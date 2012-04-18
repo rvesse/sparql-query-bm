@@ -1,0 +1,236 @@
+Introduction
+============
+
+SPARQL Query Benchmarker is a simple command line tool that can be used to benchmark end to end performance
+of a SPARQL engine via HTTP
+
+On *nix systems you can invoke the benchmarker like so:
+
+  ./benchmark endpoint queryListFile [options]
+
+On Windows systems you can invoke the benchmarker like so:
+
+  benchmark.bat endpoint queryListFile [options]
+
+Or you can invoke the jar directly using Java as follows:
+
+  java -jar sparql-query-bm-cli.jar endpoint queryListFile [options]
+
+Required arguments are:
+
+endpoint 		The URI of a HTTP accessible SPARQL endpoint
+queryListFile	Path to a file containing a list of paths to actual query files (1 per line)
+
+Supported Options are as follows:
+-d N
+--delay N            Sets maximum delay between queries in milliseconds, will be random delay up to this maximum, use 0 for no delay (default N=1000)
+-f filename.csv
+--file filename.csv  Sets filename to which the CSV results summary will be output (default results.csv)
+-h
+--help               Prints this usage message and exits
+--halt-on-timeout    Halts and aborts benchmarking if any query times out
+--halt-on-error      Halts and aborts benchmarking if any query errors
+--halt-any           Halts and aborts benchmarking if any issue is encountered
+-l N                 Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query
+--limit N            Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query
+--nocsv              Disable CSV output, supercedes any preceding -f/--filename option but may be superceded by a subsequent -f/--filename option
+--nocount            Disables result counting, benchmarking will only record time to receive first result from the endpoint
+--norand             If present the order in which queries are executed will not be randomized
+--noxml              Disables XML output, supercedes any preceding -x/--xml option but may be superceded by a subsequent -x/--xml option
+-o N
+--outliers N         Sets number of outliers to ignore i.e. discards the N best and N worst results when calculating overall averages (default N=1)
+--overwrite          Allows overwriting of existing results files of the same names, if not set and files existing benchmarking will abort immediately
+-p N
+--parallel N         Sets the number of parallel threads to use for benchmarking (default N=1 i.e. single threaded evaluation)
+--password PWD       Sets the password used for basic authentication
+-q
+--quiet              Enables quiet mode so only errors will go to the console and no progress messages will be shown
+-r N
+--runs N             Sets number of runs where N is an integer (default 25)
+--results-ask FMT    Sets the format to request for ASK query results (default application/sparql-results+xml)
+--results-graph FMT  Sets the format to request for CONSTRUCT/DESCRIBE results (default application/rdf+xml)
+--results-select FMT Sets the format to request for SELECT query results (default application/sparql-results+xml)
+-s N
+--sanity-checks N    Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=2)
+-t N
+--timeout N          Sets timeout for queries where N is number of seconds (default 300)
+--username USER      Sets the username used for basic authentication
+-w N
+--warmups N          Sets number of warm up runs to run prior to actual benchmarking runs (default 5)
+-x filename.xml
+--xml filename.xml   Request XML output and sets filename to which the XML results will be output
+
+Notes
+-----
+
+With sanity checking enabled (as it is by default) a number of tests will be issued prior to any
+benchmarking to determine if the given endpoint is up and available for use.  There are 3 tests
+currently and by default at least 2 must pass for the benchmarker to run.  Set -s 0 to disable
+these checks.
+
+If errors occur they will be logged using log4j, the --logging argument will enable log4j logging
+to stdout.  You may configure log4j manually if you prefer to have this information logged elsewhere.
+
+Currently the following result formats are supported:
+- ASK results
+ - application/sparql-results+xml (SPARQL XML)
+- CONSTRUCT/DESCRIBE results
+ - application/rdf+xml (RDF XML)
+ - text/turtle (Turtle)
+ - text/plain (NTriples)
+ - application/rdf+json (RDF JSON, Talis specification [1])
+- SELECT results
+ - application/sparql-results+xml (SPARQL XML)
+ - application/sparql-results+json (SPARQL JSON)
+ - text/tab-separated-values (SPARQL TSV)
+ - text/csv (SPARQL CSV)
+ 
+Methodology
+===========
+
+Benchmarks are run on Query Mixes, a Query Mix contains one/more queries, a mix may repeat the same query
+several times if desired.  The actual benchmark consists of N runs of this query mix (default N=25),
+number of runs may be configured using the -r or --runs options.  By default queries are run in a random
+order for each run to try and avoid the SPARQL engine learning the pattern of queries and aggressively
+caching and thus gaming the benchmark.  Randomization may be turned off if desired using the --norand
+option.  Prior to the actual benchmarked runs N warmup runs are performed (default N=5) to exercise the
+system such that it may ramp up into a hot running state that will show optimum performance.  For some
+systems this may be irrelevant or may require more runs so you can configure this with the -w or
+--warmups option.
+
+Each run records both the response time and the runtime for that run, response time is considered to
+be the time from when the query is issued to when the HTTP response starts.  The runtime is calculated 
+as the total time from issuing the query to the HTTP response coming back and for it to be parsed on the 
+client such that we can count the number of results.  This is in line with the methodology outlined 
+in other SPARQL benchmarking reports such as [2] by Revelytix. Runtime is individual to a query, 
+query mix runtimes are a summation of the runtimes of each individual query rather than the time
+to run the entire mix of queries i.e. the runtime does not include any overhead of the actual 
+benchmarking process as far as is possible.
+
+In some cases we have seen that the overhead of serializing results back over HTTP may significantly 
+exceed the time taken for the system to actually execute the query, we provide several options for
+configuring the format requested so you may wish to choose whichever format is fastest for the
+endpoint you are benchmarking.  See preceding notes on options for supported formats.  You may also
+wish to skip the counting of results or apply a fixed limit on the number of results to each query, see
+the list of options for the relevant options.
+
+As the benchmarker runs it reports statistics for each query mix run.  Once all runs have completed
+it discards the best and worst N results as outliers (this defaults to N=1 but is configurable) before
+calculating statistics both per query and for the complete query mix.
+
+Currently statistics calculated are as follows:
+-Total Response Time
+-Average Response Time (Arithmetic Mean)
+-Total Runtime
+-Average Runtime (Arithmetic Mean)
+-Average Runtime (Geometric Mean)
+-Minimum Runtime
+-Maximum Runtime
+-Runtime Variance (Population Variance)
+-Runtime Standard Deviation (Population Standard Deviation)
+-Queries per Second
+-Queries per Hour
+-Query Mixes per Hour
+
+If performing a multi-threaded benchmark then additional stats will be included, see the subsequent
+section for details.
+
+As well as printing information to stdout the benchmarker will also generate a CSV and an XML file at the end of
+the benchmarking process.  These file contains overall statistics as well as run and per query statistics.
+Additionally they may also gather environmental and settings information for the runs.  There are options 
+available to customise the filenames, whether they are generated at all and whether they are allowed to 
+overwrite existing files with the same names. 
+
+Single vs Multi-Threaded Benchmarking
+-------------------------------------
+
+By default the benchmarker runs in single threaded mode so only a single query will ever be running
+at one time.  The benchmarker can be made to run in multi-threaded mode using the -p or --parallel
+option to set the number of threads.  When running in this mode the entire query mix is run in
+parallel so there may be up to N mixes and thus N queries running at one time where N is the number 
+of threads specified by the user.
+
+Please note that the random delay between queries may mean that there are less than N queries
+actually running so you may wish to disable delays by using -d 0 or --delay 0 in order to ensure that
+there are always N queries running when performing a multi-threaded benchmark.  Also you may wish to
+use the --norand option so that mixes are more likely to be running the same query simultaneously
+though this will not necessarily simulate real world usage of a system very well.
+
+Multi-threaded benchmarking allows you to put additional strain on your system so you may see
+different performance figures versus single-threaded benchmarking.
+
+When performing multi-threaded benchmarking additional stats will be generated, these are as follows:
+-Actual Runtime
+-Actual Average Runtime (Arithmetic Mean)
+-Actual Queries per Second
+-Actual Queries per Hour
+-Actual Query Mixes per Hour
+
+These are equivalent to the single-threaded metrics except that they account for the parallelization
+of operations, typically these metrics will show better figures than the single threaded figures
+though this may depend on the system and the query.  Multi-threaded stats include a tiny fraction of
+benchmarking overhead which single-threaded stats do not so the figures may be higher for some
+cases.
+
+Publishing Results
+------------------
+
+It is strongly suggested that anyone using this tool to publish results follows best practices
+with regards to transparency.  We recommend disclosing technical specifications of the system
+being benchmarked and the hardware it was run on, where the benchmarker was run relative to the
+benchmarked system (typically we'd expect the two to be run on the same machine or on machines
+in the same LAN) and the full output of the benchmarker (ideally either the CSV/XML output).
+
+Query Sets
+==========
+
+This tool includes several query sets to get you started, you can create a query set for any queries you
+wish to benchmark.
+
+- You can find SP2B queries [3] under queries\sp2b.txt
+    SP2B without Query 5a which is typically the hardest and may not be runnable on some systems for
+    larger dataset sizes can be found under queries\sp2b_reduced.txt
+- You can find LUBM queries [4] under queries\lubm.txt
+- You can find Serialization queries under queries\serialization.txt
+    The Serialization queries are simple queries that just grab large chunks of the data (50,000) results
+    and are designed to test the performance of a system when it comes to giving you back large results over HTTP.
+
+The query list file format is simply one path to a query file per line, paths may be relative and will
+be resolved treating the path to the query file as the base path.
+
+API Usage
+=========
+
+For information on how to use the API programmatically please see the API document
+
+References
+==========
+
+[1] http://docs.api.talis.com/platform-api/output-types/rdf-json
+[2] http://www.revelytix.com/sites/default/files/TripleStorePerformanceTestingMethodolgy.pdf
+[3] http://dbis.informatik.uni-freiburg.de/index.php?project=SP2B
+[4] http://swat.cse.lehigh.edu/projects/lubm/
+
+License
+=======
+
+Copyright 2012 Robert Vesse
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+you may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Acknowledgments
+===============
+
+SPARQL Query Benchmarker uses the JENA ARQ query engine for issuing queries and parsing the results
+
+This tool was developed with the support of my employer Cray Inc

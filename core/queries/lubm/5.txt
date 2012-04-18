@@ -1,0 +1,6 @@
+PREFIX ub: <http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#>
+SELECT * 
+WHERE {
+	?n0 a ub:Person .
+	?n0 ub:memberOf <http://www.Department0.University0.edu> .
+}

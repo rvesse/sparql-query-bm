@@ -1,0 +1,10 @@
+PREFIX ub: <http://www.lehigh.edu/~zhp2/2004/0401/univ-bench.owl#>
+SELECT *
+WHERE {
+	?n0 a ub:GraduateStudent .
+	?n1 a ub:University .
+	?n2 a ub:Department .
+	?n0 ub:memberOf ?n2 .
+	?n2 ub:subOrganizationOf ?n1 .
+	?n0 ub:undergraduateDegreeFrom ?n1 .
+}

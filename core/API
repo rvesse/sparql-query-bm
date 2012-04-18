@@ -1,0 +1,126 @@
+Introduction
+============
+
+This document covers how to use the benchmarking API from code, if you just want to run from the command line
+please see the README file
+
+The API for the benchmarker is designed to be relatively simple with one main extension point.  Generally running
+the benchmarker from code just means creating a instance of the Benchmarker class, using the setters to
+configure it appropriately and then calling runBenchmark() to actual run the benchmark.
+
+API Conventions
+===============
+
+The API has one main convention, all runtime are stored and calculated in nanoseconds in order
+to preserve as much precision as possible.  All runtime related statistics should therefore be assumed
+to be in nanoseconds unless the javadoc explicitly states otherwise.
+
+The API also uses the terms Total and Actual runtime, these mean the following:
+
+Total Runtime - The sum of all runtimes i.e. the runtime without taking any account of parallelization
+Actual Runtime - The actual physical runtime consumed i.e. the runtime taking into account parallelization
+
+Basic Usage
+===========
+
+To run a benchmark you need to do the following as a minimum:
+1 - Create an instance of the Benchmarker class
+2 - Use the setter methods to set at least the following:
+ - Query Mix - setQueryMix()
+ - Endpoint - setEndpoint()
+ - (Outliers * 2) must be less than number of Runs - setOutliers() and setRuns()
+3 - Call runBenchmark()
+
+e.g.
+
+	Benchmarker b = new Benchmarker();
+	b.setQueryMix(new BenchmarkQueryMix("queries/sp2b.txt"));
+	b.setEndpoint("http://example.org/sparql");
+	b.setOutliers(1);
+	b.setRuns(25);
+	b.runBenchmark();
+	
+There are many more setters that can be used to configure all manner of the behaviours
+
+After the benchmark has completed you can then get various statistics for the benchmark by accessing the
+query mix object using getQueryMix() to get a BenchmarkQueryMix instance.  This instance provides access
+to various aggregate statistics such as getAverageRuntime() and getQueryMixesPerHour()
+
+You can access more fine grained statistics by calling getRuns() on the BenchmarkQueryMix instance.  This will
+give you an iterator of QueryMixRun instances, each instance represents the statistics from a single run of
+the query mix and can give you information like which query from the mix ran slowest/fastest.
+
+You can also access fine grained statistics on individual queries by accessing the iterator of queries using
+the getQueries() method or by using getQuery(N) to get a specific query when N is the ID of the query (zero based
+index).  Either of these methods provides access to a BenchmarkQuery instance which gives you various aggregate
+stats for the query.  As with a query mix you can use getRuns() to get an iterator of QueryRun instances where
+each instance represents a single run of the query.
+
+Advanced Usage (Progress Listeners)
+===================================
+
+The API uses a listener style pattern to generate its actual output, the interface for listeners is
+ProgressListener and the API provides a couple of built-in implementations:
+
+ConsoleProgressListener
+  Prints informational messages to console stdout, actually derived from StreamProgressListener but
+  does not close stdout when finished
+  
+CsvProgressListener
+  The default listener which is always registered automatically (but may be removed if desired) and
+  generates the CSV results summaries of the benchmarks
+
+FileProgressListener
+  Prints informational messages to a file, may overwrite/append the file if it already exists depending
+  on cosntructor arguments.  Closes the file at end of benchmarking.
+  
+StreamProgressListener
+  Prints informational messages to an arbitrary OutputStream/PrintStream closing the stream at the
+  end of benchmarking if desired (defaults to closing the stream)
+  
+Listeners can be added, removed and inspected using the methods addListener(), removeListener() and
+getListeners() respectively.
+
+For example if you wished to have console output as seen when running the tool via the command line
+then you would need to register a new instance of ConsoleProgressListener.  If you wanted to
+create a log file of the output you could register a FileProgressListener.
+  
+If you wish to extend the output of the API then you should create a custom implementation of this
+interface to do this.  The interface has 5 methods as follows:
+
+handleStarted(Benchmarker b)
+----------------------------
+
+This is called when benchmarking is started, the method receives a reference to the benchmarker object
+so it can keep a copy of this reference if necessary.  This is typically a good place to do any
+listener initialization or to capture benchmarking settings and environment information.
+
+handleProgress(String message)
+------------------------------
+
+This is called whenever an informational message is generated, listeners that are concerned only with
+stats will typically just do nothing for this method.  Listeners concerned with reporting progress
+to the user should usually perform some action here.
+
+handleProgress(BenchmarkQuery query, QueryRun run)
+--------------------------------------------------
+
+This is called when a single run of a query is completed, it receives a reference both to the query that
+was run and to the stats for that run.  Listeners concerned with stats will typically want to take
+some actions in this method.
+
+handleProgress(QueryMixRun run)
+-------------------------------
+
+This is called when a single run of the query mix is completed i.e. all queries in the mix have been run.
+It receives a reference to the stats for that run, listeners concerned with stats will typically want to 
+take some actions in this method.
+
+handleFinished(boolean ok)
+--------------------------
+
+This is called when benchmarking finished, the boolean parameter indicates whether the benchmarking
+finished normally or if it was halted by an error/cancellation.  Listeners will typically do clean up
+actions here and produce any summary output since at this point they know they have all statistics
+available for the benchmark.
+                      
