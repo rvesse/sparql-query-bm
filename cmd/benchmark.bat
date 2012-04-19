@@ -1,1 +1,1 @@
-java -jar target/sparql-query-bm-1.0.0.jar %*
+java -jar target/sparql-query-bm-cli.jar %*

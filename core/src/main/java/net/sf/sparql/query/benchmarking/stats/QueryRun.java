@@ -140,7 +140,7 @@ public class QueryRun implements Comparable<QueryRun> {
 	 */
 	public void setRunOrder(long order) throws IllegalAccessError
 	{
-		if (order == NOT_YET_RUN)
+		if (this.order == NOT_YET_RUN)
 		{
 			this.order = order;
 		}
