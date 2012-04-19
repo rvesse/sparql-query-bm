@@ -29,6 +29,7 @@ public class QueryRun implements Comparable<QueryRun> {
 	private long responseTime = NOT_YET_RUN;
 	private long resultCount = NOT_YET_RUN;
 	private String errorMessage;
+	private long order = NOT_YET_RUN;
 	
 	/**
 	 * Creates a Query Run which represents that the running of a query resulted in an error
@@ -119,6 +120,34 @@ public class QueryRun implements Comparable<QueryRun> {
 	public String getErrorMessage()
 	{
 		return this.errorMessage;
+	}
+	
+	/**
+	 * Gets the global run order for this query run
+	 * @return
+	 */
+	public long getRunOrder()
+	{
+		return this.order;
+	}
+	
+	/**
+	 * Sets the run order for this query run
+	 * <p>
+	 * Only really used internally, trying to set this once it has been set will lead to an {@link IllegalAccessError}
+	 * </p>
+	 * @param order Order
+	 */
+	public void setRunOrder(long order) throws IllegalAccessError
+	{
+		if (order == NOT_YET_RUN)
+		{
+			this.order = order;
+		}
+		else
+		{
+			throw new IllegalAccessError("Cannot set the run order after it has been set");
+		}
 	}
 
 	/**

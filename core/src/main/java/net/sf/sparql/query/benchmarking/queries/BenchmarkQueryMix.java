@@ -197,7 +197,7 @@ public class BenchmarkQueryMix {
 	 */
 	public QueryMixRun run(Benchmarker b)
 	{
-		QueryMixRun run = new QueryMixRun(this.queries.size());
+		QueryMixRun run = new QueryMixRun(this.queries.size(), b.getGlobalOrder());
 		
 		//If running as thread then we prefix all our progress messages with a Thread ID
 		String prefix = this.asThread ? "[Thread " + Thread.currentThread().getId() + "] " : "";

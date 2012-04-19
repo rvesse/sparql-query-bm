@@ -55,6 +55,8 @@ public class XmlProgressListener implements ProgressListener
 							   TAG_SUMMARY = "summary",
 							   ATTR_RESPONSE_TIME = "responseTime",
 							   ATTR_TOTAL_RESPONSE_TIME = "totalResponseTime",
+							   ATTR_RUNTIME = "runtime",
+							   ATTR_RESULT_COUNT = "resultCount",
 							   ATTR_TOTAL_RUNTIME = "totalRuntime",
 							   ATTR_ACTUAL_RUNTIME = "actualRuntime",
 							   ATTR_ACTUAL_AVG_RUNTIME = "averageActualRuntime",
@@ -73,7 +75,10 @@ public class XmlProgressListener implements ProgressListener
 							   ATTR_QPH = "queriesPerHour",
 							   ATTR_ACTUAL_QPH = "actualQueriesPerHour",
 							   ATTR_QMPH = "queryMixesPerHour",
-							   ATTR_ACTUAL_QMPH = "actualQueryMixesPerHour";
+							   ATTR_ACTUAL_QMPH = "actualQueryMixesPerHour",
+							   ATTR_FASTEST_QUERY = "fastestQuery",
+							   ATTR_SLOWEST_QUERY = "slowestQuery",
+							   ATTR_RUN_ORDER = "runOrder";
 	
 	/**
 	 * Constructor to be called when the file to write to should be detected at benchmarking start time using the {@link Benchmarker#getXmlResultsFile()} method
@@ -315,12 +320,42 @@ public class XmlProgressListener implements ProgressListener
 		//Print run information
 		openTag(TAG_MIX_RUN, true);
 		
+		this.addAttribute(ATTR_RUN_ORDER, run.getRunOrder());
 		this.addAttribute(ATTR_TOTAL_RESPONSE_TIME, run.getTotalResponseTime());
 		this.addAttribute(ATTR_TOTAL_RUNTIME, run.getTotalRuntime());
 		this.addAttribute(ATTR_MIN_QUERY_RUNTIME, run.getMinimumRuntime());
 		this.addAttribute(ATTR_MAX_QUERY_RUNTIME, run.getMaximumRuntime());
+		this.addAttribute(ATTR_FASTEST_QUERY, run.getMinimumRuntimeQueryID());
+		this.addAttribute(ATTR_SLOWEST_QUERY, run.getMaximumRuntimeQueryID());
 		
-		finishAttributes(true);
+		finishAttributes();
+		
+		Iterator<QueryRun> rs = run.getRuns();
+		int id = 0;
+		while (rs.hasNext())
+		{
+			QueryRun r = rs.next();
+			openTag(TAG_QUERY, true);
+			addAttribute(ATTR_ID, id);
+			id++;
+			addAttribute(ATTR_RUN_ORDER, r.getRunOrder());
+			addAttribute(ATTR_RESPONSE_TIME, r.getResponseTime());
+			addAttribute(ATTR_RUNTIME, r.getRuntime());
+			addAttribute(ATTR_RESULT_COUNT, r.getResultCount());
+			
+			if (r.getErrorMessage() != null)
+			{
+				finishAttributes();
+				writer.print(escape(r.getErrorMessage()));
+				closeTag(TAG_QUERY);
+			}
+			else
+			{
+				finishAttributes(true);
+			}
+		}
+		
+		closeTag(TAG_MIX_RUN);
 		
 		writer.flush();
 	}

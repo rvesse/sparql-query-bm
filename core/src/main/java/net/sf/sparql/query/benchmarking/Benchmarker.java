@@ -26,6 +26,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import net.sf.sparql.query.benchmarking.monitoring.CsvProgressListener;
 import net.sf.sparql.query.benchmarking.monitoring.ProgressListener;
@@ -130,6 +132,8 @@ public class Benchmarker {
 	private static final Logger logger = Logger.getLogger(Benchmarker.class);
 	
 	private ExecutorService executor = Executors.newCachedThreadPool();
+	
+	private AtomicLong globalOrder = new AtomicLong(0);
 	
 	private boolean halted = false;
 	
@@ -818,6 +822,9 @@ public class Benchmarker {
 		reportProgress("Running Benchmarks...");
 		reportProgress();
 		
+		//Reset Order because warm up runs/prior runs may have altered this
+		globalOrder.set(0);
+		
 		if (parallelThreads == 1)
 		{
 			//Single Threaded Benchmark
@@ -983,6 +990,18 @@ public class Benchmarker {
 		}
 		
 		return (passed >= sanity);
+	}
+	
+	/**
+	 * Gets the Global Run Order
+	 * <p>
+	 * Called elsewhere so that mix runs and query runs record what order they were run in
+	 * </p>
+	 * @return Global Run Order
+	 */
+	public long getGlobalOrder()
+	{
+		return globalOrder.incrementAndGet();
 	}
 	
 	/**

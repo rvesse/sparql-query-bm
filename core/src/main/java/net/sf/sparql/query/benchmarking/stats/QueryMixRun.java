@@ -28,18 +28,21 @@ import java.util.List;
 public class QueryMixRun implements Comparable<QueryMixRun> {
 
 	private List<QueryRun> runs;
+	private long order = 0;
 	
 	/**
 	 * Creates a new Query Mix run which represents the results of running a mix of queries
 	 * @param numQueries Number of Queries that will be executed in this run
+	 * @param order Global Run Order
 	 */
-	public QueryMixRun(int numQueries)
+	public QueryMixRun(int numQueries, long order)
 	{
 		this.runs = new ArrayList<QueryRun>(numQueries);
 		for (int i = 0; i < numQueries; i++)
 		{
 			this.runs.add(null);
 		}
+		this.order = order;
 	}
 	
 	/**
@@ -54,11 +57,23 @@ public class QueryMixRun implements Comparable<QueryMixRun> {
 
 	/**
 	 * Gets an iterator over the runs that make up this query mix
+	 * <p>
+	 * The runs are in the same order as the queries are in the originating mix i.e. the order does not reflect the execution order
+	 * </p>
 	 * @return Iterator over the runs
 	 */
 	public Iterator<QueryRun> getRuns()
 	{
 		return this.runs.iterator();
+	}
+	
+	/**
+	 * Gets the global run order that reflects the order in which the query mixes and queries were run
+	 * @return
+	 */
+	public long getRunOrder()
+	{
+		return this.order;
 	}
 	
 	/**

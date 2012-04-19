@@ -311,6 +311,7 @@ public class BenchmarkQuery {
 	public QueryRun run(Benchmarker b)
 	{
 		timer.start();
+		long order = b.getGlobalOrder();
 		QueryTask task = new QueryTask(new QueryRunner(this.query, b));
 		b.getExecutor().submit(task);
 		QueryRun r;
@@ -347,6 +348,7 @@ public class BenchmarkQuery {
 		}
 		timer.stop();
 		this.runs.add(r);
+		r.setRunOrder(order);
 		return r;
 	}
 	
