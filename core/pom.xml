@@ -87,7 +87,7 @@
 	</repositories>
 	
 	<build>
-		<finalName>sparql-query-bm-core-${version}</finalName>
+		<finalName>sparql-query-bm-core-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
