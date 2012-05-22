@@ -1,0 +1,20 @@
+The following are a list of planned enhancements for this project:
+
+- Use an RDF vocabulary to describe query mixes instead of current text file
+	- Allows for marking queries to be included multiple times
+	- Allows for adding user friendly names
+	
+- RdfProgressListener
+	- Generate an RDF form output, define a vocabulary for this
+	- Add a --rdf flag to set this file
+	
+- Revise command line argument names
+	- The -f/--file flag should become -c/--csv
+	
+- Don't require files/no output flag to be set for each standard listener, simply require at least one listener setting
+
+- Lag Compensation
+	- Try to calculate how much delay in HTTP communications there is with the endpoint via simple GETs to the endpoint
+	- Adjust all values for the endpoint by this delay
+	
+- XSLT Stylesheets for rendering XML results in browser

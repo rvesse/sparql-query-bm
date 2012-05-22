@@ -1,0 +1,846 @@
+<?xml version="1.0"?>
+<sparqlBenchmark>
+ <configuration>
+  <property name="endpoint" value="http://localhost:8080/openrdf-sesame/repositories/10k-mem" />
+  <property name="sanityChecking" value="2" />
+  <property name="warmups" value="5" />
+  <property name="runs" value="25" />
+  <property name="randomOrder" value="true" />
+  <property name="outliers" value="1" />
+  <property name="timeout" value="300" />
+  <property name="maxDelay" value="1000" />
+  <property name="askFormat" value="application/sparql-results+xml" />
+  <property name="graphFormat" value="application/rdf+xml" />
+  <property name="selectFormat" value="application/sparql-results+xml" />
+  <property name="threads" value="1" />
+  <property name="counting" value="true" />
+  <property name="limit" value="0" />
+  <property name="gzip" value="false" />
+  <property name="deflate" value="false" />
+  <queries>
+   <query id="0" name="1.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?yr
+WHERE
+  { ?journal rdf:type bench:Journal .
+    ?journal dc:title "Journal 1 (1940)"^^xsd:string .
+    ?journal dcterms:issued ?yr
+  }
+]]>
+   </query>
+   <query id="1" name="2.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?inproc ?author ?booktitle ?title ?proc ?ee ?page ?url ?yr ?abstract
+WHERE
+  { ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?author .
+    ?inproc bench:booktitle ?booktitle .
+    ?inproc dc:title ?title .
+    ?inproc dcterms:partOf ?proc .
+    ?inproc rdfs:seeAlso ?ee .
+    ?inproc swrc:pages ?page .
+    ?inproc foaf:homepage ?url .
+    ?inproc dcterms:issued ?yr
+    OPTIONAL
+      { ?inproc bench:abstract ?abstract }
+  }
+ORDER BY ?yr
+]]>
+   </query>
+   <query id="2" name="3a.txt">
+     <![CDATA[
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:pages )
+  }
+]]>
+   </query>
+   <query id="3" name="3b.txt">
+     <![CDATA[
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:month )
+  }
+]]>
+   </query>
+   <query id="4" name="3c.txt">
+     <![CDATA[
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:isbn )
+  }
+]]>
+   </query>
+   <query id="5" name="4.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT  ?name1 ?name2
+WHERE
+  { ?article1 rdf:type bench:Article .
+    ?article2 rdf:type bench:Article .
+    ?article1 dc:creator ?author1 .
+    ?author1 foaf:name ?name1 .
+    ?article2 dc:creator ?author2 .
+    ?author2 foaf:name ?name2 .
+    ?article1 swrc:journal ?journal .
+    ?article2 swrc:journal ?journal
+    FILTER ( ?name1 < ?name2 )
+  }
+]]>
+   </query>
+   <query id="6" name="5a.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?person ?name
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person2 .
+    ?person foaf:name ?name .
+    ?person2 foaf:name ?name2
+    FILTER ( ?name = ?name2 )
+  }
+]]>
+   </query>
+   <query id="7" name="5b.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?person ?name
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person .
+    ?person foaf:name ?name
+  }
+]]>
+   </query>
+   <query id="8" name="6.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?yr ?name ?document
+WHERE
+  { ?class rdfs:subClassOf foaf:Document .
+    ?document rdf:type ?class .
+    ?document dcterms:issued ?yr .
+    ?document dc:creator ?author .
+    ?author foaf:name ?name
+    OPTIONAL
+      { ?class2 rdfs:subClassOf foaf:Document .
+        ?document2 rdf:type ?class2 .
+        ?document2 dcterms:issued ?yr2 .
+        ?document2 dc:creator ?author2
+        FILTER ( ( ?author = ?author2 ) && ( ?yr2 < ?yr ) )
+      }
+    FILTER ( ! bound(?author2) )
+  }
+]]>
+   </query>
+   <query id="9" name="7.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT  ?title
+WHERE
+  { ?class rdfs:subClassOf foaf:Document .
+    ?doc rdf:type ?class .
+    ?doc dc:title ?title .
+    ?bag2 ?member2 ?doc .
+    ?doc2 dcterms:references ?bag2
+    OPTIONAL
+      { ?class3 rdfs:subClassOf foaf:Document .
+        ?doc3 rdf:type ?class3 .
+        ?doc3 dcterms:references ?bag3 .
+        ?bag3 ?member3 ?doc
+        OPTIONAL
+          { ?class4 rdfs:subClassOf foaf:Document .
+            ?doc4 rdf:type ?class4 .
+            ?doc4 dcterms:references ?bag4 .
+            ?bag4 ?member4 ?doc3
+          }
+        FILTER ( ! bound(?doc4) )
+      }
+    FILTER ( ! bound(?doc3) )
+  }
+]]>
+   </query>
+   <query id="10" name="8.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?name
+WHERE
+  { ?erdoes rdf:type foaf:Person .
+    ?erdoes foaf:name "Paul Erdoes"^^xsd:string
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?document2 dc:creator ?author .
+        ?document2 dc:creator ?author2 .
+        ?author2 foaf:name ?name
+        FILTER ( ( ( ( ?author != ?erdoes ) && ( ?document2 != ?document ) ) && ( ?author2 != ?erdoes ) ) && ( ?author2 != ?author ) )
+      }
+    UNION
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?author foaf:name ?name
+        FILTER ( ?author != ?erdoes )
+      }
+  }
+]]>
+   </query>
+   <query id="11" name="9.txt">
+     <![CDATA[
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?predicate
+WHERE
+  {   { ?person rdf:type foaf:Person .
+        ?subject ?predicate ?person
+      }
+    UNION
+      { ?person rdf:type foaf:Person .
+        ?person ?predicate ?object
+      }
+  }
+]]>
+   </query>
+   <query id="12" name="10.txt">
+     <![CDATA[
+PREFIX  person: <http://localhost/persons/>
+
+SELECT  ?subject ?predicate
+WHERE
+  { ?subject ?predicate person:Paul_Erdoes }
+]]>
+   </query>
+   <query id="13" name="11.txt">
+     <![CDATA[
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT  ?ee
+WHERE
+  { ?publication rdfs:seeAlso ?ee }
+ORDER BY ?ee
+OFFSET  50
+LIMIT   10
+]]>
+   </query>
+   <query id="14" name="12a.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person1 .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person2 .
+    ?person1 foaf:name ?name1 .
+    ?person2 foaf:name ?name2
+    FILTER ( ?name1 = ?name2 )
+  }
+]]>
+   </query>
+   <query id="15" name="12b.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { ?erdoes rdf:type foaf:Person .
+    ?erdoes foaf:name "Paul Erdoes"^^xsd:string
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?document2 dc:creator ?author .
+        ?document2 dc:creator ?author2 .
+        ?author2 foaf:name ?name
+        FILTER ( ( ( ( ?author != ?erdoes ) && ( ?document2 != ?document ) ) && ( ?author2 != ?erdoes ) ) && ( ?author2 != ?author ) )
+      }
+    UNION
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?author foaf:name ?name
+        FILTER ( ?author != ?erdoes )
+      }
+  }
+]]>
+   </query>
+   <query id="16" name="12c.txt">
+     <![CDATA[
+PREFIX  person: <http://localhost/persons/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { person:John_Q_Public rdf:type foaf:Person }
+]]>
+   </query>
+  </queries>
+ </configuration>
+ <queryMixRuns>
+  <queryMixRun runOrder="1" totalResponseTime="1368435000" totalRuntime="4309258000" minQueryRuntime="3476000" maxQueryRuntime="1607377000" fastestQuery="4" slowestQuery="6">
+   <query id="0" runOrder="7" responseTime="5710000" runtime="5839000" resultCount="1" />
+   <query id="1" runOrder="17" responseTime="9500000" runtime="13987000" resultCount="147" />
+   <query id="2" runOrder="11" responseTime="5143000" runtime="10127000" resultCount="846" />
+   <query id="3" runOrder="13" responseTime="4569000" runtime="4630000" resultCount="9" />
+   <query id="4" runOrder="15" responseTime="3424000" runtime="3476000" resultCount="0" />
+   <query id="5" runOrder="4" responseTime="6883000" runtime="1413500000" resultCount="23226" />
+   <query id="6" runOrder="10" responseTime="726985000" runtime="1607377000" resultCount="155" />
+   <query id="7" runOrder="14" responseTime="18471000" runtime="31729000" resultCount="155" />
+   <query id="8" runOrder="3" responseTime="128237000" runtime="757044000" resultCount="229" />
+   <query id="9" runOrder="2" responseTime="45000000" runtime="45046000" resultCount="0" />
+   <query id="10" runOrder="12" responseTime="295548000" runtime="296408000" resultCount="184" />
+   <query id="11" runOrder="5" responseTime="9477000" runtime="9538000" resultCount="4" />
+   <query id="12" runOrder="6" responseTime="8612000" runtime="9493000" resultCount="166" />
+   <query id="13" runOrder="16" responseTime="5741000" runtime="5929000" resultCount="10" />
+   <query id="14" runOrder="9" responseTime="10262000" runtime="10262000" resultCount="1" />
+   <query id="15" runOrder="18" responseTime="80830000" runtime="80830000" resultCount="1" />
+   <query id="16" runOrder="8" responseTime="4043000" runtime="4043000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="19" totalResponseTime="1349585000" totalRuntime="4232559000" minQueryRuntime="2614000" maxQueryRuntime="1598383000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="22" responseTime="3354000" runtime="3422000" resultCount="1" />
+   <query id="1" runOrder="27" responseTime="15563000" runtime="19902000" resultCount="147" />
+   <query id="2" runOrder="24" responseTime="5582000" runtime="10515000" resultCount="846" />
+   <query id="3" runOrder="23" responseTime="4503000" runtime="4620000" resultCount="9" />
+   <query id="4" runOrder="34" responseTime="4543000" runtime="4584000" resultCount="0" />
+   <query id="5" runOrder="29" responseTime="11512000" runtime="1371751000" resultCount="23226" />
+   <query id="6" runOrder="25" responseTime="725466000" runtime="1598383000" resultCount="155" />
+   <query id="7" runOrder="20" responseTime="16134000" runtime="28846000" resultCount="155" />
+   <query id="8" runOrder="26" responseTime="123624000" runtime="748356000" resultCount="229" />
+   <query id="9" runOrder="32" responseTime="45468000" runtime="45513000" resultCount="0" />
+   <query id="10" runOrder="28" responseTime="288188000" runtime="290280000" resultCount="184" />
+   <query id="11" runOrder="30" responseTime="8195000" runtime="8281000" resultCount="4" />
+   <query id="12" runOrder="35" responseTime="2431000" runtime="2992000" resultCount="166" />
+   <query id="13" runOrder="21" responseTime="5541000" runtime="5633000" resultCount="10" />
+   <query id="14" runOrder="31" responseTime="8960000" runtime="8960000" resultCount="1" />
+   <query id="15" runOrder="36" responseTime="77907000" runtime="77907000" resultCount="1" />
+   <query id="16" runOrder="33" responseTime="2614000" runtime="2614000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="37" totalResponseTime="1367163000" totalRuntime="4260802000" minQueryRuntime="3172000" maxQueryRuntime="1616873000" fastestQuery="4" slowestQuery="6">
+   <query id="0" runOrder="52" responseTime="3511000" runtime="3580000" resultCount="1" />
+   <query id="1" runOrder="45" responseTime="13537000" runtime="17858000" resultCount="147" />
+   <query id="2" runOrder="44" responseTime="3084000" runtime="6789000" resultCount="846" />
+   <query id="3" runOrder="48" responseTime="3907000" runtime="4029000" resultCount="9" />
+   <query id="4" runOrder="41" responseTime="3090000" runtime="3172000" resultCount="0" />
+   <query id="5" runOrder="40" responseTime="7897000" runtime="1371454000" resultCount="23226" />
+   <query id="6" runOrder="53" responseTime="735275000" runtime="1616873000" resultCount="155" />
+   <query id="7" runOrder="50" responseTime="16605000" runtime="29841000" resultCount="155" />
+   <query id="8" runOrder="47" responseTime="130907000" runtime="755992000" resultCount="229" />
+   <query id="9" runOrder="42" responseTime="50642000" runtime="50688000" resultCount="0" />
+   <query id="10" runOrder="51" responseTime="287555000" runtime="288448000" resultCount="184" />
+   <query id="11" runOrder="39" responseTime="7570000" runtime="7633000" resultCount="4" />
+   <query id="12" runOrder="46" responseTime="3159000" runtime="3941000" resultCount="166" />
+   <query id="13" runOrder="54" responseTime="9665000" runtime="9745000" resultCount="10" />
+   <query id="14" runOrder="38" responseTime="7437000" runtime="7437000" resultCount="1" />
+   <query id="15" runOrder="49" responseTime="79397000" runtime="79397000" resultCount="1" />
+   <query id="16" runOrder="43" responseTime="3925000" runtime="3925000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="55" totalResponseTime="1358394000" totalRuntime="4258678000" minQueryRuntime="2341000" maxQueryRuntime="1626498000" fastestQuery="4" slowestQuery="6">
+   <query id="0" runOrder="58" responseTime="2731000" runtime="2786000" resultCount="1" />
+   <query id="1" runOrder="72" responseTime="9266000" runtime="12528000" resultCount="147" />
+   <query id="2" runOrder="70" responseTime="2854000" runtime="8048000" resultCount="846" />
+   <query id="3" runOrder="67" responseTime="2412000" runtime="2480000" resultCount="9" />
+   <query id="4" runOrder="56" responseTime="2312000" runtime="2341000" resultCount="0" />
+   <query id="5" runOrder="66" responseTime="12300000" runtime="1373081000" resultCount="23226" />
+   <query id="6" runOrder="59" responseTime="732217000" runtime="1626498000" resultCount="155" />
+   <query id="7" runOrder="61" responseTime="16374000" runtime="29270000" resultCount="155" />
+   <query id="8" runOrder="65" responseTime="125322000" runtime="747375000" resultCount="229" />
+   <query id="9" runOrder="71" responseTime="50271000" runtime="50315000" resultCount="0" />
+   <query id="10" runOrder="63" responseTime="296361000" runtime="297270000" resultCount="184" />
+   <query id="11" runOrder="60" responseTime="12017000" runtime="12096000" resultCount="4" />
+   <query id="12" runOrder="69" responseTime="2314000" runtime="2866000" resultCount="166" />
+   <query id="13" runOrder="57" responseTime="5513000" runtime="5594000" resultCount="10" />
+   <query id="14" runOrder="62" responseTime="7290000" runtime="7290000" resultCount="1" />
+   <query id="15" runOrder="68" responseTime="75844000" runtime="75844000" resultCount="1" />
+   <query id="16" runOrder="64" responseTime="2996000" runtime="2996000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="73" totalResponseTime="1366220000" totalRuntime="4339644000" minQueryRuntime="3262000" maxQueryRuntime="1623370000" fastestQuery="4" slowestQuery="6">
+   <query id="0" runOrder="83" responseTime="3347000" runtime="3404000" resultCount="1" />
+   <query id="1" runOrder="74" responseTime="11875000" runtime="15113000" resultCount="147" />
+   <query id="2" runOrder="85" responseTime="4738000" runtime="9553000" resultCount="846" />
+   <query id="3" runOrder="76" responseTime="4901000" runtime="4967000" resultCount="9" />
+   <query id="4" runOrder="82" responseTime="3211000" runtime="3262000" resultCount="0" />
+   <query id="5" runOrder="87" responseTime="12045000" runtime="1437454000" resultCount="23226" />
+   <query id="6" runOrder="86" responseTime="736436000" runtime="1623370000" resultCount="155" />
+   <query id="7" runOrder="88" responseTime="15604000" runtime="28586000" resultCount="155" />
+   <query id="8" runOrder="77" responseTime="127334000" runtime="765149000" resultCount="229" />
+   <query id="9" runOrder="75" responseTime="48042000" runtime="48085000" resultCount="0" />
+   <query id="10" runOrder="80" responseTime="289447000" runtime="290319000" resultCount="184" />
+   <query id="11" runOrder="79" responseTime="6369000" runtime="6444000" resultCount="4" />
+   <query id="12" runOrder="84" responseTime="2524000" runtime="3474000" resultCount="166" />
+   <query id="13" runOrder="78" responseTime="9718000" runtime="9835000" resultCount="10" />
+   <query id="14" runOrder="89" responseTime="10027000" runtime="10027000" resultCount="1" />
+   <query id="15" runOrder="90" responseTime="76546000" runtime="76546000" resultCount="1" />
+   <query id="16" runOrder="81" responseTime="4056000" runtime="4056000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="91" totalResponseTime="1362082000" totalRuntime="4255362000" minQueryRuntime="2508000" maxQueryRuntime="1607687000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="101" responseTime="3805000" runtime="3867000" resultCount="1" />
+   <query id="1" runOrder="104" responseTime="16471000" runtime="19731000" resultCount="147" />
+   <query id="2" runOrder="102" responseTime="6068000" runtime="11961000" resultCount="846" />
+   <query id="3" runOrder="92" responseTime="3462000" runtime="3550000" resultCount="9" />
+   <query id="4" runOrder="100" responseTime="4821000" runtime="4897000" resultCount="0" />
+   <query id="5" runOrder="98" responseTime="6934000" runtime="1371750000" resultCount="23226" />
+   <query id="6" runOrder="105" responseTime="727585000" runtime="1607687000" resultCount="155" />
+   <query id="7" runOrder="103" responseTime="21794000" runtime="33865000" resultCount="155" />
+   <query id="8" runOrder="93" responseTime="126757000" runtime="752040000" resultCount="229" />
+   <query id="9" runOrder="108" responseTime="48595000" runtime="48654000" resultCount="0" />
+   <query id="10" runOrder="97" responseTime="288770000" runtime="289626000" resultCount="184" />
+   <query id="11" runOrder="95" responseTime="13497000" runtime="13581000" resultCount="4" />
+   <query id="12" runOrder="94" responseTime="2290000" runtime="2845000" resultCount="166" />
+   <query id="13" runOrder="107" responseTime="5243000" runtime="5318000" resultCount="10" />
+   <query id="14" runOrder="96" responseTime="5681000" runtime="5681000" resultCount="1" />
+   <query id="15" runOrder="106" responseTime="77801000" runtime="77801000" resultCount="1" />
+   <query id="16" runOrder="99" responseTime="2508000" runtime="2508000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="109" totalResponseTime="1354583000" totalRuntime="4243796000" minQueryRuntime="2190000" maxQueryRuntime="1603041000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="120" responseTime="4482000" runtime="4550000" resultCount="1" />
+   <query id="1" runOrder="122" responseTime="9207000" runtime="12384000" resultCount="147" />
+   <query id="2" runOrder="114" responseTime="4944000" runtime="11337000" resultCount="846" />
+   <query id="3" runOrder="117" responseTime="3216000" runtime="3303000" resultCount="9" />
+   <query id="4" runOrder="124" responseTime="3970000" runtime="4037000" resultCount="0" />
+   <query id="5" runOrder="119" responseTime="6383000" runtime="1364382000" resultCount="23226" />
+   <query id="6" runOrder="125" responseTime="728968000" runtime="1603041000" resultCount="155" />
+   <query id="7" runOrder="121" responseTime="16180000" runtime="30020000" resultCount="155" />
+   <query id="8" runOrder="123" responseTime="131929000" runtime="761518000" resultCount="229" />
+   <query id="9" runOrder="110" responseTime="43908000" runtime="43951000" resultCount="0" />
+   <query id="10" runOrder="116" responseTime="290457000" runtime="293209000" resultCount="184" />
+   <query id="11" runOrder="111" responseTime="10832000" runtime="10892000" resultCount="4" />
+   <query id="12" runOrder="115" responseTime="4107000" runtime="5092000" resultCount="166" />
+   <query id="13" runOrder="118" responseTime="9100000" runtime="9180000" resultCount="10" />
+   <query id="14" runOrder="112" responseTime="9350000" runtime="9350000" resultCount="1" />
+   <query id="15" runOrder="113" responseTime="75360000" runtime="75360000" resultCount="1" />
+   <query id="16" runOrder="126" responseTime="2190000" runtime="2190000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="127" totalResponseTime="1343942000" totalRuntime="4221621000" minQueryRuntime="1930000" maxQueryRuntime="1604406000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="134" responseTime="2570000" runtime="2624000" resultCount="1" />
+   <query id="1" runOrder="142" responseTime="9070000" runtime="12316000" resultCount="147" />
+   <query id="2" runOrder="138" responseTime="5725000" runtime="11484000" resultCount="846" />
+   <query id="3" runOrder="128" responseTime="2376000" runtime="2446000" resultCount="9" />
+   <query id="4" runOrder="143" responseTime="3659000" runtime="3691000" resultCount="0" />
+   <query id="5" runOrder="141" responseTime="10148000" runtime="1360307000" resultCount="23226" />
+   <query id="6" runOrder="139" responseTime="724119000" runtime="1604406000" resultCount="155" />
+   <query id="7" runOrder="133" responseTime="16753000" runtime="29705000" resultCount="155" />
+   <query id="8" runOrder="129" responseTime="131572000" runtime="754991000" resultCount="229" />
+   <query id="9" runOrder="140" responseTime="44057000" runtime="44098000" resultCount="0" />
+   <query id="10" runOrder="136" responseTime="291655000" runtime="292561000" resultCount="184" />
+   <query id="11" runOrder="130" responseTime="5710000" runtime="5832000" resultCount="4" />
+   <query id="12" runOrder="131" responseTime="2274000" runtime="2822000" resultCount="166" />
+   <query id="13" runOrder="137" responseTime="8486000" runtime="8570000" resultCount="10" />
+   <query id="14" runOrder="144" responseTime="9158000" runtime="9158000" resultCount="1" />
+   <query id="15" runOrder="135" responseTime="74680000" runtime="74680000" resultCount="1" />
+   <query id="16" runOrder="132" responseTime="1930000" runtime="1930000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="145" totalResponseTime="1368276000" totalRuntime="4299175000" minQueryRuntime="1913000" maxQueryRuntime="1608885000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="151" responseTime="2426000" runtime="2480000" resultCount="1" />
+   <query id="1" runOrder="159" responseTime="14474000" runtime="17726000" resultCount="147" />
+   <query id="2" runOrder="158" responseTime="4038000" runtime="7940000" resultCount="846" />
+   <query id="3" runOrder="146" responseTime="2219000" runtime="2272000" resultCount="9" />
+   <query id="4" runOrder="156" responseTime="2217000" runtime="2252000" resultCount="0" />
+   <query id="5" runOrder="149" responseTime="11468000" runtime="1429380000" resultCount="23226" />
+   <query id="6" runOrder="147" responseTime="738790000" runtime="1608885000" resultCount="155" />
+   <query id="7" runOrder="161" responseTime="17333000" runtime="30338000" resultCount="155" />
+   <query id="8" runOrder="155" responseTime="127352000" runtime="747842000" resultCount="229" />
+   <query id="9" runOrder="160" responseTime="53705000" runtime="53749000" resultCount="0" />
+   <query id="10" runOrder="148" responseTime="293845000" runtime="294802000" resultCount="184" />
+   <query id="11" runOrder="150" responseTime="5953000" runtime="6035000" resultCount="4" />
+   <query id="12" runOrder="153" responseTime="3362000" runtime="4197000" resultCount="166" />
+   <query id="13" runOrder="157" responseTime="4827000" runtime="5010000" resultCount="10" />
+   <query id="14" runOrder="162" responseTime="9339000" runtime="9339000" resultCount="1" />
+   <query id="15" runOrder="154" responseTime="75015000" runtime="75015000" resultCount="1" />
+   <query id="16" runOrder="152" responseTime="1913000" runtime="1913000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="163" totalResponseTime="1357582000" totalRuntime="4249793000" minQueryRuntime="3455000" maxQueryRuntime="1605907000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="179" responseTime="4495000" runtime="4548000" resultCount="1" />
+   <query id="1" runOrder="169" responseTime="9491000" runtime="12596000" resultCount="147" />
+   <query id="2" runOrder="175" responseTime="2814000" runtime="6382000" resultCount="846" />
+   <query id="3" runOrder="171" responseTime="3796000" runtime="3944000" resultCount="9" />
+   <query id="4" runOrder="177" responseTime="4067000" runtime="4098000" resultCount="0" />
+   <query id="5" runOrder="165" responseTime="10718000" runtime="1370410000" resultCount="23226" />
+   <query id="6" runOrder="172" responseTime="729033000" runtime="1605907000" resultCount="155" />
+   <query id="7" runOrder="170" responseTime="20151000" runtime="33374000" resultCount="155" />
+   <query id="8" runOrder="167" responseTime="128468000" runtime="762138000" resultCount="229" />
+   <query id="9" runOrder="174" responseTime="44197000" runtime="44250000" resultCount="0" />
+   <query id="10" runOrder="173" responseTime="298815000" runtime="299714000" resultCount="184" />
+   <query id="11" runOrder="164" responseTime="5582000" runtime="5636000" resultCount="4" />
+   <query id="12" runOrder="166" responseTime="3080000" runtime="3845000" resultCount="166" />
+   <query id="13" runOrder="168" responseTime="4685000" runtime="4761000" resultCount="10" />
+   <query id="14" runOrder="180" responseTime="9144000" runtime="9144000" resultCount="1" />
+   <query id="15" runOrder="176" responseTime="75591000" runtime="75591000" resultCount="1" />
+   <query id="16" runOrder="178" responseTime="3455000" runtime="3455000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="181" totalResponseTime="1361458000" totalRuntime="4237256000" minQueryRuntime="2446000" maxQueryRuntime="1609144000" fastestQuery="0" slowestQuery="6">
+   <query id="0" runOrder="182" responseTime="2397000" runtime="2446000" resultCount="1" />
+   <query id="1" runOrder="196" responseTime="12793000" runtime="15938000" resultCount="147" />
+   <query id="2" runOrder="195" responseTime="3160000" runtime="8075000" resultCount="846" />
+   <query id="3" runOrder="189" responseTime="4173000" runtime="4234000" resultCount="9" />
+   <query id="4" runOrder="186" responseTime="3936000" runtime="4014000" resultCount="0" />
+   <query id="5" runOrder="188" responseTime="6513000" runtime="1355823000" resultCount="23226" />
+   <query id="6" runOrder="187" responseTime="735458000" runtime="1609144000" resultCount="155" />
+   <query id="7" runOrder="183" responseTime="15870000" runtime="33757000" resultCount="155" />
+   <query id="8" runOrder="192" responseTime="127144000" runtime="751893000" resultCount="229" />
+   <query id="9" runOrder="184" responseTime="49892000" runtime="49940000" resultCount="0" />
+   <query id="10" runOrder="197" responseTime="296413000" runtime="297407000" resultCount="184" />
+   <query id="11" runOrder="193" responseTime="10549000" runtime="10679000" resultCount="4" />
+   <query id="12" runOrder="191" responseTime="2329000" runtime="3000000" resultCount="166" />
+   <query id="13" runOrder="194" responseTime="4793000" runtime="4868000" resultCount="10" />
+   <query id="14" runOrder="185" responseTime="8795000" runtime="8795000" resultCount="1" />
+   <query id="15" runOrder="198" responseTime="73619000" runtime="73619000" resultCount="1" />
+   <query id="16" runOrder="190" responseTime="3624000" runtime="3624000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="199" totalResponseTime="1351212000" totalRuntime="4230607000" minQueryRuntime="2122000" maxQueryRuntime="1607317000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="206" responseTime="2303000" runtime="2363000" resultCount="1" />
+   <query id="1" runOrder="204" responseTime="11462000" runtime="14551000" resultCount="147" />
+   <query id="2" runOrder="211" responseTime="5873000" runtime="11777000" resultCount="846" />
+   <query id="3" runOrder="202" responseTime="2883000" runtime="3027000" resultCount="9" />
+   <query id="4" runOrder="203" responseTime="4464000" runtime="4520000" resultCount="0" />
+   <query id="5" runOrder="201" responseTime="6318000" runtime="1360749000" resultCount="23226" />
+   <query id="6" runOrder="213" responseTime="728869000" runtime="1607317000" resultCount="155" />
+   <query id="7" runOrder="215" responseTime="17521000" runtime="28965000" resultCount="155" />
+   <query id="8" runOrder="212" responseTime="127137000" runtime="751369000" resultCount="229" />
+   <query id="9" runOrder="216" responseTime="46499000" runtime="46544000" resultCount="0" />
+   <query id="10" runOrder="214" responseTime="289727000" runtime="290600000" resultCount="184" />
+   <query id="11" runOrder="200" responseTime="7124000" runtime="7184000" resultCount="4" />
+   <query id="12" runOrder="207" responseTime="2307000" runtime="2836000" resultCount="166" />
+   <query id="13" runOrder="205" responseTime="4668000" runtime="4748000" resultCount="10" />
+   <query id="14" runOrder="208" responseTime="8666000" runtime="8666000" resultCount="1" />
+   <query id="15" runOrder="210" responseTime="83269000" runtime="83269000" resultCount="1" />
+   <query id="16" runOrder="209" responseTime="2122000" runtime="2122000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="217" totalResponseTime="1368176000" totalRuntime="4253987000" minQueryRuntime="1828000" maxQueryRuntime="1620511000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="233" responseTime="3588000" runtime="3705000" resultCount="1" />
+   <query id="1" runOrder="234" responseTime="15063000" runtime="18253000" resultCount="147" />
+   <query id="2" runOrder="226" responseTime="6682000" runtime="11663000" resultCount="846" />
+   <query id="3" runOrder="225" responseTime="2570000" runtime="2713000" resultCount="9" />
+   <query id="4" runOrder="228" responseTime="4571000" runtime="4633000" resultCount="0" />
+   <query id="5" runOrder="221" responseTime="6590000" runtime="1364392000" resultCount="23226" />
+   <query id="6" runOrder="222" responseTime="734925000" runtime="1620511000" resultCount="155" />
+   <query id="7" runOrder="232" responseTime="17701000" runtime="30675000" resultCount="155" />
+   <query id="8" runOrder="219" responseTime="131379000" runtime="750216000" resultCount="229" />
+   <query id="9" runOrder="231" responseTime="43345000" runtime="43388000" resultCount="0" />
+   <query id="10" runOrder="227" responseTime="291744000" runtime="292640000" resultCount="184" />
+   <query id="11" runOrder="230" responseTime="10068000" runtime="10156000" resultCount="4" />
+   <query id="12" runOrder="224" responseTime="4399000" runtime="5314000" resultCount="166" />
+   <query id="13" runOrder="218" responseTime="4798000" runtime="4975000" resultCount="10" />
+   <query id="14" runOrder="220" responseTime="9246000" runtime="9246000" resultCount="1" />
+   <query id="15" runOrder="223" responseTime="79679000" runtime="79679000" resultCount="1" />
+   <query id="16" runOrder="229" responseTime="1828000" runtime="1828000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="235" totalResponseTime="1354758000" totalRuntime="4252945000" minQueryRuntime="2287000" maxQueryRuntime="1610406000" fastestQuery="4" slowestQuery="6">
+   <query id="0" runOrder="248" responseTime="2707000" runtime="2761000" resultCount="1" />
+   <query id="1" runOrder="242" responseTime="9791000" runtime="13517000" resultCount="147" />
+   <query id="2" runOrder="244" responseTime="3011000" runtime="6641000" resultCount="846" />
+   <query id="3" runOrder="237" responseTime="2704000" runtime="2852000" resultCount="9" />
+   <query id="4" runOrder="239" responseTime="2252000" runtime="2287000" resultCount="0" />
+   <query id="5" runOrder="252" responseTime="5964000" runtime="1378665000" resultCount="23226" />
+   <query id="6" runOrder="245" responseTime="735781000" runtime="1610406000" resultCount="155" />
+   <query id="7" runOrder="241" responseTime="17513000" runtime="30402000" resultCount="155" />
+   <query id="8" runOrder="236" responseTime="126513000" runtime="754745000" resultCount="229" />
+   <query id="9" runOrder="249" responseTime="50098000" runtime="50141000" resultCount="0" />
+   <query id="10" runOrder="246" responseTime="291342000" runtime="292222000" resultCount="184" />
+   <query id="11" runOrder="250" responseTime="9501000" runtime="9564000" resultCount="4" />
+   <query id="12" runOrder="240" responseTime="4554000" runtime="5623000" resultCount="166" />
+   <query id="13" runOrder="247" responseTime="4705000" runtime="4797000" resultCount="10" />
+   <query id="14" runOrder="243" responseTime="8317000" runtime="8317000" resultCount="1" />
+   <query id="15" runOrder="238" responseTime="77136000" runtime="77136000" resultCount="1" />
+   <query id="16" runOrder="251" responseTime="2869000" runtime="2869000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="253" totalResponseTime="1354641000" totalRuntime="4234069000" minQueryRuntime="2164000" maxQueryRuntime="1601212000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="264" responseTime="2321000" runtime="2379000" resultCount="1" />
+   <query id="1" runOrder="266" responseTime="10403000" runtime="13458000" resultCount="147" />
+   <query id="2" runOrder="256" responseTime="3060000" runtime="8004000" resultCount="846" />
+   <query id="3" runOrder="254" responseTime="2202000" runtime="2259000" resultCount="9" />
+   <query id="4" runOrder="270" responseTime="2682000" runtime="2755000" resultCount="0" />
+   <query id="5" runOrder="267" responseTime="10626000" runtime="1371407000" resultCount="23226" />
+   <query id="6" runOrder="269" responseTime="730535000" runtime="1601212000" resultCount="155" />
+   <query id="7" runOrder="268" responseTime="23194000" runtime="34862000" resultCount="155" />
+   <query id="8" runOrder="255" responseTime="125774000" runtime="751016000" resultCount="229" />
+   <query id="9" runOrder="258" responseTime="44558000" runtime="44599000" resultCount="0" />
+   <query id="10" runOrder="259" responseTime="293801000" runtime="295902000" resultCount="184" />
+   <query id="11" runOrder="260" responseTime="10070000" runtime="10163000" resultCount="4" />
+   <query id="12" runOrder="257" responseTime="2202000" runtime="2732000" resultCount="166" />
+   <query id="13" runOrder="261" responseTime="8958000" runtime="9066000" resultCount="10" />
+   <query id="14" runOrder="262" responseTime="5474000" runtime="5474000" resultCount="1" />
+   <query id="15" runOrder="265" responseTime="76617000" runtime="76617000" resultCount="1" />
+   <query id="16" runOrder="263" responseTime="2164000" runtime="2164000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="271" totalResponseTime="1347598000" totalRuntime="4253480000" minQueryRuntime="2018000" maxQueryRuntime="1611287000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="282" responseTime="2396000" runtime="2463000" resultCount="1" />
+   <query id="1" runOrder="276" responseTime="8954000" runtime="12028000" resultCount="147" />
+   <query id="2" runOrder="284" responseTime="4478000" runtime="11035000" resultCount="846" />
+   <query id="3" runOrder="278" responseTime="2645000" runtime="2704000" resultCount="9" />
+   <query id="4" runOrder="288" responseTime="2129000" runtime="2159000" resultCount="0" />
+   <query id="5" runOrder="274" responseTime="9829000" runtime="1375506000" resultCount="23226" />
+   <query id="6" runOrder="280" responseTime="734713000" runtime="1611287000" resultCount="155" />
+   <query id="7" runOrder="273" responseTime="15452000" runtime="28421000" resultCount="155" />
+   <query id="8" runOrder="279" responseTime="125444000" runtime="764556000" resultCount="229" />
+   <query id="9" runOrder="277" responseTime="44093000" runtime="44136000" resultCount="0" />
+   <query id="10" runOrder="275" responseTime="294818000" runtime="295754000" resultCount="184" />
+   <query id="11" runOrder="272" responseTime="11299000" runtime="11379000" resultCount="4" />
+   <query id="12" runOrder="283" responseTime="2590000" runtime="3118000" resultCount="166" />
+   <query id="13" runOrder="281" responseTime="5047000" runtime="5223000" resultCount="10" />
+   <query id="14" runOrder="287" responseTime="5366000" runtime="5366000" resultCount="1" />
+   <query id="15" runOrder="286" responseTime="76327000" runtime="76327000" resultCount="1" />
+   <query id="16" runOrder="285" responseTime="2018000" runtime="2018000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="289" totalResponseTime="1344832000" totalRuntime="4291592000" minQueryRuntime="2181000" maxQueryRuntime="1613326000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="303" responseTime="2362000" runtime="2417000" resultCount="1" />
+   <query id="1" runOrder="305" responseTime="8796000" runtime="11887000" resultCount="147" />
+   <query id="2" runOrder="293" responseTime="3249000" runtime="8401000" resultCount="846" />
+   <query id="3" runOrder="296" responseTime="2247000" runtime="2307000" resultCount="9" />
+   <query id="4" runOrder="306" responseTime="2450000" runtime="2484000" resultCount="0" />
+   <query id="5" runOrder="302" responseTime="6127000" runtime="1426520000" resultCount="23226" />
+   <query id="6" runOrder="297" responseTime="733277000" runtime="1613326000" resultCount="155" />
+   <query id="7" runOrder="304" responseTime="17932000" runtime="31495000" resultCount="155" />
+   <query id="8" runOrder="292" responseTime="130114000" runtime="752596000" resultCount="229" />
+   <query id="9" runOrder="298" responseTime="44315000" runtime="44358000" resultCount="0" />
+   <query id="10" runOrder="294" responseTime="289221000" runtime="290145000" resultCount="184" />
+   <query id="11" runOrder="290" responseTime="7521000" runtime="7645000" resultCount="4" />
+   <query id="12" runOrder="295" responseTime="2285000" runtime="2896000" resultCount="166" />
+   <query id="13" runOrder="291" responseTime="7306000" runtime="7485000" resultCount="10" />
+   <query id="14" runOrder="301" responseTime="5344000" runtime="5344000" resultCount="1" />
+   <query id="15" runOrder="299" responseTime="80105000" runtime="80105000" resultCount="1" />
+   <query id="16" runOrder="300" responseTime="2181000" runtime="2181000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="307" totalResponseTime="1341827000" totalRuntime="4243020000" minQueryRuntime="2198000" maxQueryRuntime="1608471000" fastestQuery="4" slowestQuery="6">
+   <query id="0" runOrder="312" responseTime="4921000" runtime="5042000" resultCount="1" />
+   <query id="1" runOrder="321" responseTime="8700000" runtime="11672000" resultCount="147" />
+   <query id="2" runOrder="315" responseTime="4839000" runtime="10079000" resultCount="846" />
+   <query id="3" runOrder="314" responseTime="3783000" runtime="3900000" resultCount="9" />
+   <query id="4" runOrder="311" responseTime="2163000" runtime="2198000" resultCount="0" />
+   <query id="5" runOrder="320" responseTime="5929000" runtime="1381300000" resultCount="23226" />
+   <query id="6" runOrder="309" responseTime="731011000" runtime="1608471000" resultCount="155" />
+   <query id="7" runOrder="313" responseTime="17157000" runtime="30817000" resultCount="155" />
+   <query id="8" runOrder="322" responseTime="130176000" runtime="754657000" resultCount="229" />
+   <query id="9" runOrder="308" responseTime="45128000" runtime="45170000" resultCount="0" />
+   <query id="10" runOrder="317" responseTime="289403000" runtime="290353000" resultCount="184" />
+   <query id="11" runOrder="319" responseTime="6228000" runtime="6354000" resultCount="4" />
+   <query id="12" runOrder="310" responseTime="2343000" runtime="2890000" resultCount="166" />
+   <query id="13" runOrder="323" responseTime="4640000" runtime="4711000" resultCount="10" />
+   <query id="14" runOrder="316" responseTime="5048000" runtime="5048000" resultCount="1" />
+   <query id="15" runOrder="318" responseTime="76633000" runtime="76633000" resultCount="1" />
+   <query id="16" runOrder="324" responseTime="3725000" runtime="3725000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="325" totalResponseTime="1361894000" totalRuntime="4261364000" minQueryRuntime="2204000" maxQueryRuntime="1618857000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="341" responseTime="2399000" runtime="2448000" resultCount="1" />
+   <query id="1" runOrder="326" responseTime="8551000" runtime="11494000" resultCount="147" />
+   <query id="2" runOrder="337" responseTime="2653000" runtime="6338000" resultCount="846" />
+   <query id="3" runOrder="332" responseTime="3079000" runtime="3144000" resultCount="9" />
+   <query id="4" runOrder="336" responseTime="4632000" runtime="4708000" resultCount="0" />
+   <query id="5" runOrder="329" responseTime="10894000" runtime="1384918000" resultCount="23226" />
+   <query id="6" runOrder="328" responseTime="734776000" runtime="1618857000" resultCount="155" />
+   <query id="7" runOrder="338" responseTime="17026000" runtime="29870000" resultCount="155" />
+   <query id="8" runOrder="335" responseTime="138420000" runtime="757220000" resultCount="229" />
+   <query id="9" runOrder="334" responseTime="44348000" runtime="44390000" resultCount="0" />
+   <query id="10" runOrder="331" responseTime="287979000" runtime="290114000" resultCount="184" />
+   <query id="11" runOrder="342" responseTime="12892000" runtime="12986000" resultCount="4" />
+   <query id="12" runOrder="330" responseTime="2612000" runtime="3152000" resultCount="166" />
+   <query id="13" runOrder="327" responseTime="8353000" runtime="8445000" resultCount="10" />
+   <query id="14" runOrder="333" responseTime="6814000" runtime="6814000" resultCount="1" />
+   <query id="15" runOrder="340" responseTime="74262000" runtime="74262000" resultCount="1" />
+   <query id="16" runOrder="339" responseTime="2204000" runtime="2204000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="343" totalResponseTime="1347542000" totalRuntime="4256018000" minQueryRuntime="2442000" maxQueryRuntime="1604336000" fastestQuery="3" slowestQuery="6">
+   <query id="0" runOrder="356" responseTime="3717000" runtime="3838000" resultCount="1" />
+   <query id="1" runOrder="350" responseTime="13232000" runtime="16174000" resultCount="147" />
+   <query id="2" runOrder="348" responseTime="5107000" runtime="10537000" resultCount="846" />
+   <query id="3" runOrder="347" responseTime="2373000" runtime="2442000" resultCount="9" />
+   <query id="4" runOrder="353" responseTime="4482000" runtime="4548000" resultCount="0" />
+   <query id="5" runOrder="355" responseTime="6848000" runtime="1379030000" resultCount="23226" />
+   <query id="6" runOrder="354" responseTime="724455000" runtime="1604336000" resultCount="155" />
+   <query id="7" runOrder="345" responseTime="19314000" runtime="32129000" resultCount="155" />
+   <query id="8" runOrder="346" responseTime="127044000" runtime="760355000" resultCount="229" />
+   <query id="9" runOrder="351" responseTime="48865000" runtime="48910000" resultCount="0" />
+   <query id="10" runOrder="352" responseTime="293466000" runtime="294408000" resultCount="184" />
+   <query id="11" runOrder="357" responseTime="7357000" runtime="7411000" resultCount="4" />
+   <query id="12" runOrder="358" responseTime="2537000" runtime="3073000" resultCount="166" />
+   <query id="13" runOrder="349" responseTime="4828000" runtime="4910000" resultCount="10" />
+   <query id="14" runOrder="360" responseTime="5239000" runtime="5239000" resultCount="1" />
+   <query id="15" runOrder="344" responseTime="74812000" runtime="74812000" resultCount="1" />
+   <query id="16" runOrder="359" responseTime="3866000" runtime="3866000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="361" totalResponseTime="1380346000" totalRuntime="4303108000" minQueryRuntime="1996000" maxQueryRuntime="1638149000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="372" responseTime="2302000" runtime="2362000" resultCount="1" />
+   <query id="1" runOrder="371" responseTime="10018000" runtime="13233000" resultCount="147" />
+   <query id="2" runOrder="365" responseTime="5466000" runtime="11281000" resultCount="846" />
+   <query id="3" runOrder="377" responseTime="2158000" runtime="2229000" resultCount="9" />
+   <query id="4" runOrder="367" responseTime="2228000" runtime="2274000" resultCount="0" />
+   <query id="5" runOrder="366" responseTime="6203000" runtime="1389211000" resultCount="23226" />
+   <query id="6" runOrder="364" responseTime="756943000" runtime="1638149000" resultCount="155" />
+   <query id="7" runOrder="375" responseTime="22043000" runtime="35247000" resultCount="155" />
+   <query id="8" runOrder="373" responseTime="127187000" runtime="760277000" resultCount="229" />
+   <query id="9" runOrder="363" responseTime="49024000" runtime="49068000" resultCount="0" />
+   <query id="10" runOrder="374" responseTime="291237000" runtime="293575000" resultCount="184" />
+   <query id="11" runOrder="369" responseTime="5550000" runtime="5603000" resultCount="4" />
+   <query id="12" runOrder="368" responseTime="2577000" runtime="3110000" resultCount="166" />
+   <query id="13" runOrder="378" responseTime="4984000" runtime="5063000" resultCount="10" />
+   <query id="14" runOrder="376" responseTime="9445000" runtime="9445000" resultCount="1" />
+   <query id="15" runOrder="370" responseTime="80985000" runtime="80985000" resultCount="1" />
+   <query id="16" runOrder="362" responseTime="1996000" runtime="1996000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="379" totalResponseTime="1354730000" totalRuntime="4352339000" minQueryRuntime="1863000" maxQueryRuntime="1651484000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="395" responseTime="2276000" runtime="2325000" resultCount="1" />
+   <query id="1" runOrder="380" responseTime="8594000" runtime="13348000" resultCount="147" />
+   <query id="2" runOrder="384" responseTime="3555000" runtime="7260000" resultCount="846" />
+   <query id="3" runOrder="383" responseTime="2533000" runtime="2675000" resultCount="9" />
+   <query id="4" runOrder="387" responseTime="2224000" runtime="2260000" resultCount="0" />
+   <query id="5" runOrder="381" responseTime="6486000" runtime="1431853000" resultCount="23226" />
+   <query id="6" runOrder="393" responseTime="749627000" runtime="1651484000" resultCount="155" />
+   <query id="7" runOrder="394" responseTime="17376000" runtime="28794000" resultCount="155" />
+   <query id="8" runOrder="386" responseTime="128021000" runtime="776742000" resultCount="229" />
+   <query id="9" runOrder="391" responseTime="44166000" runtime="44207000" resultCount="0" />
+   <query id="10" runOrder="389" responseTime="294064000" runtime="294935000" resultCount="184" />
+   <query id="11" runOrder="392" responseTime="5602000" runtime="5657000" resultCount="4" />
+   <query id="12" runOrder="390" responseTime="2206000" runtime="2736000" resultCount="166" />
+   <query id="13" runOrder="382" responseTime="4573000" runtime="4636000" resultCount="10" />
+   <query id="14" runOrder="388" responseTime="5005000" runtime="5005000" resultCount="1" />
+   <query id="15" runOrder="396" responseTime="76559000" runtime="76559000" resultCount="1" />
+   <query id="16" runOrder="385" responseTime="1863000" runtime="1863000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="397" totalResponseTime="1363623000" totalRuntime="4303485000" minQueryRuntime="1849000" maxQueryRuntime="1655765000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="398" responseTime="2840000" runtime="2955000" resultCount="1" />
+   <query id="1" runOrder="414" responseTime="12161000" runtime="15191000" resultCount="147" />
+   <query id="2" runOrder="405" responseTime="3939000" runtime="8417000" resultCount="846" />
+   <query id="3" runOrder="401" responseTime="2341000" runtime="2420000" resultCount="9" />
+   <query id="4" runOrder="409" responseTime="2156000" runtime="2190000" resultCount="0" />
+   <query id="5" runOrder="411" responseTime="6015000" runtime="1377099000" resultCount="23226" />
+   <query id="6" runOrder="402" responseTime="749157000" runtime="1655765000" resultCount="155" />
+   <query id="7" runOrder="404" responseTime="18092000" runtime="34940000" resultCount="155" />
+   <query id="8" runOrder="400" responseTime="140034000" runtime="775967000" resultCount="229" />
+   <query id="9" runOrder="407" responseTime="44505000" runtime="44547000" resultCount="0" />
+   <query id="10" runOrder="410" responseTime="287842000" runtime="288727000" resultCount="184" />
+   <query id="11" runOrder="408" responseTime="5495000" runtime="5550000" resultCount="4" />
+   <query id="12" runOrder="399" responseTime="2230000" runtime="2824000" resultCount="166" />
+   <query id="13" runOrder="412" responseTime="4577000" runtime="4654000" resultCount="10" />
+   <query id="14" runOrder="406" responseTime="5457000" runtime="5457000" resultCount="1" />
+   <query id="15" runOrder="403" responseTime="74933000" runtime="74933000" resultCount="1" />
+   <query id="16" runOrder="413" responseTime="1849000" runtime="1849000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="415" totalResponseTime="1365045000" totalRuntime="4297865000" minQueryRuntime="2224000" maxQueryRuntime="1640554000" fastestQuery="3" slowestQuery="6">
+   <query id="0" runOrder="416" responseTime="2258000" runtime="2305000" resultCount="1" />
+   <query id="1" runOrder="418" responseTime="9449000" runtime="12523000" resultCount="147" />
+   <query id="2" runOrder="426" responseTime="2681000" runtime="6391000" resultCount="846" />
+   <query id="3" runOrder="432" responseTime="2165000" runtime="2224000" resultCount="9" />
+   <query id="4" runOrder="422" responseTime="3703000" runtime="3765000" resultCount="0" />
+   <query id="5" runOrder="430" responseTime="6039000" runtime="1388125000" resultCount="23226" />
+   <query id="6" runOrder="419" responseTime="745089000" runtime="1640554000" resultCount="155" />
+   <query id="7" runOrder="424" responseTime="17142000" runtime="30035000" resultCount="155" />
+   <query id="8" runOrder="429" responseTime="127513000" runtime="761139000" resultCount="229" />
+   <query id="9" runOrder="421" responseTime="48722000" runtime="48764000" resultCount="0" />
+   <query id="10" runOrder="428" responseTime="294666000" runtime="295751000" resultCount="184" />
+   <query id="11" runOrder="431" responseTime="5780000" runtime="5839000" resultCount="4" />
+   <query id="12" runOrder="420" responseTime="2341000" runtime="2873000" resultCount="166" />
+   <query id="13" runOrder="423" responseTime="4644000" runtime="4724000" resultCount="10" />
+   <query id="14" runOrder="425" responseTime="8269000" runtime="8269000" resultCount="1" />
+   <query id="15" runOrder="427" responseTime="81136000" runtime="81136000" resultCount="1" />
+   <query id="16" runOrder="417" responseTime="3448000" runtime="3448000" resultCount="1" />
+  </queryMixRun>
+  <queryMixRun runOrder="433" totalResponseTime="1341631000" totalRuntime="4269654000" minQueryRuntime="1862000" maxQueryRuntime="1616362000" fastestQuery="16" slowestQuery="6">
+   <query id="0" runOrder="441" responseTime="2392000" runtime="2449000" resultCount="1" />
+   <query id="1" runOrder="434" responseTime="11296000" runtime="14220000" resultCount="147" />
+   <query id="2" runOrder="435" responseTime="4675000" runtime="9561000" resultCount="846" />
+   <query id="3" runOrder="448" responseTime="4011000" runtime="4070000" resultCount="9" />
+   <query id="4" runOrder="450" responseTime="2189000" runtime="2220000" resultCount="0" />
+   <query id="5" runOrder="436" responseTime="6131000" runtime="1397391000" resultCount="23226" />
+   <query id="6" runOrder="437" responseTime="729844000" runtime="1616362000" resultCount="155" />
+   <query id="7" runOrder="443" responseTime="22013000" runtime="34965000" resultCount="155" />
+   <query id="8" runOrder="440" responseTime="126857000" runtime="754434000" resultCount="229" />
+   <query id="9" runOrder="439" responseTime="42379000" runtime="42422000" resultCount="0" />
+   <query id="10" runOrder="445" responseTime="294100000" runtime="295064000" resultCount="184" />
+   <query id="11" runOrder="438" responseTime="7992000" runtime="8056000" resultCount="4" />
+   <query id="12" runOrder="449" responseTime="2505000" runtime="3118000" resultCount="166" />
+   <query id="13" runOrder="442" responseTime="4622000" runtime="4697000" resultCount="10" />
+   <query id="14" runOrder="444" responseTime="5130000" runtime="5130000" resultCount="1" />
+   <query id="15" runOrder="446" responseTime="73633000" runtime="73633000" resultCount="1" />
+   <query id="16" runOrder="447" responseTime="1862000" runtime="1862000" resultCount="1" />
+  </queryMixRun>
+ </queryMixRuns>
+ <statistics>
+  <queries>
+   <query id="0" name="1.txt" totalResponseTime="69642000" averageResponseTime="3027913" totalRuntime="71214000" averageRuntime="3096260" averageRuntimeGeometric="3001695.8875903105" minQueryRuntime="2325000" maxQueryRuntime="5042000" variance="6.564513232514177E-7" standardDeviation="810216.8371808981" queriesPerSecond="322.97029319243217" queriesPerHour="1162693.0554927557" />
+   <query id="1" name="2.txt" totalResponseTime="253603000" averageResponseTime="11026217" totalRuntime="330232000" averageRuntime="14357913" averageRuntimeGeometric="1.4195025317663353E7" minQueryRuntime="11672000" maxQueryRuntime="19731000" variance="5.014140601134215E-6" standardDeviation="2239227.6796105877" queriesPerSecond="69.64800524978804" queriesPerHour="250732.81889923697" />
+   <query id="2" name="3a.txt" totalResponseTime="98697000" averageResponseTime="4291173" totalRuntime="211297000" averageRuntime="9186826" averageRuntimeGeometric="9004500.802843964" minQueryRuntime="6382000" maxQueryRuntime="11777000" variance="3.23508927410208E-6" standardDeviation="1798635.3922076812" queriesPerSecond="108.85152282191912" queriesPerHour="391865.48215890885" />
+   <query id="3" name="3b.txt" totalResponseTime="70162000" averageResponseTime="3050521" totalRuntime="72250000" averageRuntime="3141304" averageRuntimeGeometric="3047370.2271430558" minQueryRuntime="2229000" maxQueryRuntime="4630000" variance="6.235572551984877E-7" standardDeviation="789656.4159167503" queriesPerSecond="318.3391355946448" queriesPerHour="1146020.8881407212" />
+   <query id="4" name="3c.txt" totalResponseTime="74625000" averageResponseTime="3244565" totalRuntime="75769000" averageRuntime="3294304" averageRuntimeGeometric="3159160.565153832" minQueryRuntime="2190000" maxQueryRuntime="4708000" variance="8.832635160680531E-7" standardDeviation="939821.0021424574" queriesPerSecond="303.55425607351356" queriesPerHour="1092795.3218646487" />
+   <query id="5" name="4.txt" totalResponseTime="184242000" averageResponseTime="8010521" totalRuntime="31832181000" averageRuntime="1384007869" averageRuntimeGeometric="1.383849162773373E9" minQueryRuntime="1360307000" maxQueryRuntime="1431853000" variance="4.444919766351616E-4" standardDeviation="2.1082978362535987E7" queriesPerSecond="0.722539244464368" queriesPerHour="2601.141280071725" />
+   <query id="6" name="5a.txt" totalResponseTime="16884711000" averageResponseTime="734117869" totalRuntime="37155460000" averageRuntime="1615454782" averageRuntimeGeometric="1.6154049117834384E9" minQueryRuntime="1601212000" maxQueryRuntime="1651484000" variance="1.6228125521361035E-4" standardDeviation="1.2738966018229682E7" queriesPerSecond="0.619020730968377" queriesPerHour="2228.474631486157" />
+   <query id="7" name="5b.txt" totalResponseTime="413250000" averageResponseTime="17967391" totalRuntime="717280000" averageRuntime="31186086" averageRuntimeGeometric="3.1119172358518403E7" minQueryRuntime="28586000" maxQueryRuntime="34965000" variance="4.280484340264651E-6" standardDeviation="2068933.140597987" queriesPerSecond="32.06558206759258" queriesPerHour="115436.0954433333" />
+   <query id="8" name="6.txt" totalResponseTime="2966916000" averageResponseTime="128996347" totalRuntime="17405510000" averageRuntime="756761304" averageRuntimeGeometric="7.567346779690572E8" minQueryRuntime="747842000" maxQueryRuntime="775967000" variance="4.05365208204158E-5" standardDeviation="6366829.730754222" queriesPerSecond="1.321420631200773" queriesPerHour="4757.114272322783" />
+   <query id="9" name="7.txt" totalResponseTime="1067738000" averageResponseTime="46423391" totalRuntime="1068762000" averageRuntime="46467913" averageRuntimeGeometric="4.6402856300245225E7" minQueryRuntime="43388000" maxQueryRuntime="50688000" variance="6.131674775047259E-6" standardDeviation="2476221.8751653214" queriesPerSecond="21.520226225782938" queriesPerHour="77472.81441281858" />
+   <query id="10" name="8.txt" totalResponseTime="6714094000" averageResponseTime="291917130" totalRuntime="6742072000" averageRuntime="293133565" averageRuntimeGeometric="2.931216648721346E8" minQueryRuntime="288727000" maxQueryRuntime="297407000" variance="6.975822506616276E-6" standardDeviation="2641178.242113973" queriesPerSecond="3.4114141790620263" queriesPerHour="12281.091044623294" />
+   <query id="11" name="9.txt" totalResponseTime="189238000" averageResponseTime="8227739" totalRuntime="191063000" averageRuntime="8307086" averageRuntimeGeometric="8011351.356701215" minQueryRuntime="5603000" maxQueryRuntime="12986000" variance="5.091583122873346E-6" standardDeviation="2256453.6606971" queriesPerSecond="120.37915581950156" queriesPerHour="433364.9609502056" />
+   <query id="12" name="10.txt" totalResponseTime="63356000" averageResponseTime="2754608" totalRuntime="78637000" averageRuntime="3419000" averageRuntimeGeometric="3334574.016009915" minQueryRuntime="2736000" maxQueryRuntime="5623000" variance="7.016956521739133E-7" standardDeviation="837672.7595988263" queriesPerSecond="292.4831822170225" queriesPerHour="1052939.4559812811" />
+   <query id="13" name="11.txt" totalResponseTime="135724000" averageResponseTime="5901043" totalRuntime="138106000" averageRuntime="6004608" averageRuntimeGeometric="5800464.559245507" minQueryRuntime="4654000" maxQueryRuntime="9745000" variance="2.8880928468809067E-6" standardDeviation="1699438.9800404448" queriesPerSecond="166.53876489522713" queriesPerHour="599539.5536228177" />
+   <query id="14" name="12a.txt" totalResponseTime="172996000" averageResponseTime="7521565" totalRuntime="172996000" averageRuntime="7521565" averageRuntimeGeometric="7306540.381025161" minQueryRuntime="5048000" maxQueryRuntime="10027000" variance="3.040838854442344E-6" standardDeviation="1743800.118833103" queriesPerSecond="132.95105473395498" queriesPerHour="478623.7970422379" />
+   <query id="15" name="12b.txt" totalResponseTime="1771788000" averageResponseTime="77034260" totalRuntime="1771788000" averageRuntime="77034260" averageRuntimeGeometric="7.700182325626308E7" minQueryRuntime="73633000" maxQueryRuntime="81136000" variance="5.045085062381857E-6" standardDeviation="2246126.679949698" queriesPerSecond="12.98123717940563" queriesPerHour="46732.45384586027" />
+   <query id="16" name="12c.txt" totalResponseTime="61365000" averageResponseTime="2668043" totalRuntime="61365000" averageRuntime="2668043" averageRuntimeGeometric="2564955.9431137885" minQueryRuntime="1849000" maxQueryRuntime="4043000" variance="5.883299546313799E-7" standardDeviation="767026.6974697686" queriesPerSecond="374.8065529678494" queriesPerHour="1349303.590684258" />
+  </queries>
+  <summary totalResponseTime="31236903000" averageResponseTime="1358126217" totalRuntime="98137517000" averageRuntime="4266848565" averageRuntimeGeometric="4.2667514433053226E9" minMixRuntime="4230607000" maxMixRuntime="4339644000" variance="8.318036612892249E14" standardDeviation="2.8841006592857067E7" queryMixesPerHour="843.714030427513" />
+ </statistics>
+</sparqlBenchmark>

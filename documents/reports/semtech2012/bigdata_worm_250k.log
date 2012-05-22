@@ -1,0 +1,584 @@
+Running in verbose mode, run with -q or --quiet to disable
+Benchmark Options
+-----------------
+
+Endpoint = http://localhost:8080/bigdata/sparql
+Sanity Checking Level = 2
+Warmups = 5
+Runs = 25
+Random Query Order = On
+Outliers = 1
+Timeout = 300 seconds
+Max Delay between Queries = 1000 milliseconds
+Result Limit = Query Specified
+CSV Results File = bigdata_worm_250k.csv
+XML Results File = bigdata_worm_250k.xml
+Halt on Timeout = false
+Halt on Error = false
+Halt Any = false
+ASK Results Format = application/sparql-results+xml
+Graph Results Format = application/rdf+xml
+SELECT Results Format = application/sparql-results+xml
+GZip Encoding = disabled
+Deflate Encoding = disabled
+Parallel Threads = 1
+Result Counting = enabled
+
+Sanity checking the user specified endpoint...
+Sanity Check 1 of 3...OK
+Sanity Check 2 of 3...started responding in 0.019029s...OK
+Sanity Check 3 of 3...started responding in 0.024609000000000002s...OK
+Sanity Checks passed required sanity level...
+
+Starting Benchmarking...
+17 Queries were loaded:
+Query ID 0 (1.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?yr
+WHERE
+  { ?journal rdf:type bench:Journal .
+    ?journal dc:title "Journal 1 (1940)"^^xsd:string .
+    ?journal dcterms:issued ?yr
+  }
+
+
+Query ID 1 (2.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?inproc ?author ?booktitle ?title ?proc ?ee ?page ?url ?yr ?abstract
+WHERE
+  { ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?author .
+    ?inproc bench:booktitle ?booktitle .
+    ?inproc dc:title ?title .
+    ?inproc dcterms:partOf ?proc .
+    ?inproc rdfs:seeAlso ?ee .
+    ?inproc swrc:pages ?page .
+    ?inproc foaf:homepage ?url .
+    ?inproc dcterms:issued ?yr
+    OPTIONAL
+      { ?inproc bench:abstract ?abstract }
+  }
+ORDER BY ?yr
+
+
+Query ID 2 (3a.txt)
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:pages )
+  }
+
+
+Query ID 3 (3b.txt)
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:month )
+  }
+
+
+Query ID 4 (3c.txt)
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:isbn )
+  }
+
+
+Query ID 5 (4.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT  ?name1 ?name2
+WHERE
+  { ?article1 rdf:type bench:Article .
+    ?article2 rdf:type bench:Article .
+    ?article1 dc:creator ?author1 .
+    ?author1 foaf:name ?name1 .
+    ?article2 dc:creator ?author2 .
+    ?author2 foaf:name ?name2 .
+    ?article1 swrc:journal ?journal .
+    ?article2 swrc:journal ?journal
+    FILTER ( ?name1 < ?name2 )
+  }
+
+
+Query ID 6 (5a.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?person ?name
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person2 .
+    ?person foaf:name ?name .
+    ?person2 foaf:name ?name2
+    FILTER ( ?name = ?name2 )
+  }
+
+
+Query ID 7 (5b.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?person ?name
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person .
+    ?person foaf:name ?name
+  }
+
+
+Query ID 8 (6.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?yr ?name ?document
+WHERE
+  { ?class rdfs:subClassOf foaf:Document .
+    ?document rdf:type ?class .
+    ?document dcterms:issued ?yr .
+    ?document dc:creator ?author .
+    ?author foaf:name ?name
+    OPTIONAL
+      { ?class2 rdfs:subClassOf foaf:Document .
+        ?document2 rdf:type ?class2 .
+        ?document2 dcterms:issued ?yr2 .
+        ?document2 dc:creator ?author2
+        FILTER ( ( ?author = ?author2 ) && ( ?yr2 < ?yr ) )
+      }
+    FILTER ( ! bound(?author2) )
+  }
+
+
+Query ID 9 (7.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT  ?title
+WHERE
+  { ?class rdfs:subClassOf foaf:Document .
+    ?doc rdf:type ?class .
+    ?doc dc:title ?title .
+    ?bag2 ?member2 ?doc .
+    ?doc2 dcterms:references ?bag2
+    OPTIONAL
+      { ?class3 rdfs:subClassOf foaf:Document .
+        ?doc3 rdf:type ?class3 .
+        ?doc3 dcterms:references ?bag3 .
+        ?bag3 ?member3 ?doc
+        OPTIONAL
+          { ?class4 rdfs:subClassOf foaf:Document .
+            ?doc4 rdf:type ?class4 .
+            ?doc4 dcterms:references ?bag4 .
+            ?bag4 ?member4 ?doc3
+          }
+        FILTER ( ! bound(?doc4) )
+      }
+    FILTER ( ! bound(?doc3) )
+  }
+
+
+Query ID 10 (8.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?name
+WHERE
+  { ?erdoes rdf:type foaf:Person .
+    ?erdoes foaf:name "Paul Erdoes"^^xsd:string
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?document2 dc:creator ?author .
+        ?document2 dc:creator ?author2 .
+        ?author2 foaf:name ?name
+        FILTER ( ( ( ( ?author != ?erdoes ) && ( ?document2 != ?document ) ) && ( ?author2 != ?erdoes ) ) && ( ?author2 != ?author ) )
+      }
+    UNION
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?author foaf:name ?name
+        FILTER ( ?author != ?erdoes )
+      }
+  }
+
+
+Query ID 11 (9.txt)
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?predicate
+WHERE
+  {   { ?person rdf:type foaf:Person .
+        ?subject ?predicate ?person
+      }
+    UNION
+      { ?person rdf:type foaf:Person .
+        ?person ?predicate ?object
+      }
+  }
+
+
+Query ID 12 (10.txt)
+PREFIX  person: <http://localhost/persons/>
+
+SELECT  ?subject ?predicate
+WHERE
+  { ?subject ?predicate person:Paul_Erdoes }
+
+
+Query ID 13 (11.txt)
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT  ?ee
+WHERE
+  { ?publication rdfs:seeAlso ?ee }
+ORDER BY ?ee
+OFFSET  50
+LIMIT   10
+
+
+Query ID 14 (12a.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person1 .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person2 .
+    ?person1 foaf:name ?name1 .
+    ?person2 foaf:name ?name2
+    FILTER ( ?name1 = ?name2 )
+  }
+
+
+Query ID 15 (12b.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { ?erdoes rdf:type foaf:Person .
+    ?erdoes foaf:name "Paul Erdoes"^^xsd:string
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?document2 dc:creator ?author .
+        ?document2 dc:creator ?author2 .
+        ?author2 foaf:name ?name
+        FILTER ( ( ( ( ?author != ?erdoes ) && ( ?document2 != ?document ) ) && ( ?author2 != ?erdoes ) ) && ( ?author2 != ?author ) )
+      }
+    UNION
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?author foaf:name ?name
+        FILTER ( ?author != ?erdoes )
+      }
+  }
+
+
+Query ID 16 (12c.txt)
+PREFIX  person: <http://localhost/persons/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { person:John_Q_Public rdf:type foaf:Person }
+
+
+Running Warmups...
+
+Warmup Run 1 of 5
+Query Order for this Run is 9, 15, 2, 3, 16, 14, 8, 11, 6, 7, 5, 13, 10, 0, 4, 1, 12
+Running Query 7.txt...started responding in 0.359325s...got 62 result(s) in 0.364367s
+Sleeping for 0.938s before next query
+Running Query 12b.txt...got 1 result(s) in 0.040735999999999994s
+Sleeping for 0.476s before next query
+Running Query 3a.txt...started responding in 0.026783s...got 15853 result(s) in 0.45538999999999996s
+Sleeping for 0.984s before next query
+Running Query 3b.txt...started responding in 0.12518200000000002s...got 127 result(s) in 0.126373s
+Sleeping for 0.592s before next query
+Running Query 12c.txt...got 1 result(s) in 0.03116s
+Sleeping for 0.662s before next query
+Running Query 12a.txt...got 1 result(s) in 0.043942s
+Sleeping for 0.58s before next query
+Running Query 6.txt...got error after 300.001145s: Query Runner execeeded Timeout - null
+Sleeping for 0.627s before next query
+Running Query 9.txt...started responding in 0.387481s...got 4 result(s) in 0.387921s
+Sleeping for 0.366s before next query
+Running Query 5a.txt...started responding in 3.9848000000000003s...started responding in 513.644784s...got error after 300.000716s: Query Runner execeeded Timeout - null
+Sleeping for 0.659s before next query
+Running Query 5b.txt...started responding in 0.147374s...got 6904 result(s) in 0.5725800000000001s
+Sleeping for 0.472s before next query
+Running Query 4.txt...started responding in 0.085967s...got 542801 result(s) in 22.72849s
+Sleeping for 0.621s before next query
+Running Query 11.txt...started responding in 1.029063s...got 10 result(s) in 1.029222s
+Sleeping for 0.147s before next query
+Running Query 8.txt...started responding in 0.06354s...got 332 result(s) in 0.399601s
+Sleeping for 0.716s before next query
+Running Query 1.txt...started responding in 0.028634s...got 1 result(s) in 0.028731000000000003s
+Sleeping for 0.801s before next query
+Running Query 3c.txt...started responding in 0.27492s...got 0 result(s) in 0.274995s
+Sleeping for 0.238s before next query
+Running Query 2.txt...started responding in 0.445735s...got 6197 result(s) in 1.045245s
+Sleeping for 0.156s before next query
+Running Query 10.txt...started responding in 0.018696s...got 452 result(s) in 0.024179s
+Sleeping for 0.19s before next query
+
+Total Response Time: 603.110399s
+Total Runtime: 627.5547929999999s
+Minimum Query Runtime: 0.024179s (Query 10.txt)
+Maximum Query Runtime: 300.001145s (Query 6.txt)
+
+Warmup Run 2 of 5
+Query Order for this Run is 10, 11, 6, 7, 9, 16, 2, 13, 4, 8, 15, 1, 14, 5, 3, 0, 12
+Running Query 8.txt...started responding in 0.084645s...got 332 result(s) in 0.36861900000000003s
+Sleeping for 0.41s before next query
+Running Query 9.txt...started responding in 0.473242s...got 4 result(s) in 0.473354s
+Sleeping for 0.949s before next query
+Running Query 5a.txt...started responding in 3.3934670000000002s...got error after 300.00113s: Query Runner execeeded Timeout - null
+Sleeping for 0.237s before next query
+Running Query 5b.txt...started responding in 0.127412s...got 6904 result(s) in 0.8974070000000001s
+Sleeping for 0.0090s before next query
+Running Query 7.txt...started responding in 1.008653s...got 62 result(s) in 1.009177s
+Sleeping for 0.257s before next query
+Running Query 12c.txt...got 1 result(s) in 0.0285s
+Sleeping for 0.763s before next query
+Running Query 3a.txt...started responding in 0.028939s...got 15853 result(s) in 0.5493150000000001s
+Sleeping for 0.336s before next query
+Running Query 11.txt...started responding in 0.9839289999999999s...got 10 result(s) in 0.984088s
+Sleeping for 0.144s before next query
+Running Query 3c.txt...started responding in 0.414527s...got 0 result(s) in 0.414598s
+Sleeping for 0.836s before next query
+Running Query 6.txt...got error after 300.00061700000003s: Query Runner execeeded Timeout - null
+Sleeping for 0.481s before next query
+Running Query 12b.txt...got 1 result(s) in 0.094414s
+Sleeping for 0.324s before next query
+Running Query 2.txt...started responding in 0.757756s...got 6197 result(s) in 2.526109s
+Sleeping for 0.619s before next query
+Running Query 12a.txt...got 1 result(s) in 0.075437s
+Sleeping for 0.864s before next query
+Running Query 4.txt...started responding in 0.124671s...got 542801 result(s) in 31.001279s
+Sleeping for 0.303s before next query
+Running Query 3b.txt...started responding in 0.37861399999999995s...got 127 result(s) in 0.379447s
+Sleeping for 0.389s before next query
+Running Query 1.txt...started responding in 0.013504s...got 1 result(s) in 0.013764s
+Sleeping for 0.072s before next query
+Running Query 10.txt...started responding in 0.028184s...got 452 result(s) in 0.038785s
+Sleeping for 0.676s before next query
+
+Total Response Time: 604.624174s
+Total Runtime: 638.85604s
+Minimum Query Runtime: 0.013764s (Query 1.txt)
+Maximum Query Runtime: 300.00113s (Query 5a.txt)
+
+Warmup Run 3 of 5
+Query Order for this Run is 14, 9, 2, 10, 12, 6, 16, 0, 13, 3, 7, 8, 11, 5, 15, 1, 4
+Running Query 12a.txt...got 1 result(s) in 0.065743s
+Sleeping for 0.437s before next query
+Running Query 7.txt...started responding in 0.76718s...got 62 result(s) in 0.767664s
+Sleeping for 0.379s before next query
+Running Query 3a.txt...started responding in 0.037982s...got 15853 result(s) in 0.566162s
+Sleeping for 0.648s before next query
+Running Query 8.txt...started responding in 0.10874299999999999s...got 332 result(s) in 0.500406s
+Sleeping for 0.603s before next query
+Running Query 10.txt...started responding in 0.011782s...got 452 result(s) in 0.017661000000000003s
+Sleeping for 0.133s before next query
+Running Query 5a.txt...started responding in 5.343298s...got error after 300.000624s: Query Runner execeeded Timeout - null
+Sleeping for 0.884s before next query
+Running Query 12c.txt...got 1 result(s) in 0.035015s
+Sleeping for 0.58s before next query
+Running Query 1.txt...started responding in 0.037218s...got 1 result(s) in 0.037302s
+Sleeping for 0.723s before next query
+Running Query 11.txt...started responding in 1.967093s...got 10 result(s) in 1.967258s
+Sleeping for 0.667s before next query
+Running Query 3b.txt...started responding in 0.549649s...got 127 result(s) in 0.550332s
+Sleeping for 0.464s before next query
+Running Query 5b.txt...started responding in 0.129887s...got 6904 result(s) in 1.118468s
+Sleeping for 0.264s before next query
+Running Query 6.txt...got error after 300.000278s: Query Runner execeeded Timeout - null
+Sleeping for 0.645s before next query
+Running Query 9.txt...started responding in 0.845041s...got 4 result(s) in 0.845151s
+Sleeping for 0.943s before next query
+Running Query 4.txt...started responding in 0.218685s...got 542801 result(s) in 52.386s
+Sleeping for 0.086s before next query
+Running Query 12b.txt...got 1 result(s) in 0.049424s
+Sleeping for 0.615s before next query
+Running Query 2.txt...started responding in 0.622668s...got 6197 result(s) in 1.9316389999999999s
+Sleeping for 0.14s before next query
+Running Query 3c.txt...started responding in 0.613946s...got 0 result(s) in 0.614024s
+Sleeping for 0.835s before next query
+
+Total Response Time: 606.060958s
+Total Runtime: 661.4531509999999s
+Minimum Query Runtime: 0.017661000000000003s (Query 10.txt)
+Maximum Query Runtime: 300.000624s (Query 5a.txt)
+
+Warmup Run 4 of 5
+Query Order for this Run is 3, 0, 7, 16, 13, 10, 14, 8, 15, 11, 2, 4, 12, 6, 9, 5, 1
+Running Query 3b.txt...started responding in 0.691472s...got 127 result(s) in 0.691862s
+Sleeping for 0.075s before next query
+Running Query 1.txt...started responding in 0.025426999999999998s...got 1 result(s) in 0.02551s
+Sleeping for 0.733s before next query
+Running Query 5b.txt...started responding in 0.255456s...got 6904 result(s) in 1.240491s
+Sleeping for 0.302s before next query
+Running Query 12c.txt...got 1 result(s) in 0.027751s
+Sleeping for 0.913s before next query
+Running Query 11.txt...started responding in 1.969828s...got 10 result(s) in 1.9699849999999999s
+Sleeping for 0.302s before next query
+Running Query 8.txt...started responding in 0.224327s...got 332 result(s) in 0.75727s
+Sleeping for 0.329s before next query
+Running Query 12a.txt...got 1 result(s) in 0.04307s
+Sleeping for 0.442s before next query
+Running Query 6.txt...got error after 300.000237s: Query Runner execeeded Timeout - null
+Sleeping for 0.352s before next query
+Running Query 12b.txt...got 1 result(s) in 0.072377s
+Sleeping for 0.055s before next query
+Running Query 9.txt...started responding in 1.8915540000000002s...got 4 result(s) in 1.891667s
+Sleeping for 0.411s before next query
+Running Query 3a.txt...started responding in 0.080609s...got 15853 result(s) in 1.096516s
+Sleeping for 0.931s before next query
+Running Query 3c.txt...started responding in 1.330681s...got 0 result(s) in 1.33075s
+Sleeping for 0.514s before next query
+Running Query 10.txt...started responding in 0.243205s...got 452 result(s) in 0.272383s
+Sleeping for 0.367s before next query
+Running Query 5a.txt...started responding in 23.835848000000002s...got error after 300.001755s: Query Runner execeeded Timeout - null
+Sleeping for 0.281s before next query
+Running Query 7.txt...started responding in 1.750368s...got 62 result(s) in 1.75084s
+Sleeping for 0.945s before next query
+Running Query 4.txt...started responding in 0.340168s...got 542801 result(s) in 85.584058s
+Sleeping for 0.713s before next query
+Running Query 2.txt...started responding in 1.204859s...got 6197 result(s) in 5.394088s
+Sleeping for 0.783s before next query
+
+Total Response Time: 610.153144s
+Total Runtime: 702.15061s
+Minimum Query Runtime: 0.02551s (Query 1.txt)
+Maximum Query Runtime: 300.001755s (Query 5a.txt)
+
+Warmup Run 5 of 5
+Query Order for this Run is 15, 1, 16, 13, 9, 4, 3, 12, 2, 10, 8, 0, 7, 6, 14, 11, 5
+Running Query 12b.txt...got 1 result(s) in 0.129352s
+Sleeping for 0.487s before next query
+Running Query 2.txt...started responding in 1.069975s...got 6197 result(s) in 4.849804s
+Sleeping for 0.121s before next query
+Running Query 12c.txt...got 1 result(s) in 0.09522499999999999s
+Sleeping for 0.322s before next query
+Running Query 11.txt...started responding in 5.278465s...got 10 result(s) in 5.278618000000001s
+Sleeping for 0.08s before next query
+Running Query 7.txt...started responding in 2.278373s...got 62 result(s) in 2.278829s
+Sleeping for 0.049s before next query
+Running Query 3c.txt...started responding in 1.0385820000000001s...got 0 result(s) in 1.038657s
+Sleeping for 0.391s before next query
+Running Query 3b.txt...started responding in 1.327627s...got 127 result(s) in 1.3282729999999998s
+Sleeping for 0.061s before next query
+Running Query 10.txt...started responding in 0.058811s...got 452 result(s) in 0.069538s
+Sleeping for 0.252s before next query
+Running Query 3a.txt...started responding in 0.12674s...got 15853 result(s) in 1.411157s
+Sleeping for 0.4s before next query
+Running Query 8.txt...started responding in 0.26771100000000003s...got 332 result(s) in 1.018181s
+Sleeping for 0.234s before next query
+Running Query 6.txt...started responding in 1863.614779s...got error after 300.00201799999996s: Query Runner execeeded Timeout - null
+Sleeping for 0.644s before next query
+Running Query 1.txt...started responding in 0.08070999999999999s...got 1 result(s) in 0.08079399999999999s
+Sleeping for 0.064s before next query
+Running Query 5b.txt...started responding in 0.272906s...got 6904 result(s) in 1.915998s
+Sleeping for 0.564s before next query
+Running Query 5a.txt...started responding in 13.299582000000001s...got error after 300.0016s: Query Runner execeeded Timeout - null
+Sleeping for 0.684s before next query
+Running Query 12a.txt...got 1 result(s) in 0.189672s
+Sleeping for 0.846s before next query
+Running Query 9.txt...started responding in 1.973707s...got 4 result(s) in 1.973824s
+Sleeping for 0.32s before next query
+Running Query 4.txt...started responding in 0.210195s...got 542801 result(s) in 106.373097s
+Sleeping for 0.506s before next query
+
+Total Response Time: 614.401669s
+Total Runtime: 728.034637s
+Minimum Query Runtime: 0.069538s (Query 10.txt)
+Maximum Query Runtime: 300.00201799999996s (Query 6.txt)
+
+Running Benchmarks...
+
+Query Mix Run 1 of 25
+Query Order for this Run is 4, 2, 3, 12, 16, 15, 9, 5, 11, 6, 13, 10, 1, 8, 0, 14, 7
+Running Query 3c.txt...started responding in 1.880268s...got 0 result(s) in 1.88034s
+Sleeping for 0.049s before next query
+Running Query 3a.txt...started responding in 0.11955400000000001s...got 15853 result(s) in 1.960432s
+Sleeping for 0.252s before next query
+Running Query 3b.txt...started responding in 1.930644s...got 127 result(s) in 1.931368s
+Sleeping for 0.0040s before next query
+Running Query 10.txt...started responding in 0.036505s...got 452 result(s) in 0.047563s
+Sleeping for 0.276s before next query
+Running Query 12c.txt...got 1 result(s) in 0.040621000000000004s
+Sleeping for 0.182s before next query
+Running Query 12b.txt...got 1 result(s) in 0.164079s
+Sleeping for 0.307s before next query
+Running Query 7.txt...started responding in 2.777664s...got 62 result(s) in 2.7782359999999997s
+Sleeping for 0.936s before next query
+Running Query 4.txt...started responding in 0.270356s...got 542801 result(s) in 112.096388s
+Sleeping for 0.034s before next query
+Running Query 9.txt...started responding in 1.5064760000000001s...got 4 result(s) in 1.506589s
+Sleeping for 0.493s before next query
+Running Query 5a.txt...started responding in 12.104752000000001s...got error after 300.003098s: Query Runner execeeded Timeout - null
+Sleeping for 0.073s before next query
+Running Query 11.txt...started responding in 11.314626s...got 10 result(s) in 11.315439s
+Sleeping for 0.856s before next query
+Running Query 8.txt...started responding in 0.229534s...got 332 result(s) in 2.2773290000000004s
+Sleeping for 0.441s before next query
+Running Query 2.txt...started responding in 3.071098s...got 6197 result(s) in 9.172002s
+Sleeping for 0.625s before next query
+Running Query 6.txt...

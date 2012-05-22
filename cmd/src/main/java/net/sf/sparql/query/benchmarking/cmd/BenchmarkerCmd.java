@@ -1,18 +1,33 @@
-/**
- * Copyright 2012 Robert Vesse
+/** 
+ * Copyright 2011-2012 Cray Inc. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * you may obtain a copy of the License at
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ * * Neither the name Cray Inc. nor the names of its contributors may be
+ *   used to endorse or promote products derived from this software
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ **/
 
 package net.sf.sparql.query.benchmarking.cmd;
 
@@ -129,7 +144,7 @@ public class BenchmarkerCmd {
 					case 't':
 						b.setTimeout(Integer.parseInt(argv[i]));
 						break;
-					case 'f':
+					case 'c':
 						b.setCsvResultsFile(argv[i]);
 						break;
 					case 'w':
@@ -175,7 +190,7 @@ public class BenchmarkerCmd {
 						i++;
 						b.setOutliers(Integer.parseInt(argv[i]));
 					}
-					else if (arg.equals("--file"))
+					else if (arg.equals("--csv"))
 					{
 						expectNextArg(i, argv, arg);
 						i++;
@@ -353,11 +368,11 @@ public class BenchmarkerCmd {
 		System.out.println("queryListFile is a file listing paths to files containing SPARQL queries to run, 1 filename per line");
 		System.out.println();
 		System.out.println("The following options are supported:");
+		System.out.println(" -c filename.csv");
+		System.out.println(" --csv filename.csv  Sets filename to which the CSV results summary will be output (default " + Benchmarker.DEFAULT_CSV_RESULTS_FILE + ")");
 		System.out.println(" -d N");
 		System.out.println(" --delay N            Sets maximum delay between queries in milliseconds, will be random delay up to this maximum, use 0 for no delay (default N=" + Benchmarker.DEFAULT_MAX_DELAY + ")");
 		System.out.println(" --deflate            Sets whether HTTP requests will accept Deflate encoding");
-		System.out.println(" -f filename.csv");
-		System.out.println(" --file filename.csv  Sets filename to which the CSV results summary will be output (default " + Benchmarker.DEFAULT_CSV_RESULTS_FILE + ")");
 		System.out.println(" --gzip               Sets whether HTTP requests will accept GZip encoding");
 		System.out.println(" -h");
 		System.out.println(" --help               Prints this usage message and exits");
@@ -366,8 +381,8 @@ public class BenchmarkerCmd {
 		System.out.println(" --halt-any           Halts and aborts benchmarking if any issue is encountered");
 		System.out.println(" -l N                 Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query");
 		System.out.println(" --limit N            Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query");
-		System.out.println(" --nocsv              Disables CSV output, supercedes any preceding -f/--filename option but may be superceded by a subsequent -f/--filename option");
-		System.out.println(" --nocount            Disables result counting, benchmarking will only record time to receive first result from the endpount");
+		System.out.println(" --nocsv              Disables CSV output, supercedes any preceding -c/--csv option but may be superceded by a subsequent -c/--csv option");
+		System.out.println(" --nocount            Disables result counting, benchmarking will only record time to receive first result from the endpoint");
 		System.out.println(" --norand             If present the order in which queries are executed will not be randomized");
 		System.out.println(" --noxml              Disables XML output, supercedes any preceding -x/--xml option but may be superceded by a subsequent -x/--xml option");
 		System.out.println(" -o N");

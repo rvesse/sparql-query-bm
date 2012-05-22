@@ -2,7 +2,7 @@ Introduction
 ============
 
 This document covers how to use the benchmarking API from code, if you just want to run from the command line
-please see the README file
+please see the README file within the cmd project
 
 The API for the benchmarker is designed to be relatively simple with one main extension point.  Generally running
 the benchmarker from code just means creating a instance of the Benchmarker class, using the setters to
@@ -40,7 +40,7 @@ e.g.
 	b.setRuns(25);
 	b.runBenchmark();
 	
-There are many more setters that can be used to configure all manner of the behaviours
+There are many more setters that can be used to configure many aspects of the behaviour of the API
 
 After the benchmark has completed you can then get various statistics for the benchmark by accessing the
 query mix object using getQueryMix() to get a BenchmarkQueryMix instance.  This instance provides access
@@ -123,4 +123,40 @@ This is called when benchmarking finished, the boolean parameter indicates wheth
 finished normally or if it was halted by an error/cancellation.  Listeners will typically do clean up
 actions here and produce any summary output since at this point they know they have all statistics
 available for the benchmark.
-                      
+
+License
+=======
+
+Copyright 2011-2012 Cray Inc. All Rights Reserved
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+* Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+
+* Neither the name Cray Inc. nor the names of its contributors may be
+  used to endorse or promote products derived from this software
+  without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+Acnknowledgements
+=================
+
+SPARQL Query Benchmarker uses the the Apache Jena ARQ query engine for issuing queries and parsing the results

@@ -1,18 +1,33 @@
-/**
- * Copyright 2012 Robert Vesse
+/** 
+ * Copyright 2011-2012 Cray Inc. All Rights Reserved
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * you may obtain a copy of the License at
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ * * Neither the name Cray Inc. nor the names of its contributors may be
+ *   used to endorse or promote products derived from this software
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ **/
 
 package net.sf.sparql.query.benchmarking.queries;
 
@@ -39,6 +54,7 @@ public class QueryRunner implements Callable<QueryRun> {
 	private static final Logger logger = Logger.getLogger(QueryRunner.class);
 	private Query query;
 	private Benchmarker b;
+	private boolean cancelled = false;
 	
 	/**
 	 * Creates a new Query Runner
@@ -105,13 +121,14 @@ public class QueryRunner implements Callable<QueryRun> {
 			{
 				ResultSet rset = exec.execSelect();
 				responseTime = System.nanoTime() - startTime;
+				if (cancelled) return null; //Abort if we have been cancelled by the time the engine responds
 				this.b.reportPartialProgress("started responding in " + BenchmarkerUtils.toSeconds(responseTime) + "s...");
 				
 				//Result Counting may be skipped depending on user options
 				if (!this.b.getNoCount()) 
 				{
 					//Count Results
-					while (rset.hasNext())
+					while (rset.hasNext() && !cancelled)
 					{
 						numResults++;
 						rset.next();
@@ -131,5 +148,13 @@ public class QueryRunner implements Callable<QueryRun> {
 			//Clean up query execution
 			if (exec != null) exec.close();
 		}
+	}
+
+	/**
+	 * Cancels a Query Runner, used to tell queries 
+	 */
+	public void cancel()
+	{
+		cancelled = true;
 	}
 }

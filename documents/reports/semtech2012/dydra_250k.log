@@ -1,0 +1,648 @@
+Running in verbose mode, run with -q or --quiet to disable
+Benchmark Options
+-----------------
+
+Endpoint = http://dydra.com/rvesse/250k/sparql?auth_token=5FxV66jVROLocHrnO4W9
+Sanity Checking Level = 2
+Warmups = 5
+Runs = 25
+Random Query Order = On
+Outliers = 1
+Timeout = 300 seconds
+Max Delay between Queries = 1000 milliseconds
+Result Limit = Query Specified
+CSV Results File = dydra_250k.csv
+XML Results File = dydra_250k.xml
+Halt on Timeout = false
+Halt on Error = false
+Halt Any = false
+ASK Results Format = application/sparql-results+xml
+Graph Results Format = application/rdf+xml
+SELECT Results Format = application/sparql-results+xml
+GZip Encoding = disabled
+Deflate Encoding = disabled
+Parallel Threads = 1
+Result Counting = enabled
+
+Sanity checking the user specified endpoint...
+Sanity Check 1 of 3...OK
+Sanity Check 2 of 3...started responding in 0.23794900000000002s...OK
+Sanity Check 3 of 3...started responding in 1.371555s...OK
+Sanity Checks passed required sanity level...
+
+Starting Benchmarking...
+17 Queries were loaded:
+Query ID 0 (1.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?yr
+WHERE
+  { ?journal rdf:type bench:Journal .
+    ?journal dc:title "Journal 1 (1940)"^^xsd:string .
+    ?journal dcterms:issued ?yr
+  }
+
+
+Query ID 1 (2.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?inproc ?author ?booktitle ?title ?proc ?ee ?page ?url ?yr ?abstract
+WHERE
+  { ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?author .
+    ?inproc bench:booktitle ?booktitle .
+    ?inproc dc:title ?title .
+    ?inproc dcterms:partOf ?proc .
+    ?inproc rdfs:seeAlso ?ee .
+    ?inproc swrc:pages ?page .
+    ?inproc foaf:homepage ?url .
+    ?inproc dcterms:issued ?yr
+    OPTIONAL
+      { ?inproc bench:abstract ?abstract }
+  }
+ORDER BY ?yr
+
+
+Query ID 2 (3a.txt)
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:pages )
+  }
+
+
+Query ID 3 (3b.txt)
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:month )
+  }
+
+
+Query ID 4 (3c.txt)
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:isbn )
+  }
+
+
+Query ID 5 (4.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT  ?name1 ?name2
+WHERE
+  { ?article1 rdf:type bench:Article .
+    ?article2 rdf:type bench:Article .
+    ?article1 dc:creator ?author1 .
+    ?author1 foaf:name ?name1 .
+    ?article2 dc:creator ?author2 .
+    ?author2 foaf:name ?name2 .
+    ?article1 swrc:journal ?journal .
+    ?article2 swrc:journal ?journal
+    FILTER ( ?name1 < ?name2 )
+  }
+
+
+Query ID 6 (5a.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?person ?name
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person2 .
+    ?person foaf:name ?name .
+    ?person2 foaf:name ?name2
+    FILTER ( ?name = ?name2 )
+  }
+
+
+Query ID 7 (5b.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?person ?name
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person .
+    ?person foaf:name ?name
+  }
+
+
+Query ID 8 (6.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?yr ?name ?document
+WHERE
+  { ?class rdfs:subClassOf foaf:Document .
+    ?document rdf:type ?class .
+    ?document dcterms:issued ?yr .
+    ?document dc:creator ?author .
+    ?author foaf:name ?name
+    OPTIONAL
+      { ?class2 rdfs:subClassOf foaf:Document .
+        ?document2 rdf:type ?class2 .
+        ?document2 dcterms:issued ?yr2 .
+        ?document2 dc:creator ?author2
+        FILTER ( ( ?author = ?author2 ) && ( ?yr2 < ?yr ) )
+      }
+    FILTER ( ! bound(?author2) )
+  }
+
+
+Query ID 9 (7.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT  ?title
+WHERE
+  { ?class rdfs:subClassOf foaf:Document .
+    ?doc rdf:type ?class .
+    ?doc dc:title ?title .
+    ?bag2 ?member2 ?doc .
+    ?doc2 dcterms:references ?bag2
+    OPTIONAL
+      { ?class3 rdfs:subClassOf foaf:Document .
+        ?doc3 rdf:type ?class3 .
+        ?doc3 dcterms:references ?bag3 .
+        ?bag3 ?member3 ?doc
+        OPTIONAL
+          { ?class4 rdfs:subClassOf foaf:Document .
+            ?doc4 rdf:type ?class4 .
+            ?doc4 dcterms:references ?bag4 .
+            ?bag4 ?member4 ?doc3
+          }
+        FILTER ( ! bound(?doc4) )
+      }
+    FILTER ( ! bound(?doc3) )
+  }
+
+
+Query ID 10 (8.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?name
+WHERE
+  { ?erdoes rdf:type foaf:Person .
+    ?erdoes foaf:name "Paul Erdoes"^^xsd:string
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?document2 dc:creator ?author .
+        ?document2 dc:creator ?author2 .
+        ?author2 foaf:name ?name
+        FILTER ( ( ( ( ?author != ?erdoes ) && ( ?document2 != ?document ) ) && ( ?author2 != ?erdoes ) ) && ( ?author2 != ?author ) )
+      }
+    UNION
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?author foaf:name ?name
+        FILTER ( ?author != ?erdoes )
+      }
+  }
+
+
+Query ID 11 (9.txt)
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?predicate
+WHERE
+  {   { ?person rdf:type foaf:Person .
+        ?subject ?predicate ?person
+      }
+    UNION
+      { ?person rdf:type foaf:Person .
+        ?person ?predicate ?object
+      }
+  }
+
+
+Query ID 12 (10.txt)
+PREFIX  person: <http://localhost/persons/>
+
+SELECT  ?subject ?predicate
+WHERE
+  { ?subject ?predicate person:Paul_Erdoes }
+
+
+Query ID 13 (11.txt)
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT  ?ee
+WHERE
+  { ?publication rdfs:seeAlso ?ee }
+ORDER BY ?ee
+OFFSET  50
+LIMIT   10
+
+
+Query ID 14 (12a.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person1 .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person2 .
+    ?person1 foaf:name ?name1 .
+    ?person2 foaf:name ?name2
+    FILTER ( ?name1 = ?name2 )
+  }
+
+
+Query ID 15 (12b.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { ?erdoes rdf:type foaf:Person .
+    ?erdoes foaf:name "Paul Erdoes"^^xsd:string
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?document2 dc:creator ?author .
+        ?document2 dc:creator ?author2 .
+        ?author2 foaf:name ?name
+        FILTER ( ( ( ( ?author != ?erdoes ) && ( ?document2 != ?document ) ) && ( ?author2 != ?erdoes ) ) && ( ?author2 != ?author ) )
+      }
+    UNION
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?author foaf:name ?name
+        FILTER ( ?author != ?erdoes )
+      }
+  }
+
+
+Query ID 16 (12c.txt)
+PREFIX  person: <http://localhost/persons/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { person:John_Q_Public rdf:type foaf:Person }
+
+
+Running Warmups...
+
+Warmup Run 1 of 5
+Query Order for this Run is 6, 0, 1, 5, 8, 11, 7, 2, 16, 10, 9, 15, 14, 12, 3, 13, 4
+Running Query 5a.txt...got error after 28.178882s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.065s before next query
+Running Query 1.txt...started responding in 0.386838s...got 1 result(s) in 0.387027s
+Sleeping for 0.346s before next query
+Running Query 2.txt...got error after 28.176094000000003s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.286s before next query
+Running Query 4.txt...started responding in 0.599827s...got error after 63.280547s: Query Runner encountered an error - com.hp.hpl.jena.sparql.resultset.ResultSetException: XMLStreamException: ParseError at [row,col]:[4,27597941]
+Message: The element type "literal" must be terminated by the matching end-tag "</literal>".
+Sleeping for 0.365s before next query
+Running Query 6.txt...got error after 28.230651s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.093s before next query
+Running Query 9.txt...got error after 28.184933s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.609s before next query
+Running Query 5b.txt...started responding in 11.415505999999999s...got error after 60.98194s: Query Runner encountered an error - com.hp.hpl.jena.sparql.resultset.ResultSetException: XMLStreamException: ParseError at [row,col]:[4,629409]
+Message: XML document structures must start and end within the same entity.
+Sleeping for 0.767s before next query
+Running Query 3a.txt...started responding in 1.319347s...got 15853 result(s) in 60.709678s
+Sleeping for 0.97s before next query
+Running Query 12c.txt...got 1 result(s) in 0.311337s
+Sleeping for 0.975s before next query
+Running Query 8.txt...got error after 28.186622s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.092s before next query
+Running Query 7.txt...got error after 28.185807s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.436s before next query
+Running Query 12b.txt...got error after 28.187924s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.0040s before next query
+Running Query 12a.txt...got 1 result(s) in 0.583581s
+Sleeping for 0.0060s before next query
+Running Query 10.txt...started responding in 0.336575s...got 452 result(s) in 0.792591s
+Sleeping for 0.55s before next query
+Running Query 3b.txt...started responding in 0.5136660000000001s...got 127 result(s) in 0.663497s
+Sleeping for 0.555s before next query
+Running Query 11.txt...started responding in 0.8792409999999999s...got 10 result(s) in 0.87938s
+Sleeping for 0.876s before next query
+Running Query 3c.txt...started responding in 0.354119s...got 0 result(s) in 0.35421800000000003s
+Sleeping for 0.035s before next query
+
+Total Response Time: 326.278104s
+Total Runtime: 386.274709s
+Minimum Query Runtime: 0.311337s (Query 12c.txt)
+Maximum Query Runtime: 63.280547s (Query 4.txt)
+
+Warmup Run 2 of 5
+Query Order for this Run is 16, 12, 13, 1, 8, 10, 4, 6, 0, 14, 9, 2, 15, 11, 5, 7, 3
+Running Query 12c.txt...got 1 result(s) in 0.281957s
+Sleeping for 0.77s before next query
+Running Query 10.txt...started responding in 0.669321s...got 452 result(s) in 1.125723s
+Sleeping for 0.735s before next query
+Running Query 11.txt...started responding in 0.462258s...got 10 result(s) in 0.462338s
+Sleeping for 0.097s before next query
+Running Query 2.txt...got error after 28.179738s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.034s before next query
+Running Query 6.txt...started responding in 18.834515s...got 12093 result(s) in 39.569297s
+Sleeping for 0.139s before next query
+Running Query 8.txt...got error after 28.181352999999998s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.739s before next query
+Running Query 3c.txt...started responding in 0.36178699999999997s...got 0 result(s) in 0.362019s
+Sleeping for 0.806s before next query
+Running Query 5a.txt...started responding in 17.247784s...got error after 45.304941s: Query Runner encountered an error - com.hp.hpl.jena.sparql.resultset.ResultSetException: XMLStreamException: ParseError at [row,col]:[4,77525]
+Message: The element type "result" must be terminated by the matching end-tag "</result>".
+Sleeping for 0.931s before next query
+Running Query 1.txt...started responding in 0.642079s...got 1 result(s) in 0.6421749999999999s
+Sleeping for 0.389s before next query
+Running Query 12a.txt...got 1 result(s) in 0.303312s
+Sleeping for 0.342s before next query
+Running Query 7.txt...got error after 28.179629000000002s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.341s before next query
+Running Query 3a.txt...started responding in 0.328752s...got 15853 result(s) in 2.017723s
+Sleeping for 0.804s before next query
+Running Query 12b.txt...got 1 result(s) in 19.196913000000002s
+Sleeping for 0.418s before next query
+Running Query 9.txt...got error after 28.179166000000002s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.367s before next query
+Running Query 4.txt...started responding in 0.7409009999999999s...got error after 62.473347000000004s: Query Runner encountered an error - com.hp.hpl.jena.sparql.resultset.ResultSetException: XMLStreamException: ParseError at [row,col]:[4,74192969]
+Message: XML document structures must start and end within the same entity.
+Sleeping for 0.794s before next query
+Running Query 5b.txt...started responding in 1.950586s...got 6904 result(s) in 12.933665999999999s
+Sleeping for 0.69s before next query
+Running Query 3b.txt...started responding in 0.55108s...got 127 result(s) in 0.701221s
+Sleeping for 0.958s before next query
+
+Total Response Time: 264.080734s
+Total Runtime: 298.094518s
+Minimum Query Runtime: 0.281957s (Query 12c.txt)
+Maximum Query Runtime: 62.473347000000004s (Query 4.txt)
+
+Warmup Run 3 of 5
+Query Order for this Run is 6, 10, 0, 8, 2, 11, 7, 3, 1, 12, 4, 14, 5, 9, 13, 15, 16
+Running Query 5a.txt...got error after 28.23744s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.18s before next query
+Running Query 8.txt...started responding in 2.411806s...got 332 result(s) in 2.564701s
+Sleeping for 0.447s before next query
+Running Query 1.txt...started responding in 0.6312920000000001s...got 1 result(s) in 0.631349s
+Sleeping for 0.983s before next query
+Running Query 6.txt...started responding in 3.968527s...got 12093 result(s) in 23.71322s
+Sleeping for 0.911s before next query
+Running Query 3a.txt...started responding in 0.391779s...got 15853 result(s) in 1.8256590000000001s
+Sleeping for 0.793s before next query
+Running Query 9.txt...got error after 28.178348000000003s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.857s before next query
+Running Query 5b.txt...started responding in 1.9814829999999999s...got 6904 result(s) in 10.047846s
+Sleeping for 0.902s before next query
+Running Query 3b.txt...started responding in 0.28842599999999996s...got 127 result(s) in 0.440136s
+Sleeping for 0.314s before next query
+Running Query 2.txt...started responding in 25.273117s...got 6197 result(s) in 28.166392s
+Sleeping for 0.5s before next query
+Running Query 10.txt...started responding in 0.271805s...got 452 result(s) in 0.296389s
+Sleeping for 0.588s before next query
+Running Query 3c.txt...started responding in 0.292601s...got 0 result(s) in 0.29267899999999997s
+Sleeping for 0.906s before next query
+Running Query 12a.txt...got 1 result(s) in 0.66561s
+Sleeping for 0.401s before next query
+Running Query 4.txt...started responding in 0.6293690000000001s...got 542801 result(s) in 26.315374s
+Sleeping for 0.51s before next query
+Running Query 7.txt...got error after 28.183897s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.336s before next query
+Running Query 11.txt...started responding in 0.5437390000000001s...got 10 result(s) in 0.543812s
+Sleeping for 0.569s before next query
+Running Query 12b.txt...got 1 result(s) in 2.54055s
+Sleeping for 0.2s before next query
+Running Query 12c.txt...got 1 result(s) in 0.282429s
+Sleeping for 0.87s before next query
+
+Total Response Time: 124.772218s
+Total Runtime: 182.92583100000002s
+Minimum Query Runtime: 0.282429s (Query 12c.txt)
+Maximum Query Runtime: 28.23744s (Query 5a.txt)
+
+Warmup Run 4 of 5
+Query Order for this Run is 0, 5, 12, 13, 8, 14, 4, 6, 16, 9, 3, 7, 2, 15, 10, 11, 1
+Running Query 1.txt...started responding in 0.278748s...got 1 result(s) in 0.278815s
+Sleeping for 0.828s before next query
+Running Query 4.txt...started responding in 0.29791199999999995s...got 542801 result(s) in 28.136365s
+Sleeping for 0.393s before next query
+Running Query 10.txt...started responding in 0.297067s...got 452 result(s) in 0.45926100000000003s
+Sleeping for 0.993s before next query
+Running Query 11.txt...started responding in 0.666412s...got 10 result(s) in 0.666482s
+Sleeping for 0.96s before next query
+Running Query 6.txt...started responding in 4.236447s...got 12093 result(s) in 23.564280999999998s
+Sleeping for 0.86s before next query
+Running Query 12a.txt...got 1 result(s) in 0.7042390000000001s
+Sleeping for 0.551s before next query
+Running Query 3c.txt...started responding in 0.406444s...got 0 result(s) in 0.406536s
+Sleeping for 0.624s before next query
+Running Query 5a.txt...got error after 28.173471000000003s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.878s before next query
+Running Query 12c.txt...got 1 result(s) in 0.241341s
+Sleeping for 0.645s before next query
+Running Query 7.txt...got error after 28.183422999999998s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.307s before next query
+Running Query 3b.txt...got error after 28.182946s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.45s before next query
+Running Query 5b.txt...started responding in 2.4114169999999997s...got 6904 result(s) in 10.010473s
+Sleeping for 0.138s before next query
+Running Query 3a.txt...got error after 28.233569s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.398s before next query
+Running Query 12b.txt...got 1 result(s) in 3.664053s
+Sleeping for 0.58s before next query
+Running Query 8.txt...got error after 28.186943s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.661s before next query
+Running Query 9.txt...got error after 31.687985s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.804s before next query
+Running Query 2.txt...started responding in 2.30079s...got 6197 result(s) in 5.223216000000001s
+Sleeping for 0.816s before next query
+
+Total Response Time: 188.153207s
+Total Runtime: 246.003399s
+Minimum Query Runtime: 0.241341s (Query 12c.txt)
+Maximum Query Runtime: 31.687985s (Query 9.txt)
+
+Warmup Run 5 of 5
+Query Order for this Run is 1, 12, 16, 15, 8, 14, 13, 5, 3, 7, 4, 9, 10, 2, 6, 0, 11
+Running Query 2.txt...started responding in 2.135929s...got 6197 result(s) in 4.635946s
+Sleeping for 0.45s before next query
+Running Query 10.txt...started responding in 0.274617s...got 452 result(s) in 0.356009s
+Sleeping for 0.046s before next query
+Running Query 12c.txt...got 1 result(s) in 0.21198599999999998s
+Sleeping for 0.232s before next query
+Running Query 12b.txt...got 1 result(s) in 3.981231s
+Sleeping for 0.858s before next query
+Running Query 6.txt...started responding in 6.653468s...got 12093 result(s) in 30.528612000000003s
+Sleeping for 0.256s before next query
+Running Query 12a.txt...got 1 result(s) in 2.505338s
+Sleeping for 0.273s before next query
+Running Query 11.txt...started responding in 0.996177s...got 10 result(s) in 0.996281s
+Sleeping for 0.538s before next query
+Running Query 4.txt...started responding in 1.872828s...got 542801 result(s) in 28.518335999999998s
+Sleeping for 0.916s before next query
+Running Query 3b.txt...started responding in 0.33307600000000004s...got 127 result(s) in 0.336332s
+Sleeping for 0.158s before next query
+Running Query 5b.txt...started responding in 4.6820770000000005s...got 6904 result(s) in 15.561588s
+Sleeping for 0.82s before next query
+Running Query 3c.txt...started responding in 4.877543999999999s...got 0 result(s) in 4.8775889999999995s
+Sleeping for 0.49s before next query
+Running Query 7.txt...got error after 28.175929s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.382s before next query
+Running Query 8.txt...started responding in 18.652673999999998s...got 332 result(s) in 18.807890999999998s
+Sleeping for 0.011s before next query
+Running Query 3a.txt...started responding in 5.845103s...got 15853 result(s) in 7.859311s
+Sleeping for 0.862s before next query
+Running Query 5a.txt...got error after 28.228723000000002s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.348s before next query
+Running Query 1.txt...got error after 28.220803s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.421s before next query
+Running Query 9.txt...got error after 28.176003s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.66s before next query
+
+Total Response Time: 165.82350599999998s
+Total Runtime: 231.97790799999999s
+Minimum Query Runtime: 0.21198599999999998s (Query 12c.txt)
+Maximum Query Runtime: 30.528612000000003s (Query 6.txt)
+
+Running Benchmarks...
+
+Query Mix Run 1 of 25
+Query Order for this Run is 5, 14, 7, 4, 12, 11, 8, 3, 16, 15, 10, 0, 2, 1, 6, 9, 13
+Running Query 4.txt...got error after 28.175935000000003s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.156s before next query
+Running Query 12a.txt...got error after 28.744717s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.253s before next query
+Running Query 5b.txt...got error after 28.171421s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.635s before next query
+Running Query 3c.txt...got error after 36.141123s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.356s before next query
+Running Query 10.txt...got error after 28.24582s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.507s before next query
+Running Query 9.txt...got error after 28.17859s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.506s before next query
+Running Query 6.txt...got error after 28.175376s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.905s before next query
+Running Query 3b.txt...got error after 28.169922s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.397s before next query
+Running Query 12c.txt...got error after 28.238935s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.533s before next query
+Running Query 12b.txt...got error after 65.37777700000001s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.972s before next query
+Running Query 8.txt...got error after 28.177889s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.776s before next query
+Running Query 1.txt...got error after 28.169836s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.786s before next query
+Running Query 3a.txt...got error after 28.171577000000003s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.828s before next query
+Running Query 2.txt...got error after 29.808361s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.796s before next query
+Running Query 5a.txt...got error after 30.518461s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.721s before next query
+Running Query 7.txt...got error after 28.173688s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.303s before next query
+Running Query 11.txt...got error after 28.172421s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.362s before next query
+
+Total Response Time: 528.811849s
+Total Runtime: 528.811849s
+Minimum Query Runtime: 28.169836s (Query 1.txt)
+Maximum Query Runtime: 65.37777700000001s (Query 12b.txt)
+
+Query Mix Run 2 of 25
+Query Order for this Run is 0, 5, 10, 7, 12, 6, 13, 11, 9, 16, 4, 1, 2, 8, 15, 3, 14
+Running Query 1.txt...got error after 29.686747s: Query Runner encountered an error - HttpException: 500 Internal Server Error
+Query exceeded maximum execution time of 30 seconds.
+Sleeping for 0.243s before next query
+Running Query 4.txt...

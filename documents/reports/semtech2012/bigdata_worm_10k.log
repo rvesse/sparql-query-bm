@@ -1,0 +1,1847 @@
+Running in verbose mode, run with -q or --quiet to disable
+Benchmark Options
+-----------------
+
+Endpoint = http://localhost:8080/bigdata/sparql
+Sanity Checking Level = 2
+Warmups = 5
+Runs = 25
+Random Query Order = On
+Outliers = 1
+Timeout = 300 seconds
+Max Delay between Queries = 1000 milliseconds
+Result Limit = Query Specified
+CSV Results File = bigdata_worm_10k.csv
+XML Results File = bigdata_worm_10k.xml
+Halt on Timeout = false
+Halt on Error = false
+Halt Any = false
+ASK Results Format = application/sparql-results+xml
+Graph Results Format = application/rdf+xml
+SELECT Results Format = application/sparql-results+xml
+GZip Encoding = disabled
+Deflate Encoding = disabled
+Parallel Threads = 1
+Result Counting = enabled
+
+Sanity checking the user specified endpoint...
+Sanity Check 1 of 3...OK
+Sanity Check 2 of 3...started responding in 0.026392s...OK
+Sanity Check 3 of 3...started responding in 0.085463s...OK
+Sanity Checks passed required sanity level...
+
+Starting Benchmarking...
+17 Queries were loaded:
+Query ID 0 (1.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?yr
+WHERE
+  { ?journal rdf:type bench:Journal .
+    ?journal dc:title "Journal 1 (1940)"^^xsd:string .
+    ?journal dcterms:issued ?yr
+  }
+
+
+Query ID 1 (2.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?inproc ?author ?booktitle ?title ?proc ?ee ?page ?url ?yr ?abstract
+WHERE
+  { ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?author .
+    ?inproc bench:booktitle ?booktitle .
+    ?inproc dc:title ?title .
+    ?inproc dcterms:partOf ?proc .
+    ?inproc rdfs:seeAlso ?ee .
+    ?inproc swrc:pages ?page .
+    ?inproc foaf:homepage ?url .
+    ?inproc dcterms:issued ?yr
+    OPTIONAL
+      { ?inproc bench:abstract ?abstract }
+  }
+ORDER BY ?yr
+
+
+Query ID 2 (3a.txt)
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:pages )
+  }
+
+
+Query ID 3 (3b.txt)
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:month )
+  }
+
+
+Query ID 4 (3c.txt)
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:isbn )
+  }
+
+
+Query ID 5 (4.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT  ?name1 ?name2
+WHERE
+  { ?article1 rdf:type bench:Article .
+    ?article2 rdf:type bench:Article .
+    ?article1 dc:creator ?author1 .
+    ?author1 foaf:name ?name1 .
+    ?article2 dc:creator ?author2 .
+    ?author2 foaf:name ?name2 .
+    ?article1 swrc:journal ?journal .
+    ?article2 swrc:journal ?journal
+    FILTER ( ?name1 < ?name2 )
+  }
+
+
+Query ID 6 (5a.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?person ?name
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person2 .
+    ?person foaf:name ?name .
+    ?person2 foaf:name ?name2
+    FILTER ( ?name = ?name2 )
+  }
+
+
+Query ID 7 (5b.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?person ?name
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person .
+    ?person foaf:name ?name
+  }
+
+
+Query ID 8 (6.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?yr ?name ?document
+WHERE
+  { ?class rdfs:subClassOf foaf:Document .
+    ?document rdf:type ?class .
+    ?document dcterms:issued ?yr .
+    ?document dc:creator ?author .
+    ?author foaf:name ?name
+    OPTIONAL
+      { ?class2 rdfs:subClassOf foaf:Document .
+        ?document2 rdf:type ?class2 .
+        ?document2 dcterms:issued ?yr2 .
+        ?document2 dc:creator ?author2
+        FILTER ( ( ?author = ?author2 ) && ( ?yr2 < ?yr ) )
+      }
+    FILTER ( ! bound(?author2) )
+  }
+
+
+Query ID 9 (7.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT  ?title
+WHERE
+  { ?class rdfs:subClassOf foaf:Document .
+    ?doc rdf:type ?class .
+    ?doc dc:title ?title .
+    ?bag2 ?member2 ?doc .
+    ?doc2 dcterms:references ?bag2
+    OPTIONAL
+      { ?class3 rdfs:subClassOf foaf:Document .
+        ?doc3 rdf:type ?class3 .
+        ?doc3 dcterms:references ?bag3 .
+        ?bag3 ?member3 ?doc
+        OPTIONAL
+          { ?class4 rdfs:subClassOf foaf:Document .
+            ?doc4 rdf:type ?class4 .
+            ?doc4 dcterms:references ?bag4 .
+            ?bag4 ?member4 ?doc3
+          }
+        FILTER ( ! bound(?doc4) )
+      }
+    FILTER ( ! bound(?doc3) )
+  }
+
+
+Query ID 10 (8.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?name
+WHERE
+  { ?erdoes rdf:type foaf:Person .
+    ?erdoes foaf:name "Paul Erdoes"^^xsd:string
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?document2 dc:creator ?author .
+        ?document2 dc:creator ?author2 .
+        ?author2 foaf:name ?name
+        FILTER ( ( ( ( ?author != ?erdoes ) && ( ?document2 != ?document ) ) && ( ?author2 != ?erdoes ) ) && ( ?author2 != ?author ) )
+      }
+    UNION
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?author foaf:name ?name
+        FILTER ( ?author != ?erdoes )
+      }
+  }
+
+
+Query ID 11 (9.txt)
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?predicate
+WHERE
+  {   { ?person rdf:type foaf:Person .
+        ?subject ?predicate ?person
+      }
+    UNION
+      { ?person rdf:type foaf:Person .
+        ?person ?predicate ?object
+      }
+  }
+
+
+Query ID 12 (10.txt)
+PREFIX  person: <http://localhost/persons/>
+
+SELECT  ?subject ?predicate
+WHERE
+  { ?subject ?predicate person:Paul_Erdoes }
+
+
+Query ID 13 (11.txt)
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT  ?ee
+WHERE
+  { ?publication rdfs:seeAlso ?ee }
+ORDER BY ?ee
+OFFSET  50
+LIMIT   10
+
+
+Query ID 14 (12a.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person1 .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person2 .
+    ?person1 foaf:name ?name1 .
+    ?person2 foaf:name ?name2
+    FILTER ( ?name1 = ?name2 )
+  }
+
+
+Query ID 15 (12b.txt)
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { ?erdoes rdf:type foaf:Person .
+    ?erdoes foaf:name "Paul Erdoes"^^xsd:string
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?document2 dc:creator ?author .
+        ?document2 dc:creator ?author2 .
+        ?author2 foaf:name ?name
+        FILTER ( ( ( ( ?author != ?erdoes ) && ( ?document2 != ?document ) ) && ( ?author2 != ?erdoes ) ) && ( ?author2 != ?author ) )
+      }
+    UNION
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?author foaf:name ?name
+        FILTER ( ?author != ?erdoes )
+      }
+  }
+
+
+Query ID 16 (12c.txt)
+PREFIX  person: <http://localhost/persons/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { person:John_Q_Public rdf:type foaf:Person }
+
+
+Running Warmups...
+
+Warmup Run 1 of 5
+Query Order for this Run is 5, 1, 12, 7, 0, 6, 13, 8, 15, 16, 14, 4, 9, 3, 2, 10, 11
+Running Query 4.txt...started responding in 0.67871s...got 23226 result(s) in 5.1514359999999995s
+Sleeping for 0.772s before next query
+Running Query 2.txt...started responding in 0.166797s...got 147 result(s) in 0.236494s
+Sleeping for 0.496s before next query
+Running Query 10.txt...started responding in 0.036270000000000004s...got 166 result(s) in 0.041523000000000004s
+Sleeping for 0.517s before next query
+Running Query 5b.txt...started responding in 0.08060200000000001s...got 155 result(s) in 0.087909s
+Sleeping for 0.934s before next query
+Running Query 1.txt...started responding in 0.035099s...got 1 result(s) in 0.035218000000000006s
+Sleeping for 0.541s before next query
+Running Query 5a.txt...started responding in 2.566551s...got 155 result(s) in 3.22683s
+Sleeping for 0.053s before next query
+Running Query 11.txt...started responding in 0.062582s...got 10 result(s) in 0.062778s
+Sleeping for 0.966s before next query
+Running Query 6.txt...started responding in 0.579812s...got 229 result(s) in 0.590855s
+Sleeping for 0.069s before next query
+Running Query 12b.txt...got 1 result(s) in 0.046449s
+Sleeping for 0.501s before next query
+Running Query 12c.txt...got 1 result(s) in 0.033194s
+Sleeping for 0.483s before next query
+Running Query 12a.txt...got 1 result(s) in 0.054014s
+Sleeping for 0.892s before next query
+Running Query 3c.txt...started responding in 0.055595s...got 0 result(s) in 0.055664s
+Sleeping for 0.27s before next query
+Running Query 7.txt...started responding in 0.053293999999999994s...got 0 result(s) in 0.05336s
+Sleeping for 0.375s before next query
+Running Query 3b.txt...started responding in 0.047356999999999996s...got 9 result(s) in 0.047558s
+Sleeping for 0.34s before next query
+Running Query 3a.txt...started responding in 0.03377s...got 846 result(s) in 0.064333s
+Sleeping for 0.892s before next query
+Running Query 8.txt...started responding in 0.099456s...got 184 result(s) in 0.102301s
+Sleeping for 0.752s before next query
+Running Query 9.txt...started responding in 0.026636s...got 4 result(s) in 0.02673s
+Sleeping for 0.604s before next query
+
+Total Response Time: 4.656188s
+Total Runtime: 9.916646s
+Minimum Query Runtime: 0.02673s (Query 9.txt)
+Maximum Query Runtime: 5.1514359999999995s (Query 4.txt)
+
+Warmup Run 2 of 5
+Query Order for this Run is 8, 13, 14, 9, 15, 6, 12, 5, 16, 7, 4, 3, 11, 1, 2, 0, 10
+Running Query 6.txt...started responding in 0.6950919999999999s...got 229 result(s) in 0.70778s
+Sleeping for 0.625s before next query
+Running Query 11.txt...started responding in 0.035540999999999996s...got 10 result(s) in 0.035805s
+Sleeping for 0.33s before next query
+Running Query 12a.txt...got 1 result(s) in 0.029561s
+Sleeping for 0.295s before next query
+Running Query 7.txt...started responding in 0.034819s...got 0 result(s) in 0.034917000000000004s
+Sleeping for 0.908s before next query
+Running Query 12b.txt...got 1 result(s) in 0.031495999999999996s
+Sleeping for 0.134s before next query
+Running Query 5a.txt...started responding in 2.421752s...got 155 result(s) in 2.8516340000000002s
+Sleeping for 0.517s before next query
+Running Query 10.txt...started responding in 0.018600000000000002s...got 166 result(s) in 0.021973s
+Sleeping for 0.034s before next query
+Running Query 4.txt...started responding in 0.059751s...got 23226 result(s) in 1.284465s
+Sleeping for 0.177s before next query
+Running Query 12c.txt...got 1 result(s) in 0.028067s
+Sleeping for 0.491s before next query
+Running Query 5b.txt...started responding in 0.021925999999999998s...got 155 result(s) in 0.023588s
+Sleeping for 0.042s before next query
+Running Query 3c.txt...started responding in 0.039671s...got 0 result(s) in 0.039723999999999995s
+Sleeping for 0.788s before next query
+Running Query 3b.txt...started responding in 0.041241s...got 9 result(s) in 0.041395s
+Sleeping for 0.292s before next query
+Running Query 9.txt...started responding in 0.036738s...got 4 result(s) in 0.036859s
+Sleeping for 0.42s before next query
+Running Query 2.txt...started responding in 0.049532s...got 147 result(s) in 0.06407299999999999s
+Sleeping for 0.917s before next query
+Running Query 3a.txt...started responding in 0.012266s...got 846 result(s) in 0.02257s
+Sleeping for 0.083s before next query
+Running Query 1.txt...started responding in 0.019757999999999998s...got 1 result(s) in 0.01984s
+Sleeping for 0.098s before next query
+Running Query 8.txt...started responding in 0.07310599999999999s...got 184 result(s) in 0.07377s
+Sleeping for 0.349s before next query
+
+Total Response Time: 3.648917s
+Total Runtime: 5.347517s
+Minimum Query Runtime: 0.01984s (Query 1.txt)
+Maximum Query Runtime: 2.8516340000000002s (Query 5a.txt)
+
+Warmup Run 3 of 5
+Query Order for this Run is 15, 9, 3, 0, 11, 1, 6, 10, 2, 14, 16, 7, 5, 13, 12, 8, 4
+Running Query 12b.txt...got 1 result(s) in 0.021658999999999998s
+Sleeping for 0.89s before next query
+Running Query 7.txt...started responding in 0.033383s...got 0 result(s) in 0.033427s
+Sleeping for 0.271s before next query
+Running Query 3b.txt...started responding in 0.02614s...got 9 result(s) in 0.026216999999999997s
+Sleeping for 0.689s before next query
+Running Query 1.txt...started responding in 0.018071999999999998s...got 1 result(s) in 0.018139s
+Sleeping for 0.053s before next query
+Running Query 9.txt...started responding in 0.029002s...got 4 result(s) in 0.029068999999999998s
+Sleeping for 0.624s before next query
+Running Query 2.txt...started responding in 0.042066s...got 147 result(s) in 0.046590000000000006s
+Sleeping for 0.278s before next query
+Running Query 5a.txt...started responding in 1.946531s...got 155 result(s) in 2.415098s
+Sleeping for 0.128s before next query
+Running Query 8.txt...started responding in 0.09713s...got 184 result(s) in 0.09813200000000001s
+Sleeping for 0.876s before next query
+Running Query 3a.txt...started responding in 0.009992000000000001s...got 846 result(s) in 0.019906s
+Sleeping for 0.445s before next query
+Running Query 12a.txt...got 1 result(s) in 0.028251000000000002s
+Sleeping for 0.315s before next query
+Running Query 12c.txt...got 1 result(s) in 0.026803999999999998s
+Sleeping for 0.325s before next query
+Running Query 5b.txt...started responding in 0.019846s...got 155 result(s) in 0.021079999999999998s
+Sleeping for 0.097s before next query
+Running Query 4.txt...started responding in 0.046141s...got 23226 result(s) in 1.256901s
+Sleeping for 0.772s before next query
+Running Query 11.txt...started responding in 0.052859s...got 10 result(s) in 0.053013s
+Sleeping for 0.489s before next query
+Running Query 10.txt...started responding in 0.018268999999999997s...got 166 result(s) in 0.019629s
+Sleeping for 0.609s before next query
+Running Query 6.txt...started responding in 0.497884s...got 229 result(s) in 0.5038090000000001s
+Sleeping for 0.784s before next query
+Running Query 3c.txt...started responding in 0.039244s...got 0 result(s) in 0.039308s
+Sleeping for 0.327s before next query
+
+Total Response Time: 2.9532730000000003s
+Total Runtime: 4.657032s
+Minimum Query Runtime: 0.018139s (Query 1.txt)
+Maximum Query Runtime: 2.415098s (Query 5a.txt)
+
+Warmup Run 4 of 5
+Query Order for this Run is 9, 2, 16, 3, 15, 8, 11, 0, 10, 1, 6, 12, 7, 13, 4, 5, 14
+Running Query 7.txt...started responding in 0.035866s...got 0 result(s) in 0.035931s
+Sleeping for 0.848s before next query
+Running Query 3a.txt...started responding in 0.012525s...got 846 result(s) in 0.023504s
+Sleeping for 0.027s before next query
+Running Query 12c.txt...got 1 result(s) in 0.028815s
+Sleeping for 0.886s before next query
+Running Query 3b.txt...started responding in 0.021231000000000003s...got 9 result(s) in 0.021322s
+Sleeping for 0.302s before next query
+Running Query 12b.txt...got 1 result(s) in 0.037551s
+Sleeping for 0.047s before next query
+Running Query 6.txt...started responding in 0.484647s...got 229 result(s) in 0.489118s
+Sleeping for 0.293s before next query
+Running Query 9.txt...started responding in 0.03566299999999999s...got 4 result(s) in 0.03576s
+Sleeping for 0.761s before next query
+Running Query 1.txt...started responding in 0.017640999999999997s...got 1 result(s) in 0.017743s
+Sleeping for 0.685s before next query
+Running Query 8.txt...started responding in 0.06767100000000001s...got 184 result(s) in 0.068675s
+Sleeping for 0.524s before next query
+Running Query 2.txt...started responding in 0.047856s...got 147 result(s) in 0.057728s
+Sleeping for 0.039s before next query
+Running Query 5a.txt...started responding in 2.046064s...got 155 result(s) in 2.612899s
+Sleeping for 0.149s before next query
+Running Query 10.txt...started responding in 0.006642s...got 166 result(s) in 0.007996s
+Sleeping for 0.22s before next query
+Running Query 5b.txt...started responding in 0.028117s...got 155 result(s) in 0.038893000000000004s
+Sleeping for 0.027s before next query
+Running Query 11.txt...started responding in 0.027578s...got 10 result(s) in 0.027682s
+Sleeping for 0.125s before next query
+Running Query 3c.txt...started responding in 0.03964s...got 0 result(s) in 0.039684s
+Sleeping for 0.601s before next query
+Running Query 4.txt...started responding in 0.042144s...got 23226 result(s) in 1.15273s
+Sleeping for 0.83s before next query
+Running Query 12a.txt...got 1 result(s) in 0.026403s
+Sleeping for 0.18s before next query
+
+Total Response Time: 3.0060540000000002s
+Total Runtime: 4.722434s
+Minimum Query Runtime: 0.007996s (Query 10.txt)
+Maximum Query Runtime: 2.612899s (Query 5a.txt)
+
+Warmup Run 5 of 5
+Query Order for this Run is 16, 12, 15, 1, 0, 6, 9, 8, 11, 5, 3, 14, 7, 13, 10, 2, 4
+Running Query 12c.txt...got 1 result(s) in 0.025036000000000003s
+Sleeping for 0.963s before next query
+Running Query 10.txt...started responding in 0.016783000000000003s...got 166 result(s) in 0.018248999999999998s
+Sleeping for 0.739s before next query
+Running Query 12b.txt...got 1 result(s) in 0.024495999999999997s
+Sleeping for 0.513s before next query
+Running Query 2.txt...started responding in 0.032625s...got 147 result(s) in 0.038837s
+Sleeping for 0.676s before next query
+Running Query 1.txt...started responding in 0.022313s...got 1 result(s) in 0.022379000000000003s
+Sleeping for 0.201s before next query
+Running Query 5a.txt...started responding in 2.092777s...got 155 result(s) in 2.634996s
+Sleeping for 0.226s before next query
+Running Query 7.txt...started responding in 0.034415s...got 0 result(s) in 0.034491999999999995s
+Sleeping for 0.877s before next query
+Running Query 6.txt...started responding in 0.48511000000000004s...got 229 result(s) in 0.491187s
+Sleeping for 0.975s before next query
+Running Query 9.txt...started responding in 0.022686s...got 4 result(s) in 0.022776s
+Sleeping for 0.964s before next query
+Running Query 4.txt...started responding in 0.050755s...got 23226 result(s) in 1.215963s
+Sleeping for 0.192s before next query
+Running Query 3b.txt...started responding in 0.039677s...got 9 result(s) in 0.039805s
+Sleeping for 0.932s before next query
+Running Query 12a.txt...got 1 result(s) in 0.028517s
+Sleeping for 0.779s before next query
+Running Query 5b.txt...started responding in 0.035287s...got 155 result(s) in 0.037418999999999994s
+Sleeping for 0.055s before next query
+Running Query 11.txt...started responding in 0.054368s...got 10 result(s) in 0.054508s
+Sleeping for 0.8s before next query
+Running Query 8.txt...started responding in 0.081755s...got 184 result(s) in 0.08304399999999999s
+Sleeping for 0.85s before next query
+Running Query 3a.txt...started responding in 0.01943s...got 846 result(s) in 0.051903s
+Sleeping for 0.67s before next query
+Running Query 3c.txt...started responding in 0.037991s...got 0 result(s) in 0.038064s
+Sleeping for 0.093s before next query
+
+Total Response Time: 3.1040210000000004s
+Total Runtime: 4.861671s
+Minimum Query Runtime: 0.018248999999999998s (Query 10.txt)
+Maximum Query Runtime: 2.634996s (Query 5a.txt)
+
+Running Benchmarks...
+
+Query Mix Run 1 of 25
+Query Order for this Run is 9, 0, 13, 4, 7, 5, 6, 11, 2, 16, 3, 8, 14, 12, 10, 1, 15
+Running Query 7.txt...started responding in 0.03686s...got 0 result(s) in 0.036916s
+Sleeping for 0.716s before next query
+Running Query 1.txt...started responding in 0.015449999999999998s...got 1 result(s) in 0.015513s
+Sleeping for 0.627s before next query
+Running Query 11.txt...started responding in 0.035561999999999996s...got 10 result(s) in 0.035723s
+Sleeping for 0.383s before next query
+Running Query 3c.txt...started responding in 0.038593s...got 0 result(s) in 0.03866s
+Sleeping for 0.992s before next query
+Running Query 5b.txt...started responding in 0.017776s...got 155 result(s) in 0.018837s
+Sleeping for 0.742s before next query
+Running Query 4.txt...started responding in 0.062786s...got 23226 result(s) in 1.230093s
+Sleeping for 0.873s before next query
+Running Query 5a.txt...started responding in 2.037619s...got 155 result(s) in 2.5810120000000003s
+Sleeping for 0.506s before next query
+Running Query 9.txt...started responding in 0.026657s...got 4 result(s) in 0.026745s
+Sleeping for 0.754s before next query
+Running Query 3a.txt...started responding in 0.010269s...got 846 result(s) in 0.021603s
+Sleeping for 0.752s before next query
+Running Query 12c.txt...got 1 result(s) in 0.02571s
+Sleeping for 0.899s before next query
+Running Query 3b.txt...started responding in 0.030651s...got 9 result(s) in 0.030728000000000002s
+Sleeping for 0.572s before next query
+Running Query 6.txt...started responding in 0.513145s...got 229 result(s) in 0.520692s
+Sleeping for 0.873s before next query
+Running Query 12a.txt...got 1 result(s) in 0.022815000000000002s
+Sleeping for 0.22s before next query
+Running Query 10.txt...started responding in 0.016135999999999998s...got 166 result(s) in 0.016718s
+Sleeping for 0.345s before next query
+Running Query 8.txt...started responding in 0.059671999999999996s...got 184 result(s) in 0.060181s
+Sleeping for 0.187s before next query
+Running Query 2.txt...started responding in 0.034395s...got 147 result(s) in 0.040697000000000004s
+Sleeping for 0.415s before next query
+Running Query 12b.txt...got 1 result(s) in 0.01597s
+Sleeping for 0.925s before next query
+
+Total Response Time: 3.000066s
+Total Runtime: 4.738613s
+Minimum Query Runtime: 0.015513s (Query 1.txt)
+Maximum Query Runtime: 2.5810120000000003s (Query 5a.txt)
+
+Query Mix Run 2 of 25
+Query Order for this Run is 8, 4, 16, 0, 13, 6, 2, 3, 1, 11, 5, 9, 7, 14, 12, 15, 10
+Running Query 6.txt...started responding in 0.388201s...got 229 result(s) in 0.390573s
+Sleeping for 0.438s before next query
+Running Query 3c.txt...started responding in 0.036903s...got 0 result(s) in 0.036946s
+Sleeping for 0.191s before next query
+Running Query 12c.txt...got 1 result(s) in 0.025487s
+Sleeping for 0.786s before next query
+Running Query 1.txt...started responding in 0.015874s...got 1 result(s) in 0.015937s
+Sleeping for 0.945s before next query
+Running Query 11.txt...started responding in 0.028805s...got 10 result(s) in 0.02889s
+Sleeping for 0.112s before next query
+Running Query 5a.txt...started responding in 1.741682s...got 155 result(s) in 2.2103629999999996s
+Sleeping for 0.035s before next query
+Running Query 3a.txt...started responding in 0.015566s...got 846 result(s) in 0.035762s
+Sleeping for 0.475s before next query
+Running Query 3b.txt...started responding in 0.034386s...got 9 result(s) in 0.034506999999999996s
+Sleeping for 0.358s before next query
+Running Query 2.txt...started responding in 0.042206s...got 147 result(s) in 0.049618s
+Sleeping for 0.955s before next query
+Running Query 9.txt...started responding in 0.026954000000000002s...got 4 result(s) in 0.027060999999999998s
+Sleeping for 0.695s before next query
+Running Query 4.txt...started responding in 0.057481000000000004s...got 23226 result(s) in 1.174136s
+Sleeping for 0.808s before next query
+Running Query 7.txt...started responding in 0.021056000000000002s...got 0 result(s) in 0.021117s
+Sleeping for 0.286s before next query
+Running Query 5b.txt...started responding in 0.024388s...got 155 result(s) in 0.027504999999999998s
+Sleeping for 0.927s before next query
+Running Query 12a.txt...got 1 result(s) in 0.025634s
+Sleeping for 0.152s before next query
+Running Query 10.txt...started responding in 0.017800999999999997s...got 166 result(s) in 0.018472000000000002s
+Sleeping for 0.075s before next query
+Running Query 12b.txt...got 1 result(s) in 0.020336s
+Sleeping for 0.404s before next query
+Running Query 8.txt...started responding in 0.073225s...got 184 result(s) in 0.073894s
+Sleeping for 0.234s before next query
+
+Total Response Time: 2.595985s
+Total Runtime: 4.216238000000001s
+Minimum Query Runtime: 0.015937s (Query 1.txt)
+Maximum Query Runtime: 2.2103629999999996s (Query 5a.txt)
+
+Query Mix Run 3 of 25
+Query Order for this Run is 11, 3, 8, 2, 12, 5, 0, 16, 4, 6, 1, 9, 13, 15, 10, 14, 7
+Running Query 9.txt...started responding in 0.031903s...got 4 result(s) in 0.031987s
+Sleeping for 0.045s before next query
+Running Query 3b.txt...started responding in 0.030696s...got 9 result(s) in 0.030780000000000002s
+Sleeping for 0.398s before next query
+Running Query 6.txt...started responding in 0.497318s...got 229 result(s) in 0.501904s
+Sleeping for 0.933s before next query
+Running Query 3a.txt...started responding in 0.015992s...got 846 result(s) in 0.02792s
+Sleeping for 0.525s before next query
+Running Query 10.txt...started responding in 0.004575999999999999s...got 166 result(s) in 0.005148s
+Sleeping for 0.365s before next query
+Running Query 4.txt...started responding in 0.043996s...got 23226 result(s) in 0.953338s
+Sleeping for 0.414s before next query
+Running Query 1.txt...started responding in 0.015484999999999999s...got 1 result(s) in 0.015551s
+Sleeping for 0.848s before next query
+Running Query 12c.txt...got 1 result(s) in 0.024812999999999998s
+Sleeping for 0.174s before next query
+Running Query 3c.txt...started responding in 0.038066s...got 0 result(s) in 0.038111s
+Sleeping for 0.96s before next query
+Running Query 5a.txt...started responding in 1.884131s...got 155 result(s) in 2.282003s
+Sleeping for 0.198s before next query
+Running Query 2.txt...started responding in 0.039432s...got 147 result(s) in 0.047276000000000006s
+Sleeping for 0.995s before next query
+Running Query 7.txt...started responding in 0.0357s...got 0 result(s) in 0.035745s
+Sleeping for 0.163s before next query
+Running Query 11.txt...started responding in 0.024697s...got 10 result(s) in 0.024780999999999997s
+Sleeping for 0.372s before next query
+Running Query 12b.txt...got 1 result(s) in 0.034065s
+Sleeping for 0.3s before next query
+Running Query 8.txt...started responding in 0.055723s...got 184 result(s) in 0.056497s
+Sleeping for 0.276s before next query
+Running Query 12a.txt...got 1 result(s) in 0.026449999999999998s
+Sleeping for 0.144s before next query
+Running Query 5b.txt...started responding in 0.024017s...got 155 result(s) in 0.025039000000000002s
+Sleeping for 0.606s before next query
+
+Total Response Time: 2.82706s
+Total Runtime: 4.161408000000001s
+Minimum Query Runtime: 0.005148s (Query 10.txt)
+Maximum Query Runtime: 2.282003s (Query 5a.txt)
+
+Query Mix Run 4 of 25
+Query Order for this Run is 12, 8, 5, 16, 11, 4, 0, 14, 13, 1, 10, 6, 7, 2, 15, 3, 9
+Running Query 10.txt...started responding in 0.019458s...got 166 result(s) in 0.020056s
+Sleeping for 0.944s before next query
+Running Query 6.txt...started responding in 0.33472199999999996s...got 229 result(s) in 0.337292s
+Sleeping for 0.913s before next query
+Running Query 4.txt...started responding in 0.039354s...got 23226 result(s) in 1.109652s
+Sleeping for 0.927s before next query
+Running Query 12c.txt...got 1 result(s) in 0.02565s
+Sleeping for 0.617s before next query
+Running Query 9.txt...started responding in 0.029093s...got 4 result(s) in 0.029166s
+Sleeping for 0.902s before next query
+Running Query 3c.txt...started responding in 0.037541s...got 0 result(s) in 0.037607999999999996s
+Sleeping for 0.713s before next query
+Running Query 1.txt...started responding in 0.018329s...got 1 result(s) in 0.018405s
+Sleeping for 0.475s before next query
+Running Query 12a.txt...got 1 result(s) in 0.029512s
+Sleeping for 0.05s before next query
+Running Query 11.txt...started responding in 0.020247s...got 10 result(s) in 0.020389s
+Sleeping for 0.221s before next query
+Running Query 2.txt...started responding in 0.037122s...got 147 result(s) in 0.047864s
+Sleeping for 0.101s before next query
+Running Query 8.txt...started responding in 0.07169s...got 184 result(s) in 0.07250799999999999s
+Sleeping for 0.649s before next query
+Running Query 5a.txt...started responding in 1.9639659999999999s...got 155 result(s) in 2.4412179999999997s
+Sleeping for 0.595s before next query
+Running Query 5b.txt...started responding in 0.021439s...got 155 result(s) in 0.023142s
+Sleeping for 0.463s before next query
+Running Query 3a.txt...started responding in 0.018956s...got 846 result(s) in 0.046727s
+Sleeping for 0.044s before next query
+Running Query 12b.txt...got 1 result(s) in 0.034127000000000005s
+Sleeping for 0.196s before next query
+Running Query 3b.txt...started responding in 0.019899999999999998s...got 9 result(s) in 0.020028999999999998s
+Sleeping for 0.578s before next query
+Running Query 7.txt...started responding in 0.030061s...got 0 result(s) in 0.030114000000000002s
+Sleeping for 0.723s before next query
+
+Total Response Time: 2.7511669999999997s
+Total Runtime: 4.343459s
+Minimum Query Runtime: 0.018405s (Query 1.txt)
+Maximum Query Runtime: 2.4412179999999997s (Query 5a.txt)
+
+Query Mix Run 5 of 25
+Query Order for this Run is 10, 12, 6, 3, 9, 4, 11, 5, 14, 8, 1, 2, 7, 13, 15, 0, 16
+Running Query 8.txt...started responding in 0.06333899999999999s...got 184 result(s) in 0.064042s
+Sleeping for 0.129s before next query
+Running Query 10.txt...started responding in 0.01656s...got 166 result(s) in 0.017643s
+Sleeping for 0.974s before next query
+Running Query 5a.txt...started responding in 2.272227s...got 155 result(s) in 2.605532s
+Sleeping for 0.197s before next query
+Running Query 3b.txt...started responding in 0.042944s...got 9 result(s) in 0.04304s
+Sleeping for 0.703s before next query
+Running Query 7.txt...started responding in 0.031111s...got 0 result(s) in 0.03116s
+Sleeping for 0.474s before next query
+Running Query 3c.txt...started responding in 0.036857999999999995s...got 0 result(s) in 0.036912999999999994s
+Sleeping for 0.138s before next query
+Running Query 9.txt...started responding in 0.030476s...got 4 result(s) in 0.030552s
+Sleeping for 0.16s before next query
+Running Query 4.txt...started responding in 0.036713s...got 23226 result(s) in 1.091907s
+Sleeping for 0.804s before next query
+Running Query 12a.txt...got 1 result(s) in 0.01759s
+Sleeping for 0.197s before next query
+Running Query 6.txt...started responding in 0.49887400000000004s...got 229 result(s) in 0.51164s
+Sleeping for 0.19s before next query
+Running Query 2.txt...started responding in 0.040954s...got 147 result(s) in 0.049303s
+Sleeping for 0.445s before next query
+Running Query 3a.txt...started responding in 0.012044000000000001s...got 846 result(s) in 0.027697s
+Sleeping for 0.609s before next query
+Running Query 5b.txt...started responding in 0.023337s...got 155 result(s) in 0.025695s
+Sleeping for 0.564s before next query
+Running Query 11.txt...started responding in 0.010938s...got 10 result(s) in 0.011068s
+Sleeping for 0.807s before next query
+Running Query 12b.txt...got 1 result(s) in 0.033076999999999995s
+Sleeping for 0.663s before next query
+Running Query 1.txt...started responding in 0.017891999999999998s...got 1 result(s) in 0.017962s
+Sleeping for 0.525s before next query
+Running Query 12c.txt...got 1 result(s) in 0.025362s
+Sleeping for 0.215s before next query
+
+Total Response Time: 3.210296s
+Total Runtime: 4.640183s
+Minimum Query Runtime: 0.011068s (Query 11.txt)
+Maximum Query Runtime: 2.605532s (Query 5a.txt)
+
+Query Mix Run 6 of 25
+Query Order for this Run is 8, 12, 7, 0, 9, 3, 4, 6, 11, 15, 14, 2, 16, 5, 13, 10, 1
+Running Query 6.txt...started responding in 0.554901s...got 229 result(s) in 0.558556s
+Sleeping for 0.908s before next query
+Running Query 10.txt...started responding in 0.014904s...got 166 result(s) in 0.015465s
+Sleeping for 0.261s before next query
+Running Query 5b.txt...started responding in 0.016870999999999997s...got 155 result(s) in 0.028057s
+Sleeping for 0.523s before next query
+Running Query 1.txt...started responding in 0.014855s...got 1 result(s) in 0.014910999999999999s
+Sleeping for 0.403s before next query
+Running Query 7.txt...started responding in 0.028523s...got 0 result(s) in 0.028565999999999998s
+Sleeping for 0.914s before next query
+Running Query 3b.txt...started responding in 0.029862s...got 9 result(s) in 0.030015999999999998s
+Sleeping for 0.439s before next query
+Running Query 3c.txt...started responding in 0.036159s...got 0 result(s) in 0.036202s
+Sleeping for 0.543s before next query
+Running Query 5a.txt...started responding in 1.680801s...got 155 result(s) in 2.101891s
+Sleeping for 0.712s before next query
+Running Query 9.txt...started responding in 0.03612s...got 4 result(s) in 0.036191s
+Sleeping for 0.453s before next query
+Running Query 12b.txt...got 1 result(s) in 0.029427s
+Sleeping for 0.103s before next query
+Running Query 12a.txt...got 1 result(s) in 0.028782s
+Sleeping for 0.179s before next query
+Running Query 3a.txt...started responding in 0.010775s...got 846 result(s) in 0.028027999999999997s
+Sleeping for 0.835s before next query
+Running Query 12c.txt...got 1 result(s) in 0.026902000000000002s
+Sleeping for 0.174s before next query
+Running Query 4.txt...started responding in 0.065634s...got 23226 result(s) in 1.232002s
+Sleeping for 0.622s before next query
+Running Query 11.txt...started responding in 0.020561s...got 10 result(s) in 0.020662s
+Sleeping for 0.288s before next query
+Running Query 8.txt...started responding in 0.078793s...got 184 result(s) in 0.07954800000000001s
+Sleeping for 0.727s before next query
+Running Query 2.txt...started responding in 0.03622s...got 147 result(s) in 0.04253199999999999s
+Sleeping for 0.728s before next query
+
+Total Response Time: 2.71009s
+Total Runtime: 4.337738s
+Minimum Query Runtime: 0.014910999999999999s (Query 1.txt)
+Maximum Query Runtime: 2.101891s (Query 5a.txt)
+
+Query Mix Run 7 of 25
+Query Order for this Run is 1, 4, 12, 0, 5, 10, 8, 11, 2, 6, 9, 14, 15, 13, 3, 7, 16
+Running Query 2.txt...started responding in 0.032973s...got 147 result(s) in 0.037445s
+Sleeping for 0.0060s before next query
+Running Query 3c.txt...started responding in 0.026484999999999998s...got 0 result(s) in 0.026536s
+Sleeping for 0.0030s before next query
+Running Query 10.txt...started responding in 0.015366s...got 166 result(s) in 0.016061s
+Sleeping for 0.213s before next query
+Running Query 1.txt...started responding in 0.015976s...got 1 result(s) in 0.016045s
+Sleeping for 0.895s before next query
+Running Query 4.txt...started responding in 0.06925400000000001s...got 23226 result(s) in 1.232109s
+Sleeping for 0.479s before next query
+Running Query 8.txt...started responding in 0.066762s...got 184 result(s) in 0.067917s
+Sleeping for 0.989s before next query
+Running Query 6.txt...started responding in 0.36485500000000004s...got 229 result(s) in 0.36955s
+Sleeping for 0.533s before next query
+Running Query 9.txt...started responding in 0.030797s...got 4 result(s) in 0.030882s
+Sleeping for 0.636s before next query
+Running Query 3a.txt...started responding in 0.017606s...got 846 result(s) in 0.041884s
+Sleeping for 0.114s before next query
+Running Query 5a.txt...started responding in 2.174976s...got 155 result(s) in 2.628065s
+Sleeping for 0.214s before next query
+Running Query 7.txt...started responding in 0.034756s...got 0 result(s) in 0.034813000000000004s
+Sleeping for 0.267s before next query
+Running Query 12a.txt...got 1 result(s) in 0.027082000000000002s
+Sleeping for 0.127s before next query
+Running Query 12b.txt...got 1 result(s) in 0.034428s
+Sleeping for 0.175s before next query
+Running Query 11.txt...started responding in 0.037450000000000004s...got 10 result(s) in 0.037582s
+Sleeping for 0.344s before next query
+Running Query 3b.txt...started responding in 0.037395000000000005s...got 9 result(s) in 0.037511s
+Sleeping for 0.734s before next query
+Running Query 5b.txt...started responding in 0.023476s...got 155 result(s) in 0.027693000000000002s
+Sleeping for 0.364s before next query
+Running Query 12c.txt...got 1 result(s) in 0.025843s
+Sleeping for 0.44s before next query
+
+Total Response Time: 3.03548s
+Total Runtime: 4.691446s
+Minimum Query Runtime: 0.016045s (Query 1.txt)
+Maximum Query Runtime: 2.628065s (Query 5a.txt)
+
+Query Mix Run 8 of 25
+Query Order for this Run is 7, 6, 10, 0, 16, 2, 12, 11, 1, 15, 13, 8, 4, 9, 5, 14, 3
+Running Query 5b.txt...started responding in 0.015787000000000002s...got 155 result(s) in 0.026779s
+Sleeping for 0.732s before next query
+Running Query 5a.txt...started responding in 2.2187379999999997s...got 155 result(s) in 2.597022s
+Sleeping for 0.431s before next query
+Running Query 8.txt...started responding in 0.049313s...got 184 result(s) in 0.049798s
+Sleeping for 0.339s before next query
+Running Query 1.txt...started responding in 0.014724000000000001s...got 1 result(s) in 0.014796s
+Sleeping for 0.771s before next query
+Running Query 12c.txt...got 1 result(s) in 0.026229s
+Sleeping for 0.03s before next query
+Running Query 3a.txt...started responding in 0.015002000000000001s...got 846 result(s) in 0.027725000000000003s
+Sleeping for 0.214s before next query
+Running Query 10.txt...started responding in 0.017918s...got 166 result(s) in 0.019459s
+Sleeping for 0.984s before next query
+Running Query 9.txt...started responding in 0.030778s...got 4 result(s) in 0.030850000000000002s
+Sleeping for 0.243s before next query
+Running Query 2.txt...started responding in 0.034358s...got 147 result(s) in 0.040167s
+Sleeping for 0.803s before next query
+Running Query 12b.txt...got 1 result(s) in 0.02911s
+Sleeping for 0.438s before next query
+Running Query 11.txt...started responding in 0.018670000000000003s...got 10 result(s) in 0.018758s
+Sleeping for 0.192s before next query
+Running Query 6.txt...started responding in 0.532277s...got 229 result(s) in 0.537116s
+Sleeping for 0.79s before next query
+Running Query 3c.txt...started responding in 0.036294s...got 0 result(s) in 0.036338s
+Sleeping for 0.403s before next query
+Running Query 7.txt...started responding in 0.030083s...got 0 result(s) in 0.030139s
+Sleeping for 0.188s before next query
+Running Query 4.txt...started responding in 0.039594000000000004s...got 23226 result(s) in 1.318887s
+Sleeping for 0.96s before next query
+Running Query 12a.txt...got 1 result(s) in 0.024367s
+Sleeping for 0.878s before next query
+Running Query 3b.txt...started responding in 0.017765999999999997s...got 9 result(s) in 0.017839999999999998s
+Sleeping for 0.935s before next query
+
+Total Response Time: 3.151008s
+Total Runtime: 4.8453800000000005s
+Minimum Query Runtime: 0.014796s (Query 1.txt)
+Maximum Query Runtime: 2.597022s (Query 5a.txt)
+
+Query Mix Run 9 of 25
+Query Order for this Run is 14, 15, 0, 3, 13, 2, 5, 12, 9, 10, 16, 8, 11, 7, 1, 6, 4
+Running Query 12a.txt...got 1 result(s) in 0.015898s
+Sleeping for 0.526s before next query
+Running Query 12b.txt...got 1 result(s) in 0.028103000000000003s
+Sleeping for 0.709s before next query
+Running Query 1.txt...started responding in 0.016265s...got 1 result(s) in 0.016339s
+Sleeping for 0.315s before next query
+Running Query 3b.txt...started responding in 0.034264s...got 9 result(s) in 0.034387s
+Sleeping for 0.044s before next query
+Running Query 11.txt...started responding in 0.019846s...got 10 result(s) in 0.019944s
+Sleeping for 0.127s before next query
+Running Query 3a.txt...started responding in 0.010742000000000002s...got 846 result(s) in 0.026678s
+Sleeping for 0.839s before next query
+Running Query 4.txt...started responding in 0.056888s...got 23226 result(s) in 1.252052s
+Sleeping for 0.383s before next query
+Running Query 10.txt...started responding in 0.017707999999999998s...got 166 result(s) in 0.020395s
+Sleeping for 0.821s before next query
+Running Query 7.txt...started responding in 0.031861s...got 0 result(s) in 0.031911s
+Sleeping for 0.553s before next query
+Running Query 8.txt...started responding in 0.05609s...got 184 result(s) in 0.057296999999999994s
+Sleeping for 0.38s before next query
+Running Query 12c.txt...got 1 result(s) in 0.02506s
+Sleeping for 0.688s before next query
+Running Query 6.txt...started responding in 0.41745s...got 229 result(s) in 0.421909s
+Sleeping for 0.35s before next query
+Running Query 9.txt...started responding in 0.023108s...got 4 result(s) in 0.023177s
+Sleeping for 0.296s before next query
+Running Query 5b.txt...started responding in 0.016954s...got 155 result(s) in 0.01797s
+Sleeping for 0.316s before next query
+Running Query 2.txt...started responding in 0.029308s...got 147 result(s) in 0.033109s
+Sleeping for 0.628s before next query
+Running Query 5a.txt...started responding in 1.5855050000000002s...got 155 result(s) in 1.96215s
+Sleeping for 0.41s before next query
+Running Query 3c.txt...started responding in 0.029538000000000002s...got 0 result(s) in 0.029640999999999997s
+Sleeping for 0.578s before next query
+
+Total Response Time: 2.414588s
+Total Runtime: 4.01602s
+Minimum Query Runtime: 0.015898s (Query 12a.txt)
+Maximum Query Runtime: 1.96215s (Query 5a.txt)
+
+Query Mix Run 10 of 25
+Query Order for this Run is 0, 14, 7, 16, 15, 4, 11, 3, 13, 2, 6, 12, 8, 9, 1, 5, 10
+Running Query 1.txt...started responding in 0.014833s...got 1 result(s) in 0.014896000000000001s
+Sleeping for 0.77s before next query
+Running Query 12a.txt...got 1 result(s) in 0.022879s
+Sleeping for 0.082s before next query
+Running Query 5b.txt...started responding in 0.016678000000000002s...got 155 result(s) in 0.01767s
+Sleeping for 0.044s before next query
+Running Query 12c.txt...got 1 result(s) in 0.024651s
+Sleeping for 0.674s before next query
+Running Query 12b.txt...got 1 result(s) in 0.022626s
+Sleeping for 0.485s before next query
+Running Query 3c.txt...started responding in 0.036924s...got 0 result(s) in 0.036969s
+Sleeping for 0.372s before next query
+Running Query 9.txt...started responding in 0.020339s...got 4 result(s) in 0.020399s
+Sleeping for 0.461s before next query
+Running Query 3b.txt...started responding in 0.018367s...got 9 result(s) in 0.018439s
+Sleeping for 0.359s before next query
+Running Query 11.txt...started responding in 0.017945s...got 10 result(s) in 0.018029s
+Sleeping for 0.118s before next query
+Running Query 3a.txt...started responding in 0.00945s...got 846 result(s) in 0.017919s
+Sleeping for 0.898s before next query
+Running Query 5a.txt...started responding in 1.15377s...got 155 result(s) in 1.6640540000000001s
+Sleeping for 0.918s before next query
+Running Query 10.txt...started responding in 0.003988s...got 166 result(s) in 0.004543999999999999s
+Sleeping for 0.44s before next query
+Running Query 6.txt...started responding in 0.278594s...got 229 result(s) in 0.281842s
+Sleeping for 0.146s before next query
+Running Query 7.txt...started responding in 0.028249s...got 0 result(s) in 0.028323s
+Sleeping for 0.357s before next query
+Running Query 2.txt...started responding in 0.028765s...got 147 result(s) in 0.032168999999999996s
+Sleeping for 0.19s before next query
+Running Query 4.txt...started responding in 0.041014s...got 23226 result(s) in 0.8423590000000001s
+Sleeping for 0.857s before next query
+Running Query 8.txt...started responding in 0.049715s...got 184 result(s) in 0.050194s
+Sleeping for 0.161s before next query
+
+Total Response Time: 1.7887870000000001s
+Total Runtime: 3.117962s
+Minimum Query Runtime: 0.004543999999999999s (Query 10.txt)
+Maximum Query Runtime: 1.6640540000000001s (Query 5a.txt)
+
+Query Mix Run 11 of 25
+Query Order for this Run is 15, 2, 12, 7, 10, 6, 0, 5, 3, 9, 1, 11, 8, 16, 14, 4, 13
+Running Query 12b.txt...got 1 result(s) in 0.023631s
+Sleeping for 0.075s before next query
+Running Query 3a.txt...started responding in 0.007897s...got 846 result(s) in 0.014152s
+Sleeping for 0.554s before next query
+Running Query 10.txt...started responding in 0.016579s...got 166 result(s) in 0.017123000000000003s
+Sleeping for 0.849s before next query
+Running Query 5b.txt...started responding in 0.014914s...got 155 result(s) in 0.025256s
+Sleeping for 0.228s before next query
+Running Query 8.txt...started responding in 0.049269s...got 184 result(s) in 0.049755s
+Sleeping for 0.448s before next query
+Running Query 5a.txt...started responding in 1.444502s...got 155 result(s) in 1.831588s
+Sleeping for 0.197s before next query
+Running Query 1.txt...started responding in 0.015837999999999998s...got 1 result(s) in 0.015917999999999998s
+Sleeping for 0.338s before next query
+Running Query 4.txt...started responding in 0.036844s...got 23226 result(s) in 1.00256s
+Sleeping for 0.766s before next query
+Running Query 3b.txt...started responding in 0.020908000000000003s...got 9 result(s) in 0.020989999999999998s
+Sleeping for 0.26s before next query
+Running Query 7.txt...started responding in 0.033082s...got 0 result(s) in 0.033124s
+Sleeping for 0.402s before next query
+Running Query 2.txt...started responding in 0.039577s...got 147 result(s) in 0.043876s
+Sleeping for 0.596s before next query
+Running Query 9.txt...started responding in 0.023433s...got 4 result(s) in 0.023497s
+Sleeping for 0.487s before next query
+Running Query 6.txt...started responding in 0.28660399999999997s...got 229 result(s) in 0.28828699999999996s
+Sleeping for 0.199s before next query
+Running Query 12c.txt...got 1 result(s) in 0.025297999999999998s
+Sleeping for 0.07s before next query
+Running Query 12a.txt...got 1 result(s) in 0.02604s
+Sleeping for 0.9s before next query
+Running Query 3c.txt...started responding in 0.041389s...got 0 result(s) in 0.041453000000000004s
+Sleeping for 0.1s before next query
+Running Query 11.txt...started responding in 0.031558s...got 10 result(s) in 0.03171s
+Sleeping for 0.089s before next query
+
+Total Response Time: 2.1373629999999997s
+Total Runtime: 3.514258s
+Minimum Query Runtime: 0.014152s (Query 3a.txt)
+Maximum Query Runtime: 1.831588s (Query 5a.txt)
+
+Query Mix Run 12 of 25
+Query Order for this Run is 16, 5, 8, 7, 2, 15, 6, 14, 4, 0, 11, 3, 13, 9, 10, 1, 12
+Running Query 12c.txt...got 1 result(s) in 0.025294s
+Sleeping for 0.118s before next query
+Running Query 4.txt...started responding in 0.043745s...got 23226 result(s) in 1.199076s
+Sleeping for 0.018s before next query
+Running Query 6.txt...started responding in 0.5611970000000001s...got 229 result(s) in 0.5664779999999999s
+Sleeping for 0.969s before next query
+Running Query 5b.txt...started responding in 0.020429s...got 155 result(s) in 0.031522s
+Sleeping for 0.119s before next query
+Running Query 3a.txt...started responding in 0.024524s...got 846 result(s) in 0.051711s
+Sleeping for 0.909s before next query
+Running Query 12b.txt...got 1 result(s) in 0.025005s
+Sleeping for 0.642s before next query
+Running Query 5a.txt...started responding in 2.184691s...got 155 result(s) in 2.580591s
+Sleeping for 0.96s before next query
+Running Query 12a.txt...got 1 result(s) in 0.015672000000000002s
+Sleeping for 0.284s before next query
+Running Query 3c.txt...started responding in 0.03767s...got 0 result(s) in 0.037729s
+Sleeping for 0.469s before next query
+Running Query 1.txt...started responding in 0.015795s...got 1 result(s) in 0.015862s
+Sleeping for 0.601s before next query
+Running Query 9.txt...started responding in 0.032807s...got 4 result(s) in 0.032885s
+Sleeping for 0.339s before next query
+Running Query 3b.txt...started responding in 0.034473s...got 9 result(s) in 0.03459s
+Sleeping for 0.02s before next query
+Running Query 11.txt...started responding in 0.038816s...got 10 result(s) in 0.038938s
+Sleeping for 0.869s before next query
+Running Query 7.txt...started responding in 0.029925s...got 0 result(s) in 0.029976s
+Sleeping for 0.5s before next query
+Running Query 8.txt...started responding in 0.048299999999999996s...got 184 result(s) in 0.048784s
+Sleeping for 0.748s before next query
+Running Query 2.txt...started responding in 0.041576s...got 147 result(s) in 0.04993s
+Sleeping for 0.347s before next query
+Running Query 10.txt...started responding in 0.017975s...got 166 result(s) in 0.019271999999999997s
+Sleeping for 0.154s before next query
+
+Total Response Time: 3.197894s
+Total Runtime: 4.803315s
+Minimum Query Runtime: 0.015672000000000002s (Query 12a.txt)
+Maximum Query Runtime: 2.580591s (Query 5a.txt)
+
+Query Mix Run 13 of 25
+Query Order for this Run is 6, 12, 13, 8, 16, 11, 9, 2, 0, 10, 15, 7, 14, 5, 3, 4, 1
+Running Query 5a.txt...started responding in 2.301726s...got 155 result(s) in 2.743369s
+Sleeping for 0.238s before next query
+Running Query 10.txt...started responding in 0.006991s...got 166 result(s) in 0.008568s
+Sleeping for 0.895s before next query
+Running Query 11.txt...started responding in 0.012874s...got 10 result(s) in 0.013009999999999999s
+Sleeping for 0.348s before next query
+Running Query 6.txt...started responding in 0.43130900000000005s...got 229 result(s) in 0.43497399999999997s
+Sleeping for 0.073s before next query
+Running Query 12c.txt...got 1 result(s) in 0.026518s
+Sleeping for 0.363s before next query
+Running Query 9.txt...started responding in 0.018917000000000003s...got 4 result(s) in 0.018986s
+Sleeping for 0.785s before next query
+Running Query 7.txt...started responding in 0.033379s...got 0 result(s) in 0.033472s
+Sleeping for 0.836s before next query
+Running Query 3a.txt...started responding in 0.009647000000000001s...got 846 result(s) in 0.018529s
+Sleeping for 0.012s before next query
+Running Query 1.txt...started responding in 0.016195s...got 1 result(s) in 0.016255s
+Sleeping for 0.763s before next query
+Running Query 8.txt...started responding in 0.066993s...got 184 result(s) in 0.067604s
+Sleeping for 0.585s before next query
+Running Query 12b.txt...got 1 result(s) in 0.021777s
+Sleeping for 0.136s before next query
+Running Query 5b.txt...started responding in 0.015851s...got 155 result(s) in 0.02716s
+Sleeping for 0.491s before next query
+Running Query 12a.txt...got 1 result(s) in 0.024221s
+Sleeping for 0.653s before next query
+Running Query 4.txt...started responding in 0.040476s...got 23226 result(s) in 0.885693s
+Sleeping for 0.364s before next query
+Running Query 3b.txt...started responding in 0.036827s...got 9 result(s) in 0.036959000000000006s
+Sleeping for 0.851s before next query
+Running Query 3c.txt...started responding in 0.037664s...got 0 result(s) in 0.037714s
+Sleeping for 0.911s before next query
+Running Query 2.txt...started responding in 0.035023000000000006s...got 147 result(s) in 0.04112s
+Sleeping for 0.277s before next query
+
+Total Response Time: 3.1363879999999997s
+Total Runtime: 4.455929s
+Minimum Query Runtime: 0.008568s (Query 10.txt)
+Maximum Query Runtime: 2.743369s (Query 5a.txt)
+
+Query Mix Run 14 of 25
+Query Order for this Run is 5, 3, 7, 6, 11, 9, 12, 10, 4, 1, 14, 2, 13, 0, 16, 8, 15
+Running Query 4.txt...started responding in 0.044531999999999995s...got 23226 result(s) in 1.229002s
+Sleeping for 0.425s before next query
+Running Query 3b.txt...started responding in 0.037471s...got 9 result(s) in 0.037558999999999995s
+Sleeping for 0.839s before next query
+Running Query 5b.txt...started responding in 0.026263s...got 155 result(s) in 0.027722s
+Sleeping for 0.263s before next query
+Running Query 5a.txt...started responding in 2.1829270000000003s...got 155 result(s) in 2.699795s
+Sleeping for 0.169s before next query
+Running Query 9.txt...started responding in 0.031797s...got 4 result(s) in 0.031905s
+Sleeping for 0.801s before next query
+Running Query 7.txt...started responding in 0.02954s...got 0 result(s) in 0.029594000000000002s
+Sleeping for 0.319s before next query
+Running Query 10.txt...started responding in 0.019784s...got 166 result(s) in 0.023161s
+Sleeping for 0.443s before next query
+Running Query 8.txt...started responding in 0.063622s...got 184 result(s) in 0.064746s
+Sleeping for 0.987s before next query
+Running Query 3c.txt...started responding in 0.037514000000000006s...got 0 result(s) in 0.037566s
+Sleeping for 0.66s before next query
+Running Query 2.txt...started responding in 0.037981s...got 147 result(s) in 0.041771s
+Sleeping for 0.377s before next query
+Running Query 12a.txt...got 1 result(s) in 0.013238s
+Sleeping for 0.916s before next query
+Running Query 3a.txt...started responding in 0.011195s...got 846 result(s) in 0.026611s
+Sleeping for 0.08s before next query
+Running Query 11.txt...started responding in 0.031056999999999998s...got 10 result(s) in 0.031153s
+Sleeping for 0.815s before next query
+Running Query 1.txt...started responding in 0.015048s...got 1 result(s) in 0.015111000000000001s
+Sleeping for 0.343s before next query
+Running Query 12c.txt...got 1 result(s) in 0.026046s
+Sleeping for 0.582s before next query
+Running Query 6.txt...started responding in 0.5165339999999999s...got 229 result(s) in 0.5216430000000001s
+Sleeping for 0.329s before next query
+Running Query 12b.txt...got 1 result(s) in 0.02987s
+Sleeping for 0.322s before next query
+
+Total Response Time: 3.154419s
+Total Runtime: 4.886493000000001s
+Minimum Query Runtime: 0.013238s (Query 12a.txt)
+Maximum Query Runtime: 2.699795s (Query 5a.txt)
+
+Query Mix Run 15 of 25
+Query Order for this Run is 14, 16, 3, 0, 1, 12, 13, 11, 7, 2, 8, 10, 5, 6, 4, 15, 9
+Running Query 12a.txt...got 1 result(s) in 0.026068s
+Sleeping for 0.905s before next query
+Running Query 12c.txt...got 1 result(s) in 0.025026s
+Sleeping for 0.454s before next query
+Running Query 3b.txt...started responding in 0.02278s...got 9 result(s) in 0.022868s
+Sleeping for 0.198s before next query
+Running Query 1.txt...started responding in 0.015622s...got 1 result(s) in 0.015689s
+Sleeping for 0.424s before next query
+Running Query 2.txt...started responding in 0.028585s...got 147 result(s) in 0.031723s
+Sleeping for 0.825s before next query
+Running Query 10.txt...started responding in 0.01514s...got 166 result(s) in 0.01717s
+Sleeping for 0.896s before next query
+Running Query 11.txt...started responding in 0.020753s...got 10 result(s) in 0.02084s
+Sleeping for 0.156s before next query
+Running Query 9.txt...started responding in 0.017436s...got 4 result(s) in 0.017525s
+Sleeping for 0.843s before next query
+Running Query 5b.txt...started responding in 0.025703s...got 155 result(s) in 0.027828s
+Sleeping for 0.537s before next query
+Running Query 3a.txt...started responding in 0.009165s...got 846 result(s) in 0.022369s
+Sleeping for 0.111s before next query
+Running Query 6.txt...started responding in 0.42679300000000003s...got 229 result(s) in 0.430056s
+Sleeping for 0.914s before next query
+Running Query 8.txt...started responding in 0.050764000000000004s...got 184 result(s) in 0.05125s
+Sleeping for 0.711s before next query
+Running Query 4.txt...started responding in 0.025058s...got 23226 result(s) in 0.978012s
+Sleeping for 0.366s before next query
+Running Query 5a.txt...started responding in 1.9303s...got 155 result(s) in 2.509884s
+Sleeping for 0.902s before next query
+Running Query 3c.txt...started responding in 0.040241s...got 0 result(s) in 0.040288s
+Sleeping for 0.826s before next query
+Running Query 12b.txt...got 1 result(s) in 0.027559s
+Sleeping for 0.358s before next query
+Running Query 7.txt...started responding in 0.031984s...got 0 result(s) in 0.032043999999999996s
+Sleeping for 0.418s before next query
+
+Total Response Time: 2.7389769999999998s
+Total Runtime: 4.296199s
+Minimum Query Runtime: 0.015689s (Query 1.txt)
+Maximum Query Runtime: 2.509884s (Query 5a.txt)
+
+Query Mix Run 16 of 25
+Query Order for this Run is 11, 16, 14, 15, 5, 6, 4, 10, 3, 7, 0, 12, 9, 2, 8, 1, 13
+Running Query 9.txt...started responding in 0.017151s...got 4 result(s) in 0.017217s
+Sleeping for 0.547s before next query
+Running Query 12c.txt...got 1 result(s) in 0.024896s
+Sleeping for 0.804s before next query
+Running Query 12a.txt...got 1 result(s) in 0.022348s
+Sleeping for 0.733s before next query
+Running Query 12b.txt...got 1 result(s) in 0.013632s
+Sleeping for 0.773s before next query
+Running Query 4.txt...started responding in 0.033701s...got 23226 result(s) in 1.055235s
+Sleeping for 0.192s before next query
+Running Query 5a.txt...started responding in 2.2511799999999997s...got 155 result(s) in 2.7181100000000002s
+Sleeping for 0.628s before next query
+Running Query 3c.txt...started responding in 0.038062s...got 0 result(s) in 0.038124000000000005s
+Sleeping for 0.972s before next query
+Running Query 8.txt...started responding in 0.058994s...got 184 result(s) in 0.059877s
+Sleeping for 0.892s before next query
+Running Query 3b.txt...started responding in 0.032277s...got 9 result(s) in 0.032360999999999994s
+Sleeping for 0.758s before next query
+Running Query 5b.txt...started responding in 0.023713s...got 155 result(s) in 0.025038s
+Sleeping for 0.809s before next query
+Running Query 1.txt...started responding in 0.015059s...got 1 result(s) in 0.015143s
+Sleeping for 0.926s before next query
+Running Query 10.txt...started responding in 0.022541000000000002s...got 166 result(s) in 0.024655999999999997s
+Sleeping for 0.084s before next query
+Running Query 7.txt...started responding in 0.031471s...got 0 result(s) in 0.031523s
+Sleeping for 0.602s before next query
+Running Query 3a.txt...started responding in 0.016911000000000002s...got 846 result(s) in 0.04018s
+Sleeping for 0.347s before next query
+Running Query 6.txt...started responding in 0.415483s...got 229 result(s) in 0.418965s
+Sleeping for 0.7s before next query
+Running Query 2.txt...started responding in 0.031164999999999998s...got 147 result(s) in 0.038066s
+Sleeping for 0.295s before next query
+Running Query 11.txt...started responding in 0.031173s...got 10 result(s) in 0.031316s
+Sleeping for 0.33s before next query
+
+Total Response Time: 3.079757s
+Total Runtime: 4.606687s
+Minimum Query Runtime: 0.013632s (Query 12b.txt)
+Maximum Query Runtime: 2.7181100000000002s (Query 5a.txt)
+
+Query Mix Run 17 of 25
+Query Order for this Run is 0, 4, 16, 5, 2, 6, 13, 10, 15, 12, 14, 1, 3, 8, 9, 7, 11
+Running Query 1.txt...started responding in 0.015497s...got 1 result(s) in 0.015555999999999999s
+Sleeping for 0.52s before next query
+Running Query 3c.txt...started responding in 0.037869s...got 0 result(s) in 0.037933s
+Sleeping for 0.473s before next query
+Running Query 12c.txt...got 1 result(s) in 0.02463s
+Sleeping for 0.554s before next query
+Running Query 4.txt...started responding in 0.053921s...got 23226 result(s) in 1.211954s
+Sleeping for 0.455s before next query
+Running Query 3a.txt...started responding in 0.012151s...got 846 result(s) in 0.028882s
+Sleeping for 0.94s before next query
+Running Query 5a.txt...started responding in 2.0017300000000002s...got 155 result(s) in 2.39208s
+Sleeping for 0.176s before next query
+Running Query 11.txt...started responding in 0.025786s...got 10 result(s) in 0.025896000000000002s
+Sleeping for 0.206s before next query
+Running Query 8.txt...started responding in 0.075393s...got 184 result(s) in 0.076304s
+Sleeping for 0.54s before next query
+Running Query 12b.txt...got 1 result(s) in 0.038049s
+Sleeping for 0.577s before next query
+Running Query 10.txt...started responding in 0.005644s...got 166 result(s) in 0.006599s
+Sleeping for 0.208s before next query
+Running Query 12a.txt...got 1 result(s) in 0.027476s
+Sleeping for 0.158s before next query
+Running Query 2.txt...started responding in 0.037993s...got 147 result(s) in 0.045378999999999996s
+Sleeping for 0.297s before next query
+Running Query 3b.txt...started responding in 0.01773s...got 9 result(s) in 0.017815s
+Sleeping for 0.245s before next query
+Running Query 6.txt...started responding in 0.503404s...got 229 result(s) in 0.509567s
+Sleeping for 0.56s before next query
+Running Query 7.txt...started responding in 0.031987s...got 0 result(s) in 0.032043999999999996s
+Sleeping for 0.198s before next query
+Running Query 5b.txt...started responding in 0.033017000000000005s...got 155 result(s) in 0.034302s
+Sleeping for 0.938s before next query
+Running Query 9.txt...started responding in 0.031226s...got 4 result(s) in 0.031329s
+Sleeping for 0.522s before next query
+
+Total Response Time: 2.973503s
+Total Runtime: 4.555795s
+Minimum Query Runtime: 0.006599s (Query 10.txt)
+Maximum Query Runtime: 2.39208s (Query 5a.txt)
+
+Query Mix Run 18 of 25
+Query Order for this Run is 5, 14, 8, 12, 15, 9, 0, 1, 2, 11, 4, 7, 6, 3, 13, 10, 16
+Running Query 4.txt...started responding in 0.047752s...got 23226 result(s) in 1.299812s
+Sleeping for 0.847s before next query
+Running Query 12a.txt...got 1 result(s) in 0.023111999999999997s
+Sleeping for 0.206s before next query
+Running Query 6.txt...started responding in 0.32990600000000003s...got 229 result(s) in 0.332564s
+Sleeping for 0.479s before next query
+Running Query 10.txt...started responding in 0.016419s...got 166 result(s) in 0.016963000000000002s
+Sleeping for 0.792s before next query
+Running Query 12b.txt...got 1 result(s) in 0.024742999999999998s
+Sleeping for 0.138s before next query
+Running Query 7.txt...started responding in 0.033049999999999996s...got 0 result(s) in 0.033095999999999993s
+Sleeping for 0.498s before next query
+Running Query 1.txt...started responding in 0.015385999999999999s...got 1 result(s) in 0.015451000000000001s
+Sleeping for 0.36s before next query
+Running Query 2.txt...started responding in 0.031082000000000002s...got 147 result(s) in 0.035201s
+Sleeping for 0.568s before next query
+Running Query 3a.txt...started responding in 0.008099s...got 846 result(s) in 0.019033s
+Sleeping for 0.547s before next query
+Running Query 9.txt...started responding in 0.031261s...got 4 result(s) in 0.031333s
+Sleeping for 0.788s before next query
+Running Query 3c.txt...started responding in 0.036509s...got 0 result(s) in 0.036571s
+Sleeping for 0.267s before next query
+Running Query 5b.txt...started responding in 0.027892s...got 155 result(s) in 0.029736000000000002s
+Sleeping for 0.446s before next query
+Running Query 5a.txt...started responding in 2.176703s...got 155 result(s) in 2.680457s
+Sleeping for 0.657s before next query
+Running Query 3b.txt...started responding in 0.035844s...got 9 result(s) in 0.035959000000000005s
+Sleeping for 0.027s before next query
+Running Query 11.txt...started responding in 0.034824s...got 10 result(s) in 0.034919s
+Sleeping for 0.088s before next query
+Running Query 8.txt...started responding in 0.06849200000000001s...got 184 result(s) in 0.069684s
+Sleeping for 0.591s before next query
+Running Query 12c.txt...got 1 result(s) in 0.02548s
+Sleeping for 0.167s before next query
+
+Total Response Time: 2.966554s
+Total Runtime: 4.744114s
+Minimum Query Runtime: 0.015451000000000001s (Query 1.txt)
+Maximum Query Runtime: 2.680457s (Query 5a.txt)
+
+Query Mix Run 19 of 25
+Query Order for this Run is 3, 4, 6, 8, 7, 16, 11, 5, 2, 9, 1, 14, 13, 10, 0, 12, 15
+Running Query 3b.txt...started responding in 0.022137s...got 9 result(s) in 0.022236000000000002s
+Sleeping for 0.261s before next query
+Running Query 3c.txt...started responding in 0.036972s...got 0 result(s) in 0.037024s
+Sleeping for 0.65s before next query
+Running Query 5a.txt...started responding in 2.17875s...got 155 result(s) in 2.621015s
+Sleeping for 0.458s before next query
+Running Query 6.txt...started responding in 0.533808s...got 229 result(s) in 0.536653s
+Sleeping for 0.802s before next query
+Running Query 5b.txt...started responding in 0.021481999999999998s...got 155 result(s) in 0.022672s
+Sleeping for 0.015s before next query
+Running Query 12c.txt...got 1 result(s) in 0.025603s
+Sleeping for 0.33s before next query
+Running Query 9.txt...started responding in 0.018979s...got 4 result(s) in 0.019039s
+Sleeping for 0.53s before next query
+Running Query 4.txt...started responding in 0.055267000000000004s...got 23226 result(s) in 0.87507s
+Sleeping for 0.726s before next query
+Running Query 3a.txt...started responding in 0.007936s...got 846 result(s) in 0.017287s
+Sleeping for 0.383s before next query
+Running Query 7.txt...started responding in 0.031904s...got 0 result(s) in 0.031952s
+Sleeping for 0.265s before next query
+Running Query 2.txt...started responding in 0.03545s...got 147 result(s) in 0.041868s
+Sleeping for 0.144s before next query
+Running Query 12a.txt...got 1 result(s) in 0.030754999999999998s
+Sleeping for 0.339s before next query
+Running Query 11.txt...started responding in 0.020521s...got 10 result(s) in 0.020646s
+Sleeping for 0.461s before next query
+Running Query 8.txt...started responding in 0.060694000000000005s...got 184 result(s) in 0.061454999999999996s
+Sleeping for 0.123s before next query
+Running Query 1.txt...started responding in 0.016609000000000002s...got 1 result(s) in 0.016684s
+Sleeping for 0.678s before next query
+Running Query 10.txt...started responding in 0.01508s...got 166 result(s) in 0.015691s
+Sleeping for 0.184s before next query
+Running Query 12b.txt...got 1 result(s) in 0.030836s
+Sleeping for 0.569s before next query
+
+Total Response Time: 3.142783s
+Total Runtime: 4.426486s
+Minimum Query Runtime: 0.015691s (Query 10.txt)
+Maximum Query Runtime: 2.621015s (Query 5a.txt)
+
+Query Mix Run 20 of 25
+Query Order for this Run is 7, 12, 15, 8, 1, 9, 2, 5, 11, 16, 14, 13, 4, 0, 6, 3, 10
+Running Query 5b.txt...started responding in 0.021745s...got 155 result(s) in 0.032343000000000004s
+Sleeping for 0.363s before next query
+Running Query 10.txt...started responding in 0.015905s...got 166 result(s) in 0.017198s
+Sleeping for 0.177s before next query
+Running Query 12b.txt...got 1 result(s) in 0.033216s
+Sleeping for 0.191s before next query
+Running Query 6.txt...started responding in 0.385609s...got 229 result(s) in 0.390398s
+Sleeping for 0.692s before next query
+Running Query 2.txt...started responding in 0.029033s...got 147 result(s) in 0.033373s
+Sleeping for 0.0040s before next query
+Running Query 7.txt...started responding in 0.02969s...got 0 result(s) in 0.029737s
+Sleeping for 0.834s before next query
+Running Query 3a.txt...started responding in 0.013678000000000001s...got 846 result(s) in 0.02639s
+Sleeping for 0.487s before next query
+Running Query 4.txt...started responding in 0.056466999999999996s...got 23226 result(s) in 1.234015s
+Sleeping for 0.734s before next query
+Running Query 9.txt...started responding in 0.031895s...got 4 result(s) in 0.031989000000000004s
+Sleeping for 0.02s before next query
+Running Query 12c.txt...got 1 result(s) in 0.024956s
+Sleeping for 0.425s before next query
+Running Query 12a.txt...got 1 result(s) in 0.02419s
+Sleeping for 0.105s before next query
+Running Query 11.txt...started responding in 0.020052s...got 10 result(s) in 0.020228000000000003s
+Sleeping for 0.26s before next query
+Running Query 3c.txt...started responding in 0.036888s...got 0 result(s) in 0.036931s
+Sleeping for 0.14s before next query
+Running Query 1.txt...started responding in 0.015035s...got 1 result(s) in 0.015092000000000001s
+Sleeping for 0.483s before next query
+Running Query 5a.txt...started responding in 2.0845160000000003s...got 155 result(s) in 2.56482s
+Sleeping for 0.219s before next query
+Running Query 3b.txt...started responding in 0.035235s...got 9 result(s) in 0.035328000000000005s
+Sleeping for 0.298s before next query
+Running Query 8.txt...started responding in 0.068759s...got 184 result(s) in 0.069412s
+Sleeping for 0.296s before next query
+
+Total Response Time: 2.926869s
+Total Runtime: 4.619616s
+Minimum Query Runtime: 0.015092000000000001s (Query 1.txt)
+Maximum Query Runtime: 2.56482s (Query 5a.txt)
+
+Query Mix Run 21 of 25
+Query Order for this Run is 12, 6, 0, 15, 4, 5, 2, 11, 8, 13, 14, 7, 16, 1, 10, 9, 3
+Running Query 10.txt...started responding in 0.015919s...got 166 result(s) in 0.016715s
+Sleeping for 0.915s before next query
+Running Query 5a.txt...started responding in 1.613403s...got 155 result(s) in 2.1888560000000004s
+Sleeping for 0.299s before next query
+Running Query 1.txt...started responding in 0.015778s...got 1 result(s) in 0.015863s
+Sleeping for 0.659s before next query
+Running Query 12b.txt...got 1 result(s) in 0.021408s
+Sleeping for 0.388s before next query
+Running Query 3c.txt...started responding in 0.035931s...got 0 result(s) in 0.035995s
+Sleeping for 0.871s before next query
+Running Query 4.txt...started responding in 0.045701s...got 23226 result(s) in 1.244028s
+Sleeping for 0.296s before next query
+Running Query 3a.txt...started responding in 0.023649999999999997s...got 846 result(s) in 0.049902s
+Sleeping for 0.401s before next query
+Running Query 9.txt...started responding in 0.036395000000000004s...got 4 result(s) in 0.036492s
+Sleeping for 0.496s before next query
+Running Query 6.txt...started responding in 0.511394s...got 229 result(s) in 0.517003s
+Sleeping for 0.174s before next query
+Running Query 11.txt...started responding in 0.021823000000000002s...got 10 result(s) in 0.021931000000000003s
+Sleeping for 0.67s before next query
+Running Query 12a.txt...got 1 result(s) in 0.028523s
+Sleeping for 0.602s before next query
+Running Query 5b.txt...started responding in 0.025639s...got 155 result(s) in 0.028005s
+Sleeping for 0.133s before next query
+Running Query 12c.txt...got 1 result(s) in 0.025922999999999998s
+Sleeping for 0.489s before next query
+Running Query 2.txt...started responding in 0.042342s...got 147 result(s) in 0.049245s
+Sleeping for 0.678s before next query
+Running Query 8.txt...started responding in 0.059389000000000004s...got 184 result(s) in 0.060521s
+Sleeping for 0.857s before next query
+Running Query 7.txt...started responding in 0.031625s...got 0 result(s) in 0.031673s
+Sleeping for 0.566s before next query
+Running Query 3b.txt...started responding in 0.034317s...got 9 result(s) in 0.034405s
+Sleeping for 0.714s before next query
+
+Total Response Time: 2.5891599999999997s
+Total Runtime: 4.406488s
+Minimum Query Runtime: 0.015863s (Query 1.txt)
+Maximum Query Runtime: 2.1888560000000004s (Query 5a.txt)
+
+Query Mix Run 22 of 25
+Query Order for this Run is 10, 14, 5, 8, 9, 7, 12, 16, 6, 0, 11, 13, 1, 3, 4, 2, 15
+Running Query 8.txt...started responding in 0.05114s...got 184 result(s) in 0.052011s
+Sleeping for 0.909s before next query
+Running Query 12a.txt...got 1 result(s) in 0.025603s
+Sleeping for 0.207s before next query
+Running Query 4.txt...started responding in 0.050927999999999994s...got 23226 result(s) in 1.195383s
+Sleeping for 0.599s before next query
+Running Query 6.txt...started responding in 0.501419s...got 229 result(s) in 0.505078s
+Sleeping for 0.683s before next query
+Running Query 7.txt...started responding in 0.032756s...got 0 result(s) in 0.032805s
+Sleeping for 0.231s before next query
+Running Query 5b.txt...started responding in 0.017012s...got 155 result(s) in 0.018003s
+Sleeping for 0.813s before next query
+Running Query 10.txt...started responding in 0.01791s...got 166 result(s) in 0.019382s
+Sleeping for 0.538s before next query
+Running Query 12c.txt...got 1 result(s) in 0.025589999999999998s
+Sleeping for 0.799s before next query
+Running Query 5a.txt...started responding in 1.956315s...got 155 result(s) in 2.4763800000000002s
+Sleeping for 0.633s before next query
+Running Query 1.txt...started responding in 0.016456s...got 1 result(s) in 0.01653s
+Sleeping for 0.812s before next query
+Running Query 9.txt...started responding in 0.03059s...got 4 result(s) in 0.030664s
+Sleeping for 0.244s before next query
+Running Query 11.txt...started responding in 0.031316s...got 10 result(s) in 0.031401s
+Sleeping for 0.621s before next query
+Running Query 2.txt...started responding in 0.035084000000000004s...got 147 result(s) in 0.040864s
+Sleeping for 0.552s before next query
+Running Query 3b.txt...started responding in 0.030328s...got 9 result(s) in 0.03043s
+Sleeping for 0.212s before next query
+Running Query 3c.txt...started responding in 0.035875s...got 0 result(s) in 0.035934s
+Sleeping for 0.535s before next query
+Running Query 3a.txt...started responding in 0.022468s...got 846 result(s) in 0.045082000000000004s
+Sleeping for 0.348s before next query
+Running Query 12b.txt...got 1 result(s) in 0.038636000000000004s
+Sleeping for 0.938s before next query
+
+Total Response Time: 2.919426s
+Total Runtime: 4.619776s
+Minimum Query Runtime: 0.01653s (Query 1.txt)
+Maximum Query Runtime: 2.4763800000000002s (Query 5a.txt)
+
+Query Mix Run 23 of 25
+Query Order for this Run is 16, 12, 11, 6, 0, 7, 9, 14, 8, 10, 13, 3, 15, 4, 1, 2, 5
+Running Query 12c.txt...got 1 result(s) in 0.025543s
+Sleeping for 0.126s before next query
+Running Query 10.txt...started responding in 0.015323999999999999s...got 166 result(s) in 0.016024s
+Sleeping for 0.74s before next query
+Running Query 9.txt...started responding in 0.017901s...got 4 result(s) in 0.017963s
+Sleeping for 0.605s before next query
+Running Query 5a.txt...started responding in 1.7631400000000002s...got 155 result(s) in 2.195328s
+Sleeping for 0.336s before next query
+Running Query 1.txt...started responding in 0.016905s...got 1 result(s) in 0.017002s
+Sleeping for 0.063s before next query
+Running Query 5b.txt...started responding in 0.032216s...got 155 result(s) in 0.042704s
+Sleeping for 0.596s before next query
+Running Query 7.txt...started responding in 0.028605000000000002s...got 0 result(s) in 0.02865s
+Sleeping for 0.802s before next query
+Running Query 12a.txt...got 1 result(s) in 0.028124s
+Sleeping for 0.924s before next query
+Running Query 6.txt...started responding in 0.466811s...got 229 result(s) in 0.47132s
+Sleeping for 0.845s before next query
+Running Query 8.txt...started responding in 0.070107s...got 184 result(s) in 0.07079600000000001s
+Sleeping for 0.976s before next query
+Running Query 11.txt...started responding in 0.020521s...got 10 result(s) in 0.020617s
+Sleeping for 0.587s before next query
+Running Query 3b.txt...started responding in 0.032454000000000004s...got 9 result(s) in 0.03254s
+Sleeping for 0.983s before next query
+Running Query 12b.txt...got 1 result(s) in 0.033656s
+Sleeping for 0.458s before next query
+Running Query 3c.txt...started responding in 0.037497s...got 0 result(s) in 0.037548000000000005s
+Sleeping for 0.328s before next query
+Running Query 2.txt...started responding in 0.036258000000000006s...got 147 result(s) in 0.043771s
+Sleeping for 0.568s before next query
+Running Query 3a.txt...started responding in 0.010377s...got 846 result(s) in 0.024832s
+Sleeping for 0.137s before next query
+Running Query 4.txt...started responding in 0.040837000000000005s...got 23226 result(s) in 1.2349780000000001s
+Sleeping for 0.447s before next query
+
+Total Response Time: 2.6762759999999997s
+Total Runtime: 4.341396s
+Minimum Query Runtime: 0.016024s (Query 10.txt)
+Maximum Query Runtime: 2.195328s (Query 5a.txt)
+
+Query Mix Run 24 of 25
+Query Order for this Run is 8, 9, 0, 11, 2, 14, 12, 1, 4, 13, 15, 3, 6, 10, 5, 7, 16
+Running Query 6.txt...started responding in 0.509228s...got 229 result(s) in 0.513062s
+Sleeping for 0.345s before next query
+Running Query 7.txt...started responding in 0.031066s...got 0 result(s) in 0.031117000000000002s
+Sleeping for 0.616s before next query
+Running Query 1.txt...started responding in 0.015192s...got 1 result(s) in 0.015259s
+Sleeping for 0.14s before next query
+Running Query 9.txt...started responding in 0.033302s...got 4 result(s) in 0.033373s
+Sleeping for 0.484s before next query
+Running Query 3a.txt...started responding in 0.00746s...got 846 result(s) in 0.016850999999999998s
+Sleeping for 0.409s before next query
+Running Query 12a.txt...got 1 result(s) in 0.021814s
+Sleeping for 0.902s before next query
+Running Query 10.txt...started responding in 0.014558s...got 166 result(s) in 0.015446s
+Sleeping for 0.33s before next query
+Running Query 2.txt...started responding in 0.032345s...got 147 result(s) in 0.038506s
+Sleeping for 0.289s before next query
+Running Query 3c.txt...started responding in 0.037894s...got 0 result(s) in 0.037957s
+Sleeping for 0.11s before next query
+Running Query 11.txt...started responding in 0.021184s...got 10 result(s) in 0.021289000000000002s
+Sleeping for 0.382s before next query
+Running Query 12b.txt...got 1 result(s) in 0.027229s
+Sleeping for 0.423s before next query
+Running Query 3b.txt...started responding in 0.033228s...got 9 result(s) in 0.033308s
+Sleeping for 0.173s before next query
+Running Query 5a.txt...started responding in 2.289901s...got 155 result(s) in 2.6808s
+Sleeping for 0.181s before next query
+Running Query 8.txt...started responding in 0.07417s...got 184 result(s) in 0.075406s
+Sleeping for 0.73s before next query
+Running Query 4.txt...started responding in 0.061596s...got 23226 result(s) in 1.187565s
+Sleeping for 0.057s before next query
+Running Query 5b.txt...started responding in 0.028938s...got 155 result(s) in 0.030481s
+Sleeping for 0.925s before next query
+Running Query 12c.txt...got 1 result(s) in 0.026251999999999998s
+Sleeping for 0.42s before next query
+
+Total Response Time: 3.265357s
+Total Runtime: 4.805715s
+Minimum Query Runtime: 0.015259s (Query 1.txt)
+Maximum Query Runtime: 2.6808s (Query 5a.txt)
+
+Query Mix Run 25 of 25
+Query Order for this Run is 15, 5, 12, 4, 10, 11, 9, 7, 0, 2, 13, 6, 3, 16, 8, 14, 1
+Running Query 12b.txt...got 1 result(s) in 0.029792000000000003s
+Sleeping for 0.461s before next query
+Running Query 4.txt...started responding in 0.057938s...got 23226 result(s) in 1.258147s
+Sleeping for 0.588s before next query
+Running Query 10.txt...started responding in 0.019575s...got 166 result(s) in 0.022724s
+Sleeping for 0.468s before next query
+Running Query 3c.txt...started responding in 0.03534s...got 0 result(s) in 0.035384s
+Sleeping for 0.755s before next query
+Running Query 8.txt...started responding in 0.068013s...got 184 result(s) in 0.069059s
+Sleeping for 0.847s before next query
+Running Query 9.txt...started responding in 0.018325s...got 4 result(s) in 0.018386s
+Sleeping for 0.939s before next query
+Running Query 7.txt...started responding in 0.029524s...got 0 result(s) in 0.029571s
+Sleeping for 0.349s before next query
+Running Query 5b.txt...started responding in 0.017459s...got 155 result(s) in 0.019232s
+Sleeping for 0.069s before next query
+Running Query 1.txt...started responding in 0.014701s...got 1 result(s) in 0.014761s
+Sleeping for 0.809s before next query
+Running Query 3a.txt...started responding in 0.017004000000000002s...got 846 result(s) in 0.029856s
+Sleeping for 0.0010s before next query
+Running Query 11.txt...started responding in 0.026723s...got 10 result(s) in 0.026803999999999998s
+Sleeping for 0.486s before next query
+Running Query 5a.txt...started responding in 1.666428s...got 155 result(s) in 2.189377s
+Sleeping for 0.675s before next query
+Running Query 3b.txt...started responding in 0.034439s...got 9 result(s) in 0.034529000000000004s
+Sleeping for 0.121s before next query
+Running Query 12c.txt...got 1 result(s) in 0.025636s
+Sleeping for 0.521s before next query
+Running Query 6.txt...started responding in 0.616896s...got 229 result(s) in 0.624173s
+Sleeping for 0.794s before next query
+Running Query 12a.txt...got 1 result(s) in 0.025888s
+Sleeping for 0.721s before next query
+Running Query 2.txt...started responding in 0.040039s...got 147 result(s) in 0.049127000000000004s
+Sleeping for 0.142s before next query
+
+Total Response Time: 2.7437199999999997s
+Total Runtime: 4.502446s
+Minimum Query Runtime: 0.014761s (Query 1.txt)
+Maximum Query Runtime: 2.189377s (Query 5a.txt)
+
+Finished Benchmarking, calculating statistics...
+
+Query Summary
+-------------
+
+Query ID 0 (1.txt)
+Total Response Time: 0.361769s
+Average Response Time (Arithmetic): 0.015729086s
+Total Runtime: 0.363365s
+Average Runtime (Arithmetic): 0.015798477999999998s
+Average Runtime (Geometric): 0.01578151655000102s
+Minimum Runtime: 0.014796s
+Maximum Runtime: 0.017962s
+Runtime Variance: 5.515358147448009E-16s
+Runtime Standard Deviation: 7.426545729643099E-4s
+Queries per Second: 63.29723660722255
+Queries per Hour: 227870.0517860012
+
+Query ID 1 (2.txt)
+Total Response Time: 0.819105s
+Average Response Time (Arithmetic): 0.035613259999999994s
+Total Runtime: 0.962347s
+Average Runtime (Arithmetic): 0.041841172999999995s
+Average Runtime (Geometric): 0.04149625648447552s
+Minimum Runtime: 0.032168999999999996s
+Maximum Runtime: 0.049618s
+Runtime Variance: 2.811416075236295E-14s
+Runtime Standard Deviation: 0.005302278826350322s
+Queries per Second: 23.899903571059063
+Queries per Hour: 86039.65285581263
+
+Query ID 2 (3a.txt)
+Total Response Time: 0.306143s
+Average Response Time (Arithmetic): 0.013310565s
+Total Runtime: 0.667747s
+Average Runtime (Arithmetic): 0.029032478s
+Average Runtime (Geometric): 0.027576731263739412s
+Minimum Runtime: 0.016850999999999998s
+Maximum Runtime: 0.049902s
+Runtime Variance: 9.144241451039696E-14s
+Runtime Standard Deviation: 0.009562552719352555s
+Queries per Second: 34.44418351061869
+Queries per Hour: 123999.0606382273
+
+Query ID 3 (3b.txt)
+Total Response Time: 0.696005s
+Average Response Time (Arithmetic): 0.030261086s
+Total Runtime: 0.698299s
+Average Runtime (Arithmetic): 0.030360826s
+Average Runtime (Geometric): 0.029592303109222843s
+Minimum Runtime: 0.017839999999999998s
+Maximum Runtime: 0.037558999999999995s
+Runtime Variance: 4.004293666540644E-14s
+Runtime Standard Deviation: 0.006327948851358268s
+Queries per Second: 32.93718029937657
+Queries per Hour: 118573.84907775566
+
+Query ID 4 (3c.txt)
+Total Response Time: 0.8488020000000001s
+Average Response Time (Arithmetic): 0.036904434s
+Total Runtime: 0.850086s
+Average Runtime (Arithmetic): 0.036960259999999995s
+Average Runtime (Geometric): 0.036908740358852644s
+Minimum Runtime: 0.029640999999999997s
+Maximum Runtime: 0.040288s
+Runtime Variance: 3.479756888468811E-15s
+Runtime Standard Deviation: 0.0018654106487497085s
+Queries per Second: 27.05608672666264
+Queries per Hour: 97401.9122159855
+
+Query ID 5 (4.txt)
+Total Response Time: 1.126869s
+Average Response Time (Arithmetic): 0.048994304s
+Total Runtime: 26.365819s
+Average Runtime (Arithmetic): 1.146339956s
+Average Runtime (Geometric): 1.139081459725076s
+Minimum Runtime: 0.87507s
+Maximum Runtime: 1.299812s
+Runtime Variance: 1.5357028260215504E-11s
+Runtime Standard Deviation: 0.12392347743755217s
+Queries per Second: 0.8723415726425224
+Queries per Hour: 3140.4296615130806
+
+Query ID 6 (5a.txt)
+Total Response Time: 45.284131s
+Average Response Time (Arithmetic): 1.9688752600000001s
+Total Runtime: 55.738337s
+Average Runtime (Arithmetic): 2.423405956s
+Average Runtime (Geometric): 2.409894614790825s
+Minimum Runtime: 1.831588s
+Maximum Runtime: 2.7181100000000002s
+Runtime Variance: 6.1500248629259E-11s
+Runtime Standard Deviation: 0.24799243663720671s
+Queries per Second: 0.4126423794264208
+Queries per Hour: 1485.512565935115
+
+Query ID 7 (5b.txt)
+Total Response Time: 0.5041019999999999s
+Average Response Time (Arithmetic): 0.021917478s
+Total Runtime: 0.600017s
+Average Runtime (Arithmetic): 0.026087695s
+Average Runtime (Geometric): 0.02569203105565717s
+Minimum Runtime: 0.01797s
+Maximum Runtime: 0.034302s
+Runtime Variance: 1.9236432385633272E-14s
+Runtime Standard Deviation: 0.00438593574800558s
+Queries per Second: 38.33224821127355
+Queries per Hour: 137996.0935605848
+
+Query ID 8 (6.txt)
+Total Response Time: 10.481242s
+Average Response Time (Arithmetic): 0.455706173s
+Total Runtime: 10.585280000000001s
+Average Runtime (Arithmetic): 0.460229565s
+Average Runtime (Geometric): 0.45303650556945685s
+Minimum Runtime: 0.28828699999999996s
+Maximum Runtime: 0.5664779999999999s
+Runtime Variance: 6.032444113724012E-12s
+Runtime Standard Deviation: 0.07766881043072571s
+Queries per Second: 2.172828683876491
+Queries per Hour: 7822.183261955368
+
+Query ID 9 (7.txt)
+Total Response Time: 0.719932s
+Average Response Time (Arithmetic): 0.031301391s
+Total Runtime: 0.721149s
+Average Runtime (Arithmetic): 0.031354304s
+Average Runtime (Geometric): 0.03129677861080203s
+Minimum Runtime: 0.028323s
+Maximum Runtime: 0.035745s
+Runtime Variance: 3.648875516068053E-15s
+Runtime Standard Deviation: 0.001910203003889391s
+Queries per Second: 31.893548011781732
+Queries per Hour: 114816.77284241424
+
+Query ID 10 (8.txt)
+Total Response Time: 1.431328s
+Average Response Time (Arithmetic): 0.062231652s
+Total Runtime: 1.4502080000000002s
+Average Runtime (Arithmetic): 0.063052521s
+Average Runtime (Geometric): 0.0624684900491045s
+Minimum Runtime: 0.049755s
+Maximum Runtime: 0.076304s
+Runtime Variance: 7.157793251039697E-14s
+Runtime Standard Deviation: 0.008460374253565677s
+Queries per Second: 15.859794091341724
+Queries per Hour: 57095.25872883021
+
+Query ID 11 (9.txt)
+Total Response Time: 0.624094s
+Average Response Time (Arithmetic): 0.027134520999999998s
+Total Runtime: 0.625884s
+Average Runtime (Arithmetic): 0.027212347s
+Average Runtime (Geometric): 0.026530507283995888s
+Minimum Runtime: 0.017525s
+Maximum Runtime: 0.036191s
+Runtime Variance: 3.3670423705103974E-14s
+Runtime Standard Deviation: 0.0058026221404727s
+Queries per Second: 36.74802471098873
+Queries per Hour: 132292.8889595594
+
+Query ID 12 (10.txt)
+Total Response Time: 0.35323000000000004s
+Average Response Time (Arithmetic): 0.015357826s
+Total Runtime: 0.381453s
+Average Runtime (Arithmetic): 0.016584913s
+Average Runtime (Geometric): 0.015746952728506854s
+Minimum Runtime: 0.005148s
+Maximum Runtime: 0.023161s
+Runtime Variance: 1.8930471470699435E-14s
+Runtime Standard Deviation: 0.004350916164522069s
+Queries per Second: 60.295763987426405
+Queries per Hour: 217064.75035473506
+
+Query ID 13 (11.txt)
+Total Response Time: 0.573948s
+Average Response Time (Arithmetic): 0.024954260000000002s
+Total Runtime: 0.576518s
+Average Runtime (Arithmetic): 0.025065999999999998s
+Average Runtime (Geometric): 0.024243363102666313s
+Minimum Runtime: 0.013009999999999999s
+Maximum Runtime: 0.037582s
+Runtime Variance: 4.143292878260868E-14s
+Runtime Standard Deviation: 0.006436841522253651s
+Queries per Second: 39.89467804994814
+Queries per Hour: 143620.8409798133
+
+Query ID 14 (12a.txt)
+Total Response Time: 0.5600879999999999s
+Average Response Time (Arithmetic): 0.024351652s
+Total Runtime: 0.5600879999999999s
+Average Runtime (Arithmetic): 0.024351652s
+Average Runtime (Geometric): 0.024024951657352325s
+Minimum Runtime: 0.015672000000000002s
+Maximum Runtime: 0.029512s
+Runtime Variance: 1.3911277009451798E-14s
+Runtime Standard Deviation: 0.0037297824346001467s
+Queries per Second: 41.06497579712456
+Queries per Hour: 147833.91286964843
+
+Query ID 15 (12b.txt)
+Total Response Time: 0.64804s
+Average Response Time (Arithmetic): 0.028175652s
+Total Runtime: 0.64804s
+Average Runtime (Arithmetic): 0.028175652s
+Average Runtime (Geometric): 0.027612799558989112s
+Minimum Runtime: 0.01597s
+Maximum Runtime: 0.038049s
+Runtime Variance: 2.925618892249527E-14s
+Runtime Standard Deviation: 0.005408899049020537s
+Queries per Second: 35.49163653781641
+Queries per Hour: 127769.89153613908
+
+Query ID 16 (12c.txt)
+Total Response Time: 0.586866s
+Average Response Time (Arithmetic): 0.025515913s
+Total Runtime: 0.586866s
+Average Runtime (Arithmetic): 0.025515913s
+Average Runtime (Geometric): 0.025511487785353393s
+Minimum Runtime: 0.024651s
+Maximum Runtime: 0.026518s
+Runtime Variance: 2.261932098298676E-16s
+Runtime Standard Deviation: 4.755977395129919E-4s
+Queries per Second: 39.191229410446724
+Queries per Hour: 141088.4258776082
+
+Query Mix Summary
+-----------------
+
+Ran Query Mix containing 17 queries a total of 25 times
+Total Response Time: 66.189767s
+Average Response Time (Arithmetic): 2.877815956s
+Total Runtime: 102.688705s
+Average Runtime (Arithmetic): 4.464726304s
+Average Runtime (Geometric): 4.454154335397687E9s
+Minimum Mix Runtime: 3.514258s
+Maximum Mix Runtime: 4.8453800000000005s
+Mix Runtime Variance: 8.812270664534216E7s
+Mix Runtime Standard Deviation: 0.29685468944475535s
+Query Mixes per Hour: 806.3204225474511
+
+Results for this run output to bigdata_worm_10k.csv
