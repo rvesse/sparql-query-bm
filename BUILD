@@ -1,16 +1,10 @@
-Introduction
-============
-
-SPARQL Query Benchmarker is a combination of an API and a Command Line interface that can be used
-to benchmark any set of queries against any HTTP based SPARQL endpoint.
-
-See the API document under the core directory for general API documentation
-See the README document under the cmd directory for CLI documentation
-
 Build
 =====
 
-See the BUILD document in this directory
+SPARQL Query Benchmarker uses a mutli-module maven build.
+
+Running mvn package in this directory will build all components and generate
+distribution files which can be used to deploy the tool as desired.
 
 License
 =======
