@@ -1,0 +1,396 @@
+<?xml version="1.0"?>
+<sparqlBenchmark>
+ <configuration>
+  <property name="endpoint" value="http://localhost:8080/openrdf-sesame/repositories/50k-owlim" />
+  <property name="sanityChecking" value="2" />
+  <property name="warmups" value="5" />
+  <property name="runs" value="25" />
+  <property name="randomOrder" value="true" />
+  <property name="outliers" value="1" />
+  <property name="timeout" value="300" />
+  <property name="maxDelay" value="1000" />
+  <property name="askFormat" value="application/sparql-results+xml" />
+  <property name="graphFormat" value="application/rdf+xml" />
+  <property name="selectFormat" value="application/sparql-results+xml" />
+  <property name="threads" value="1" />
+  <property name="counting" value="true" />
+  <property name="limit" value="0" />
+  <property name="gzip" value="false" />
+  <property name="deflate" value="false" />
+  <queries>
+   <query id="0" name="1.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?yr
+WHERE
+  { ?journal rdf:type bench:Journal .
+    ?journal dc:title "Journal 1 (1940)"^^xsd:string .
+    ?journal dcterms:issued ?yr
+  }
+]]>
+   </query>
+   <query id="1" name="2.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?inproc ?author ?booktitle ?title ?proc ?ee ?page ?url ?yr ?abstract
+WHERE
+  { ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?author .
+    ?inproc bench:booktitle ?booktitle .
+    ?inproc dc:title ?title .
+    ?inproc dcterms:partOf ?proc .
+    ?inproc rdfs:seeAlso ?ee .
+    ?inproc swrc:pages ?page .
+    ?inproc foaf:homepage ?url .
+    ?inproc dcterms:issued ?yr
+    OPTIONAL
+      { ?inproc bench:abstract ?abstract }
+  }
+ORDER BY ?yr
+]]>
+   </query>
+   <query id="2" name="3a.txt">
+     <![CDATA[
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:pages )
+  }
+]]>
+   </query>
+   <query id="3" name="3b.txt">
+     <![CDATA[
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:month )
+  }
+]]>
+   </query>
+   <query id="4" name="3c.txt">
+     <![CDATA[
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+
+SELECT  ?article
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article ?property ?value
+    FILTER ( ?property = swrc:isbn )
+  }
+]]>
+   </query>
+   <query id="5" name="4.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  swrc: <http://swrc.ontoware.org/ontology#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT  ?name1 ?name2
+WHERE
+  { ?article1 rdf:type bench:Article .
+    ?article2 rdf:type bench:Article .
+    ?article1 dc:creator ?author1 .
+    ?author1 foaf:name ?name1 .
+    ?article2 dc:creator ?author2 .
+    ?author2 foaf:name ?name2 .
+    ?article1 swrc:journal ?journal .
+    ?article2 swrc:journal ?journal
+    FILTER ( ?name1 < ?name2 )
+  }
+]]>
+   </query>
+   <query id="6" name="5a.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?person ?name
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person2 .
+    ?person foaf:name ?name .
+    ?person2 foaf:name ?name2
+    FILTER ( ?name = ?name2 )
+  }
+]]>
+   </query>
+   <query id="7" name="5b.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?person ?name
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person .
+    ?person foaf:name ?name
+  }
+]]>
+   </query>
+   <query id="8" name="6.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT  ?yr ?name ?document
+WHERE
+  { ?class rdfs:subClassOf foaf:Document .
+    ?document rdf:type ?class .
+    ?document dcterms:issued ?yr .
+    ?document dc:creator ?author .
+    ?author foaf:name ?name
+    OPTIONAL
+      { ?class2 rdfs:subClassOf foaf:Document .
+        ?document2 rdf:type ?class2 .
+        ?document2 dcterms:issued ?yr2 .
+        ?document2 dc:creator ?author2
+        FILTER ( ( ?author = ?author2 ) && ( ?yr2 < ?yr ) )
+      }
+    FILTER ( ! bound(?author2) )
+  }
+]]>
+   </query>
+   <query id="9" name="7.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT  ?title
+WHERE
+  { ?class rdfs:subClassOf foaf:Document .
+    ?doc rdf:type ?class .
+    ?doc dc:title ?title .
+    ?bag2 ?member2 ?doc .
+    ?doc2 dcterms:references ?bag2
+    OPTIONAL
+      { ?class3 rdfs:subClassOf foaf:Document .
+        ?doc3 rdf:type ?class3 .
+        ?doc3 dcterms:references ?bag3 .
+        ?bag3 ?member3 ?doc
+        OPTIONAL
+          { ?class4 rdfs:subClassOf foaf:Document .
+            ?doc4 rdf:type ?class4 .
+            ?doc4 dcterms:references ?bag4 .
+            ?bag4 ?member4 ?doc3
+          }
+        FILTER ( ! bound(?doc4) )
+      }
+    FILTER ( ! bound(?doc3) )
+  }
+]]>
+   </query>
+   <query id="10" name="8.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?name
+WHERE
+  { ?erdoes rdf:type foaf:Person .
+    ?erdoes foaf:name "Paul Erdoes"^^xsd:string
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?document2 dc:creator ?author .
+        ?document2 dc:creator ?author2 .
+        ?author2 foaf:name ?name
+        FILTER ( ( ( ( ?author != ?erdoes ) && ( ?document2 != ?document ) ) && ( ?author2 != ?erdoes ) ) && ( ?author2 != ?author ) )
+      }
+    UNION
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?author foaf:name ?name
+        FILTER ( ?author != ?erdoes )
+      }
+  }
+]]>
+   </query>
+   <query id="11" name="9.txt">
+     <![CDATA[
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT  ?predicate
+WHERE
+  {   { ?person rdf:type foaf:Person .
+        ?subject ?predicate ?person
+      }
+    UNION
+      { ?person rdf:type foaf:Person .
+        ?person ?predicate ?object
+      }
+  }
+]]>
+   </query>
+   <query id="12" name="10.txt">
+     <![CDATA[
+PREFIX  person: <http://localhost/persons/>
+
+SELECT  ?subject ?predicate
+WHERE
+  { ?subject ?predicate person:Paul_Erdoes }
+]]>
+   </query>
+   <query id="13" name="11.txt">
+     <![CDATA[
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT  ?ee
+WHERE
+  { ?publication rdfs:seeAlso ?ee }
+ORDER BY ?ee
+OFFSET  50
+LIMIT   10
+]]>
+   </query>
+   <query id="14" name="12a.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  bench: <http://localhost/vocabulary/bench/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { ?article rdf:type bench:Article .
+    ?article dc:creator ?person1 .
+    ?inproc rdf:type bench:Inproceedings .
+    ?inproc dc:creator ?person2 .
+    ?person1 foaf:name ?name1 .
+    ?person2 foaf:name ?name2
+    FILTER ( ?name1 = ?name2 )
+  }
+]]>
+   </query>
+   <query id="15" name="12b.txt">
+     <![CDATA[
+PREFIX  dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { ?erdoes rdf:type foaf:Person .
+    ?erdoes foaf:name "Paul Erdoes"^^xsd:string
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?document2 dc:creator ?author .
+        ?document2 dc:creator ?author2 .
+        ?author2 foaf:name ?name
+        FILTER ( ( ( ( ?author != ?erdoes ) && ( ?document2 != ?document ) ) && ( ?author2 != ?erdoes ) ) && ( ?author2 != ?author ) )
+      }
+    UNION
+      { ?document dc:creator ?erdoes .
+        ?document dc:creator ?author .
+        ?author foaf:name ?name
+        FILTER ( ?author != ?erdoes )
+      }
+  }
+]]>
+   </query>
+   <query id="16" name="12c.txt">
+     <![CDATA[
+PREFIX  person: <http://localhost/persons/>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK
+WHERE
+  { person:John_Q_Public rdf:type foaf:Person }
+]]>
+   </query>
+  </queries>
+ </configuration>
+ <queryMixRuns>
+  <queryMixRun totalResponseTime="37749634000" totalRuntime="434380270000" minQueryRuntime="3606000" maxQueryRuntime="287671544000" />
+  <queryMixRun totalResponseTime="37928721000" totalRuntime="426351427000" minQueryRuntime="5177000" maxQueryRuntime="279230246000" />
+  <queryMixRun totalResponseTime="37755197000" totalRuntime="431249082000" minQueryRuntime="5258000" maxQueryRuntime="285430701000" />
+  <queryMixRun totalResponseTime="351387518000" totalRuntime="463938714000" minQueryRuntime="3803000" maxQueryRuntime="300000767000" />
+  <queryMixRun totalResponseTime="354030816000" totalRuntime="485771907000" minQueryRuntime="4222000" maxQueryRuntime="300000801000" />
+  <queryMixRun totalResponseTime="345476083000" totalRuntime="463775771000" minQueryRuntime="4907000" maxQueryRuntime="300001556000" />
+  <queryMixRun totalResponseTime="348368661000" totalRuntime="469775134000" minQueryRuntime="2738000" maxQueryRuntime="300000796000" />
+  <queryMixRun totalResponseTime="344038072000" totalRuntime="487910384000" minQueryRuntime="2823000" maxQueryRuntime="300001763000" />
+  <queryMixRun totalResponseTime="347381391000" totalRuntime="471300726000" minQueryRuntime="3834000" maxQueryRuntime="300000509000" />
+  <queryMixRun totalResponseTime="342599991000" totalRuntime="464307861000" minQueryRuntime="3037000" maxQueryRuntime="300001209000" />
+  <queryMixRun totalResponseTime="344179131000" totalRuntime="476939330000" minQueryRuntime="3020000" maxQueryRuntime="300000842000" />
+  <queryMixRun totalResponseTime="342629277000" totalRuntime="460336209000" minQueryRuntime="3039000" maxQueryRuntime="300001568000" />
+  <queryMixRun totalResponseTime="40067337000" totalRuntime="434774844000" minQueryRuntime="3551000" maxQueryRuntime="282850782000" />
+  <queryMixRun totalResponseTime="39057987000" totalRuntime="430601158000" minQueryRuntime="2768000" maxQueryRuntime="281288007000" />
+  <queryMixRun totalResponseTime="38732306000" totalRuntime="436533301000" minQueryRuntime="4862000" maxQueryRuntime="286738413000" />
+  <queryMixRun totalResponseTime="38340072000" totalRuntime="432387366000" minQueryRuntime="3504000" maxQueryRuntime="282934473000" />
+  <queryMixRun totalResponseTime="40447685000" totalRuntime="432485105000" minQueryRuntime="3513000" maxQueryRuntime="281637120000" />
+  <queryMixRun totalResponseTime="39858325000" totalRuntime="435800318000" minQueryRuntime="4736000" maxQueryRuntime="283388589000" />
+  <queryMixRun totalResponseTime="39797620000" totalRuntime="436173345000" minQueryRuntime="3400000" maxQueryRuntime="284859033000" />
+  <queryMixRun totalResponseTime="39632788000" totalRuntime="439504154000" minQueryRuntime="3524000" maxQueryRuntime="284206171000" />
+  <queryMixRun totalResponseTime="342746890000" totalRuntime="473633095000" minQueryRuntime="3316000" maxQueryRuntime="300000712000" />
+  <queryMixRun totalResponseTime="343644872000" totalRuntime="469016696000" minQueryRuntime="5342000" maxQueryRuntime="300000215000" />
+  <queryMixRun totalResponseTime="43196531000" totalRuntime="467221599000" minQueryRuntime="3447000" maxQueryRuntime="297018025000" />
+  <queryMixRun totalResponseTime="353808073000" totalRuntime="484203778000" minQueryRuntime="3744000" maxQueryRuntime="300001525000" />
+  <queryMixRun totalResponseTime="347172577000" totalRuntime="477984407000" minQueryRuntime="2260000" maxQueryRuntime="300000950000" />
+ </queryMixRuns>
+ <statistics>
+  <queries>
+   <query id="0" name="1.txt" totalResponseTime="110356000" averageResponseTime="4798086" totalRuntime="112027000" averageRuntime="4870739" averageRuntimeGeometric="4740508.981714843" minQueryRuntime="3488000" maxQueryRuntime="6811000" variance="1.2991943667296783E-6" standardDeviation="1139822.0767864073" queriesPerSecond="205.30765454687673" queriesPerHour="739107.5563687562" />
+   <query id="1" name="2.txt" totalResponseTime="691896000" averageResponseTime="30082434" totalRuntime="1943781000" averageRuntime="84512217" averageRuntimeGeometric="8.229464059716964E7" minQueryRuntime="71288000" maxQueryRuntime="162079000" variance="5.361596242570888E-4" standardDeviation="2.3155120907848634E7" queriesPerSecond="11.83260876945164" queriesPerHour="42597.3915700259" />
+   <query id="2" name="3a.txt" totalResponseTime="143589000" averageResponseTime="6243000" totalRuntime="1282738000" averageRuntime="55771217" averageRuntimeGeometric="5.449299236983479E7" minQueryRuntime="45189000" maxQueryRuntime="84872000" variance="1.6850891217013236E-4" standardDeviation="1.2981098265175113E7" queriesPerSecond="17.9303958886176" queriesPerHour="64549.42519902336" />
+   <query id="3" name="3b.txt" totalResponseTime="246611000" averageResponseTime="10722217" totalRuntime="249113000" averageRuntime="10831000" averageRuntimeGeometric="1.0682328428103214E7" minQueryRuntime="8195000" maxQueryRuntime="14759000" variance="3.284209565217392E-6" standardDeviation="1812238.8267602564" queriesPerSecond="92.32757824762257" queriesPerHour="332379.2816914412" />
+   <query id="4" name="3c.txt" totalResponseTime="217734000" averageResponseTime="9466695" totalRuntime="218795000" averageRuntime="9512826" averageRuntimeGeometric="9296822.69179675" minQueryRuntime="7371000" maxQueryRuntime="13264000" variance="4.2935651001890365E-6" standardDeviation="2072091.962290534" queriesPerSecond="105.1212331645717" queriesPerHour="378436.4393924581" />
+   <query id="5" name="4.txt" totalResponseTime="3601401032000" averageResponseTime="156582653565" totalRuntime="6738034308000" averageRuntime="292958013391" averageRuntimeGeometric="2.928508170739765E11" minQueryRuntime="281288007000" maxQueryRuntime="300001568000" variance="62.423989977810734" standardDeviation="7.900885392018458E9" queriesPerSecond="0.003413458428479093" queriesPerHour="12.288450342524735" />
+   <query id="6" name="5a.txt" totalResponseTime="320275658000" averageResponseTime="13925028608" totalRuntime="2019451134000" averageRuntime="87802223217" averageRuntimeGeometric="8.762288952430376E10" minQueryRuntime="80200899000" maxQueryRuntime="102105724000" variance="32.31612028929432" standardDeviation="5.684726931814258E9" queriesPerSecond="0.011389233249009383" queriesPerHour="41.00123969643378" />
+   <query id="7" name="5b.txt" totalResponseTime="36037851000" averageResponseTime="1566863086" totalRuntime="242540141000" averageRuntime="10545223521" averageRuntimeGeometric="1.0476856777614256E10" minQueryRuntime="9390386000" maxQueryRuntime="14747794000" variance="1.6371627612343367" standardDeviation="1.2795166123323045E9" queriesPerSecond="0.09482966368693627" queriesPerHour="341.3867892729706" />
+   <query id="8" name="6.txt" totalResponseTime="17910559000" averageResponseTime="778719956" totalRuntime="851709570000" averageRuntime="37030850869" averageRuntimeGeometric="3.686776459021166E10" minQueryRuntime="33201986000" maxQueryRuntime="46302216000" variance="12.668051508605334" standardDeviation="3.5592206321897683E9" queriesPerSecond="0.027004510469867165" queriesPerHour="97.21623769152178" />
+   <query id="9" name="7.txt" totalResponseTime="504900586000" averageResponseTime="21952199391" totalRuntime="504902292000" averageRuntime="21952273565" averageRuntimeGeometric="2.1817109940160343E10" minQueryRuntime="19299847000" maxQueryRuntime="28890942000" variance="6.562757322672856" standardDeviation="2.5617879152406144E9" queriesPerSecond="0.04555336817569402" queriesPerHour="163.99212543249845" />
+   <query id="10" name="8.txt" totalResponseTime="556296000" averageResponseTime="24186782" totalRuntime="635020000" averageRuntime="27609565" averageRuntimeGeometric="2.7318711785433788E7" minQueryRuntime="22629000" maxQueryRuntime="40474000" variance="1.828714676748582E-5" standardDeviation="4276347.362818627" queriesPerSecond="36.21933195977554" queriesPerHour="130389.59505519192" />
+   <query id="11" name="9.txt" totalResponseTime="2650443000" averageResponseTime="115236652" totalRuntime="2652046000" averageRuntime="115306347" averageRuntimeGeometric="1.1427373561519174E8" minQueryRuntime="104920000" maxQueryRuntime="162394000" variance="2.782911843137996E-4" standardDeviation="1.6682061752487298E7" queriesPerSecond="8.672549482466911" queriesPerHour="31221.178136880877" />
+   <query id="12" name="10.txt" totalResponseTime="113257000" averageResponseTime="4924217" totalRuntime="190451000" averageRuntime="8280478" averageRuntimeGeometric="8080467.580993872" minQueryRuntime="5339000" maxQueryRuntime="12063000" variance="3.2977428582230628E-6" standardDeviation="1815968.8483625106" queriesPerSecond="120.76597510433575" queriesPerHour="434757.5103756087" />
+   <query id="13" name="11.txt" totalResponseTime="1314223000" averageResponseTime="57140130" totalRuntime="1316510000" averageRuntime="57239565" averageRuntimeGeometric="5.597695970944843E7" minQueryRuntime="46705000" maxQueryRuntime="93387000" variance="1.6626225755009453E-4" standardDeviation="1.2894272276871404E7" queriesPerSecond="17.47043325713604" queriesPerHour="62893.55972568974" />
+   <query id="14" name="12a.txt" totalResponseTime="91698136000" averageResponseTime="3986875478" totalRuntime="91698136000" averageRuntime="3986875478" averageRuntimeGeometric="3.8912901238756795E9" minQueryRuntime="3320880000" maxQueryRuntime="6728825000" variance="0.9810150993263361" standardDeviation="9.904620635472802E8" queriesPerSecond="0.2508229829394235" queriesPerHour="902.9627385819247" />
+   <query id="15" name="12b.txt" totalResponseTime="335590000" averageResponseTime="14590869" totalRuntime="335590000" averageRuntime="14590869" averageRuntimeGeometric="1.4464314566841051E7" minQueryRuntime="11887000" maxQueryRuntime="17520000" variance="3.677568722117201E-6" standardDeviation="1917698.8090201241" queriesPerSecond="68.53601385907858" queriesPerHour="246729.64989268288" />
+   <query id="16" name="12c.txt" totalResponseTime="91171000" averageResponseTime="3963956" totalRuntime="91171000" averageRuntime="3963956" averageRuntimeGeometric="3868735.8501633904" minQueryRuntime="2738000" maxQueryRuntime="5336000" variance="7.50659693761815E-7" standardDeviation="866406.1944387371" queriesPerSecond="252.2732341125885" queriesPerHour="908183.6428053187" />
+  </queries>
+  <summary totalResponseTime="4598060762000" averageResponseTime="199915685304" totalRuntime="10472094170000" averageRuntime="455308442173" averageRuntimeGeometric="4.5489868732580554E11" minMixRuntime="430601158000" maxMixRuntime="485771907000" variance="3.7271192549254175E20" standardDeviation="1.9305748508994457E10" queryMixesPerHour="7.9067279816264335" />
+ </statistics>
+</sparqlBenchmark>

@@ -44,7 +44,16 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-Acnknowledgements
+Acknowledgements
 =================
 
-SPARQL Query Benchmarker uses the the Apache Jena ARQ query engine for issuing queries and parsing the results
+SPARQL Query Benchmarker uses the the Apache Jena ARQ query engine for issuing queries 
+and parsing the results - http://jena.apache.org
+
+Uses SP2B queries under the BSD license from http://dbis.informatik.uni-freiburg.de/forschung/projekte/SP2B/
+
+Uses LUBM query from academic paper:
+
+GUO, Y., PAN, Z., HEFLIN, J.. LUBM: A Benchmark for OWL Knowledge Base Systems. Web Semantics: Science, Services
+and Agents on the World Wide Web, North America, 3, mar. 2011. 
+Available at: <http://www.websemanticsjournal.org/index.php/ps/article/view/70/68>. Date accessed: 01 Jun. 2012.
