@@ -1,0 +1,15 @@
+This directory contains reference queries pertaining to the widely known and
+openly published LUBM and SP2B benchmarks
+
+LUBM Queries from:
+
+GUO, Y., PAN, Z., HEFLIN, J.. LUBM: A Benchmark for OWL Knowledge Base Systems. Web Semantics: Science, Services
+and Agents on the World Wide Web, North America, 3, mar. 2011. 
+Available at: <http://www.websemanticsjournal.org/index.php/ps/article/view/70/68>. Date accessed: 01 Jun. 2012.
+
+SP2B Queries from:
+
+http://dbis.informatik.uni-freiburg.de/forschung/projekte/SP2B/
+
+Neither Cray Inc nor YarcData Inc make any claim of ownership or authorship of these
+queries, they are provided AS IS and should be used at the users own risk.
