@@ -10,6 +10,5 @@
   <modules>
   	<module>core</module>
   	<module>cmd</module>
-    <module>distribution</module>
   </modules>  
 </project>

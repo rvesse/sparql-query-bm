@@ -3,8 +3,17 @@ Build
 
 SPARQL Query Benchmarker uses a mutli-module maven build.
 
-Running mvn package in this directory will build all components and generate
-distribution files which can be used to deploy the tool as desired.
+Running mvn package in this directory will build all components.  You will
+find the API under core/target and the CLI under cmd/target
+
+The CLI builds as a shaded runnable JAR incorporating all dependencies so can
+be run directly per the instructions under cmd/README
+
+Scripts
+-------
+
+makeSrcDistro will generate a tar ball of this folder and all subfolders that
+excludes any built artifacts (the target directories) 
 
 License
 =======

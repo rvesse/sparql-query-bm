@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# This is the easy way of making the distribution since learning Maven Assembly seems like way too much effort
+# Basically just make a tarball with gzip compression
+# We exclude a bunch of stuff the distribution doesn't need:
+#  - Built artifacts in target/ directories
+#  - Existing tarballs or gzipped files
+#  - SVN stuff
+#  - Eclipse stuff (.classpath, .project)
+#  - Mac OS X stuff (.DS_Store)
+#  - Default results files (results.csv and results.xml)
+
+tar -cvzf sparql-query-bm.tar.gz --exclude "target/" --exclude "*.tar" --exclude "*.gz" --exclude ".svn/" --exclude ".settings/" --exclude ".classpath" --exclude ".DS_Store" --exclude ".project" --exclude "results.xml" --exclude "results.csv" . 
