@@ -52,7 +52,7 @@ and parsing the results - http://jena.apache.org
 
 Uses SP2B queries under the BSD license from http://dbis.informatik.uni-freiburg.de/forschung/projekte/SP2B/
 
-Uses LUBM query from academic paper:
+Uses LUBM queries from academic paper:
 
 GUO, Y., PAN, Z., HEFLIN, J.. LUBM: A Benchmark for OWL Knowledge Base Systems. Web Semantics: Science, Services
 and Agents on the World Wide Web, North America, 3, mar. 2011. 

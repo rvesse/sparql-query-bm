@@ -6,7 +6,7 @@ please see the README file within the cmd project
 
 The API for the benchmarker is designed to be relatively simple with one main extension point.  Generally running
 the benchmarker from code just means creating a instance of the Benchmarker class, using the setters to
-configure it appropriately and then calling runBenchmark() to actual run the benchmark.
+configure it appropriately and then calling runBenchmark() to actually run the benchmark.
 
 API Conventions
 ===============
@@ -28,7 +28,7 @@ To run a benchmark you need to do the following as a minimum:
 2 - Use the setter methods to set at least the following:
  - Query Mix - setQueryMix()
  - Endpoint - setEndpoint()
- - (Outliers * 2) must be less than number of Runs - setOutliers() and setRuns()
+ - Note that (Outliers * 2) must be less than number of Runs - setOutliers() and setRuns()
 3 - Call runBenchmark()
 
 e.g.
@@ -72,7 +72,7 @@ CsvProgressListener
 
 FileProgressListener
   Prints informational messages to a file, may overwrite/append the file if it already exists depending
-  on cosntructor arguments.  Closes the file at end of benchmarking.
+  on constructor arguments.  Closes the file at end of benchmarking.
   
 StreamProgressListener
   Prints informational messages to an arbitrary OutputStream/PrintStream closing the stream at the
@@ -106,7 +106,7 @@ handleProgress(BenchmarkQuery query, QueryRun run)
 --------------------------------------------------
 
 This is called when a single run of a query is completed, it receives a reference both to the query that
-was run and to the stats for that run.  Listeners concerned with stats will typically want to take
+was run and to the stats for that single run.  Listeners concerned with stats will typically want to take
 some actions in this method.
 
 handleProgress(QueryMixRun run)
@@ -164,7 +164,7 @@ and parsing the results - http://jena.apache.org
 
 Uses SP2B queries under the BSD license from http://dbis.informatik.uni-freiburg.de/forschung/projekte/SP2B/
 
-Uses LUBM query from academic paper:
+Uses LUBM queries from academic paper:
 
 GUO, Y., PAN, Z., HEFLIN, J.. LUBM: A Benchmark for OWL Knowledge Base Systems. Web Semantics: Science, Services
 and Agents on the World Wide Web, North America, 3, mar. 2011. 

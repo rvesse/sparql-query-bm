@@ -39,7 +39,7 @@ Supported Options are as follows:
 --noxml              Disables XML output, supercedes any preceding -x/--xml option but may be superceded by a subsequent -x/--xml option
 -o N
 --outliers N         Sets number of outliers to ignore i.e. discards the N best and N worst results when calculating overall averages (default N=1)
---overwrite          Allows overwriting of existing results files of the same names, if not set and files existing benchmarking will abort immediately
+--overwrite          Allows overwriting of existing results files of the same names, if not set and files exist benchmarking will abort immediately
 -p N
 --parallel N         Sets the number of parallel threads to use for benchmarking (default N=1 i.e. single threaded evaluation)
 --password PWD       Sets the password used for basic authentication
@@ -251,7 +251,7 @@ and parsing the results - http://jena.apache.org
 
 Uses SP2B queries under the BSD license from http://dbis.informatik.uni-freiburg.de/forschung/projekte/SP2B/
 
-Uses LUBM query from academic paper:
+Uses LUBM queries from academic paper:
 
 GUO, Y., PAN, Z., HEFLIN, J.. LUBM: A Benchmark for OWL Knowledge Base Systems. Web Semantics: Science, Services
 and Agents on the World Wide Web, North America, 3, mar. 2011. 
