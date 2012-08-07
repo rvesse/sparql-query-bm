@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sf.sparql.query.benchmarking</groupId>
   <artifactId>parent</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <name>SPARQL Query Benchmarker</name>
   <description>Parent project for the Benchmarker Core (API) and the CLI</description>
   <packaging>pom</packaging>

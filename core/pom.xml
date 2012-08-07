@@ -1,9 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.sparql.query.benchmarking</groupId>
 	<artifactId>core</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>SPARQL Query Benchmarking Core</name>
 	<description>An API for benchmarking the performance of queries against arbitrary SPARQL endpoint</description>
 	
@@ -20,8 +19,8 @@
 		<junit.version>4.8.1</junit.version>
 		<commons-lang.version>2.4</commons-lang.version>
 		<commons-math.version>2.2</commons-math.version>
-		<arq.version>2.9.3-SNAPSHOT</arq.version>
-		<jena.version>2.7.3-SNAPSHOT</jena.version>
+		<arq.version>2.9.3</arq.version>
+		<jena.version>2.7.3</jena.version>
 	</properties>
 
 	<dependencies>
