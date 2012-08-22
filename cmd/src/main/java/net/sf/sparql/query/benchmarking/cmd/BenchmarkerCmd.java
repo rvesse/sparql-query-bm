@@ -31,6 +31,13 @@
 
 package net.sf.sparql.query.benchmarking.cmd;
 
+import java.security.GeneralSecurityException;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.HaltBehaviour;
 import net.sf.sparql.query.benchmarking.monitoring.ConsoleProgressListener;
@@ -319,6 +326,11 @@ public class BenchmarkerCmd {
 						i++;
 						b.setPassword(argv[i]);
 					}
+					else if (arg.equals("--insecure"))
+					{
+						System.out.println("WARNING: You have selected insecure mode, SSL certifications will not be validated");
+						configureForInsecureMode();
+					}
 					else
 					{
 						System.err.println("Illegal Option " + arg);
@@ -379,6 +391,7 @@ public class BenchmarkerCmd {
 		System.out.println(" --halt-on-timeout    Halts and aborts benchmarking if any query times out");
 		System.out.println(" --halt-on-error      Halts and aborts benchmarking if any query errors");
 		System.out.println(" --halt-any           Halts and aborts benchmarking if any issue is encountered");
+		System.out.println(" --insecure           Enables insecure mode, allows benchmarking of servers using invalid/self-signed SSL certifications");
 		System.out.println(" -l N                 Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query");
 		System.out.println(" --limit N            Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query");
 		System.out.println(" --nocsv              Disables CSV output, supercedes any preceding -c/--csv option but may be superceded by a subsequent -c/--csv option");
@@ -408,5 +421,40 @@ public class BenchmarkerCmd {
 		System.out.println(" -x filename.xml");
 		System.out.println(" --xml filename.xml   Request XML output and sets filename to which the XML results will be output");
 		System.out.println();
+	}
+	
+	/**
+	 * Code for configuring insecure mode taken from http://stackoverflow.com/questions/2893819/telling-java-to-accept-self-signed-ssl-certificate
+	 */
+	private static void configureForInsecureMode()
+	{
+		// Create a trust manager that does not validate certificate chains
+		TrustManager[] trustAllCerts = new TrustManager[] { 
+		    new X509TrustManager() {     
+		        public java.security.cert.X509Certificate[] getAcceptedIssuers() { 
+		            return null;
+		        } 
+		        public void checkClientTrusted( 
+		            java.security.cert.X509Certificate[] certs, String authType) {
+		            } 
+		        public void checkServerTrusted( 
+		            java.security.cert.X509Certificate[] certs, String authType) {
+		        }
+		    } 
+		}; 
+
+		// Install the all-trusting trust manager
+		try 
+		{
+		    SSLContext sc = SSLContext.getInstance("SSL"); 
+		    sc.init(null, trustAllCerts, new java.security.SecureRandom()); 
+		    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+		} 
+		catch (GeneralSecurityException e) 
+		{
+			System.err.println("Unable to configure insecure mode");
+			System.err.println(e.getMessage());
+			e.printStackTrace(System.err);
+		} 
 	}
 }

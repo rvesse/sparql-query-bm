@@ -31,6 +31,7 @@ Supported Options are as follows:
 --halt-on-timeout    Halts and aborts benchmarking if any query times out
 --halt-on-error      Halts and aborts benchmarking if any query errors
 --halt-any           Halts and aborts benchmarking if any issue is encountered
+--insecure           Enabled insecure mode, allows benchmarking of servers using invalid/self-signed SSL certificates
 -l N                 Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query
 --limit N            Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query
 --nocsv              Disable CSV output, supercedes any preceding -c/--csv option but may be superceded by a subsequent -c/--csv option
