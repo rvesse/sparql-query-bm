@@ -1,14 +1,54 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>net.sf.sparql.query.benchmarking</groupId>
-  <artifactId>parent</artifactId>
-  <version>1.0.1</version>
-  <name>SPARQL Query Benchmarker</name>
-  <description>Parent project for the Benchmarker Core (API) and the CLI</description>
-  <packaging>pom</packaging>
-  
-  <modules>
-  	<module>core</module>
-  	<module>cmd</module>
-  </modules>  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.sparql.query.benchmarking</groupId>
+	<artifactId>parent</artifactId>
+	<version>1.0.1</version>
+	<name>SPARQL Query Benchmarker</name>
+	<description>Parent project for the Benchmarker Core (API) and the CLI</description>
+	<packaging>pom</packaging>
+
+	<licenses>
+		<license>
+			<name>BSD 3 Clause License</name>
+			<url>http://opensource.org/licenses/BSD-3-Clause</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>http://svn.code.sf.net/p/sparql-query-bm/code/trunk</url>
+		<connection>http://svn.code.sf.net/p/sparql-query-bm/code/trunk</connection>
+	</scm>
+	<developers>
+		<developer>
+			<id>rvesse</id>
+			<name>Rob Vesse</name>
+			<email>rvesse@dotnetrdf.org</email>
+		</developer>
+	</developers>
+
+	<modules>
+		<module>core</module>
+		<module>cmd</module>
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

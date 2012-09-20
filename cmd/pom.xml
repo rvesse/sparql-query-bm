@@ -2,17 +2,36 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cmd</artifactId>
-	<version>1.0.1</version>
 	<name>SPARQL Query Benchmarking CLI</name>
 	<description>A command line interface to the benchmarking core</description>
-	
+
 	<parent>
 		<groupId>net.sf.sparql.query.benchmarking</groupId>
 		<artifactId>parent</artifactId>
 		<version>1.0.1</version>
 		<relativePath>../</relativePath>
 	</parent>
-	
+
+	<licenses>
+		<license>
+			<name>BSD 3 Clause License</name>
+			<url>http://opensource.org/licenses/BSD-3-Clause</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>http://svn.code.sf.net/p/sparql-query-bm/code/trunk</url>
+		<connection>http://svn.code.sf.net/p/sparql-query-bm/code/trunk</connection>
+	</scm>
+	<developers>
+		<developer>
+			<id>rvesse</id>
+			<name>Rob Vesse</name>
+			<email>rvesse@dotnetrdf.org</email>
+		</developer>
+	</developers>
+
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.sparql.query.benchmarking</groupId>
@@ -20,10 +39,10 @@
 			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<finalName>sparql-query-bm-cli</finalName>
-	
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
