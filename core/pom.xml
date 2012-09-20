@@ -82,28 +82,6 @@
 
 	</dependencies>
 
-	<repositories>
-		<repository>
-			<id>repo-jena-dev</id>
-			<name>Apache - Snapshot Repository</name>
-			<layout>default</layout>
-			<url>https://repository.apache.org/content/repositories/snapshots/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-
-		<repository>
-			<id>repo-apache-jena</id>
-			<name>Apache - Releases</name>
-			<layout>default</layout>
-			<url>https://repository.apache.org/content/repositories/releases/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
 	<build>
 		<finalName>sparql-query-bm-core-${project.version}</finalName>
 		<plugins>
@@ -115,6 +93,32 @@
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.8.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
