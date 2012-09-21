@@ -4,9 +4,10 @@
 	<artifactId>core</artifactId>
 	<name>SPARQL Query Benchmarking Core</name>
 	<description>An API for benchmarking the performance of queries against arbitrary SPARQL endpoint</description>
+	<url>http://sourceforge.net/projects/sparql-query-bm</url>
 
 	<parent>
-		<groupId>net.sf.sparql.query.benchmarking</groupId>
+		<groupId>net.sf.sparql-query-bm</groupId>
 		<artifactId>parent</artifactId>
 		<version>1.0.1</version>
 		<relativePath>../</relativePath>
