@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>net.sf.sparql-query-bm</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.1</version>
+		<version>1.0.1-SNAPSHOT</version>
 		<relativePath>../</relativePath>
 	</parent>
 
@@ -23,7 +23,8 @@
 
 	<scm>
 		<url>http://svn.code.sf.net/p/sparql-query-bm/code/trunk</url>
-		<connection>http://svn.code.sf.net/p/sparql-query-bm/code/trunk</connection>
+		<developerConnection>scm:svn:https://svn.code.sf.net/p/sparql-query-bm/code/trunk</developerConnection>
+		<connection>scm:svn:http://svn.code.sf.net/p/sparql-query-bm/code/trunk</connection>
 	</scm>
 	<developers>
 		<developer>
