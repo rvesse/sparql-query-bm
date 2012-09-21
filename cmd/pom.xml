@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cmd</artifactId>
 	<name>SPARQL Query Benchmarking CLI</name>
@@ -9,7 +8,7 @@
 	<parent>
 		<groupId>net.sf.sparql-query-bm</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.0.1</version>
 		<relativePath>../</relativePath>
 	</parent>
 
@@ -22,9 +21,9 @@
 	</licenses>
 
 	<scm>
-		<url>http://svn.code.sf.net/p/sparql-query-bm/code/trunk</url>
-		<developerConnection>scm:svn:https://svn.code.sf.net/p/sparql-query-bm/code/trunk</developerConnection>
-		<connection>svn:scm:http://svn.code.sf.net/p/sparql-query-bm/code/trunk</connection>
+		<url>http://svn.code.sf.net/p/sparql-query-bm/code/tags/1.0.1/trunk</url>
+		<developerConnection>scm:svn:https://svn.code.sf.net/p/sparql-query-bm/code/tags/1.0.1/trunk</developerConnection>
+		<connection>svn:scm:http://svn.code.sf.net/p/sparql-query-bm/code/tags/1.0.1/trunk</connection>
 	</scm>
 	<developers>
 		<developer>
@@ -68,8 +67,7 @@
 						</goals>
 						<configuration>
 							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>net.sf.sparql.query.benchmarking.cmd.BenchmarkerCmd</mainClass>
 								</transformer>
 							</transformers>
