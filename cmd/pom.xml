@@ -35,9 +35,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>net.sf.sparql.query.benchmarking</groupId>
+			<groupId>net.sf.sparql-query-bm</groupId>
 			<artifactId>core</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

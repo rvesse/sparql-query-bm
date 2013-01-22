@@ -55,7 +55,7 @@ import net.sf.sparql.query.benchmarking.stats.QueryMixRun;
 import net.sf.sparql.query.benchmarking.stats.QueryRun;
 
 import org.apache.log4j.Logger;
-import org.openjena.riot.WebContent;
+import org.apache.jena.riot.WebContent;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 
