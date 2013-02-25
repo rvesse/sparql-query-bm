@@ -39,8 +39,8 @@
 		<junit.version>4.8.1</junit.version>
 		<commons-lang.version>2.4</commons-lang.version>
 		<commons-math.version>2.2</commons-math.version>
-		<arq.version>2.10.0-SNAPSHOT</arq.version>
-		<jena.version>2.10.0-SNAPSHOT</jena.version>
+		<arq.version>2.10.0</arq.version>
+		<jena.version>2.10.0</jena.version>
 	</properties>
 
 	<dependencies>
