@@ -1,0 +1,5 @@
+SELECT ?p
+WHERE
+{
+  { SELECT DISTNCT ?p WHERE { ?s ?p ?o } LIMIT 10 }
+} ORDER BY ?p

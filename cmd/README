@@ -195,6 +195,10 @@ wish to benchmark.
 - You can find Serialization queries under queries\serialization.txt
     The Serialization queries are simple queries that just grab large chunks of the data (50,000) results
     and are designed to test the performance of a system when it comes to giving you back large results over HTTP.
+- You can find ORDER BY + DISTINCT queries under queries\order-distinct.txt
+    The ORDER BY + DISTINCT queries are designed to test how well an engine optimizes the case of an ORDER BY plus
+    a DISTINCT and whether using sub-queries to force one to happen before the other makes a noticeable difference
+    in performance.  These tests also cover the use of ORDER BY + REDUCED
 
 The query list file format is simply one path to a query file per line, paths may be relative and will
 be resolved treating the path to the query file as the base path.
