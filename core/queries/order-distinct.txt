@@ -1,8 +1,8 @@
-order-distinct-same-level.rq
-order-distinct-sub-query.rq
-order-reduced-same-level.rq
-order-reduced-sub-query.rq
-order-distinct-same-level-limit.rq
-order-distinct-sub-query-limit.rq
-order-reduced-same-level-limit.rq
-order-reduced-sub-query-limit.rq
+order-distinct/order-distinct-same-level.rq
+order-distinct/order-distinct-sub-query.rq
+order-distinct/order-reduced-same-level.rq
+order-distinct/order-reduced-sub-query.rq
+order-distinct/order-distinct-same-level-limit.rq
+order-distinct/order-distinct-sub-query-limit.rq
+order-distinct/order-reduced-same-level-limit.rq
+order-distinct/order-reduced-sub-query-limit.rq

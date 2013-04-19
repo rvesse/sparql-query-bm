@@ -50,6 +50,8 @@ import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QueryParseException;
+
 import org.apache.commons.math.stat.descriptive.moment.GeometricMean;
 import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
@@ -78,7 +80,7 @@ public class BenchmarkQuery {
 	{
 		this.name = name;
 		this.origQueryStr = queryString;
-		this.query = QueryFactory.create(this.origQueryStr);
+	    this.query = QueryFactory.create(this.origQueryStr);
 	}
 	
 	/**

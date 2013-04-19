@@ -1,4 +1,4 @@
-SELECT DISTNCT ?p
+SELECT DISTINCT ?p
 WHERE
 {
   ?s ?p ?o
