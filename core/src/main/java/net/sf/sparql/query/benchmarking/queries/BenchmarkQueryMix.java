@@ -106,7 +106,7 @@ public class BenchmarkQueryMix {
                     f = new File(u.getFile());
                     logger.info("Located query list file '" + file + "' as a classpath resource");
                 } else {
-                    throw new FileNotFoundException("Can't find query list file '" + file + "' on disk or as a classpath resource");
+                    throw new FileNotFoundException("Can't find query list file '" + file + "' (" + f.getAbsolutePath() + ") on disk or as a classpath resource");
                 }
             }
             BufferedReader reader = new BufferedReader(new FileReader(f));
@@ -119,7 +119,7 @@ public class BenchmarkQueryMix {
                         File base = new File(file);
                         base = base.getParentFile();
                         f = new File(base.getPath() + File.separatorChar + line);
-                        logger.info("Made relative path '" + line + "' into absolute path '" + f.getPath() + "'");
+                        logger.info("Made relative path '" + line + "' into absolute path '" + f.getAbsolutePath() + "'");
                     }
                     if (!f.exists()) {
                         // Try and see if this is actually a resource
@@ -129,7 +129,7 @@ public class BenchmarkQueryMix {
                             f = new File(u.getFile());
                             logger.info("Located query file '" + file + "' as a classpath resource");
                         } else {
-                            throw new FileNotFoundException("Can't find query file '" + file + "' on disk or as a classpath resource");
+                            throw new FileNotFoundException("Can't find query file '" + line + "' (" + f.getAbsolutePath() + ") on disk or as a classpath resource");
                         }
                     }
 
@@ -138,7 +138,7 @@ public class BenchmarkQueryMix {
                         this.queries.add(new BenchmarkQuery(f.getName(), query));
                     } catch (QueryParseException e) {
                         logger.error("Error reading query file: " + e.getMessage());
-                        throw new QueryParseException("Query paring error reading query file " + f.getAbsolutePath() + "\n" + e.getMessage(), e.getCause(), e.getLine(), e.getColumn());
+                        throw new QueryParseException("Query parsing error reading query file " + f.getAbsolutePath() + "\n" + e.getMessage(), e.getCause(), e.getLine(), e.getColumn());
                     }
                     line = reader.readLine();
                 }
