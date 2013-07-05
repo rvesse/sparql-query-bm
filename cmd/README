@@ -23,43 +23,48 @@ queryListFile	Path to a file containing a list of paths to actual query files (1
 
 Supported Options are as follows:
 -c filename.csv
---csv filename.csv  Sets filename to which the CSV results summary will be output (default results.csv)
+--csv filename.csv        Sets filename to which the CSV results summary will be output (default results.csv)
+--debug                   Sets log level to DEBUG, use in conjunction with --logging option to see detailed HTTP traces for debugging purposes
 -d N
---delay N            Sets maximum delay between queries in milliseconds, will be random delay up to this maximum, use 0 for no delay (default N=1000)
+--delay N                 Sets maximum delay between queries in milliseconds, will be random delay up to this maximum, use 0 for no delay (default N=1000)
+--form-url URL            Sets the login URL used for form based login
+--form-user-field FIELD   Sets the user name field used for form based login (default httpd_username)
+--form-pwd-field  FIELD   Sets the password field used for form based login (default httpd_password)
 -h
---help               Prints this usage message and exits
---halt-on-timeout    Halts and aborts benchmarking if any query times out
---halt-on-error      Halts and aborts benchmarking if any query errors
---halt-any           Halts and aborts benchmarking if any issue is encountered
---insecure           Enabled insecure mode, allows benchmarking of servers using invalid/self-signed SSL certificates
--l N                 Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query
---limit N            Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query
---nocsv              Disable CSV output, supercedes any preceding -c/--csv option but may be superceded by a subsequent -c/--csv option
---nocount            Disables result counting, benchmarking will only record time to receive first result from the endpoint
---norand             If present the order in which queries are executed will not be randomized
---noxml              Disables XML output, supercedes any preceding -x/--xml option but may be superceded by a subsequent -x/--xml option
+--help                    Prints this usage message and exits
+--halt-on-timeout         Halts and aborts benchmarking if any query times out
+--halt-on-error           Halts and aborts benchmarking if any query errors
+--halt-any                Halts and aborts benchmarking if any issue is encountered
+-l N                      Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query
+--limit N                 Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query
+--logging                 Enables redirection of log output to console, use with --debug option to get additional information
+--nocsv                   Disable CSV output, supercedes any preceding -c/--csv option but may be superceded by a subsequent -c/--csv option
+--nocount                 Disables result counting, benchmarking will only record time to receive first result from the endpoint
+--norand                  If present the order in which queries are executed will not be randomized
+--noxml                   Disables XML output, supercedes any preceding -x/--xml option but may be superceded by a subsequent -x/--xml option
 -o N
---outliers N         Sets number of outliers to ignore i.e. discards the N best and N worst results when calculating overall averages (default N=1)
---overwrite          Allows overwriting of existing results files of the same names, if not set and files exist benchmarking will abort immediately
+--outliers N              Sets number of outliers to ignore i.e. discards the N best and N worst results when calculating overall averages (default N=1)
+--overwrite               Allows overwriting of existing results files of the same names, if not set and files exist benchmarking will abort immediately
 -p N
---parallel N         Sets the number of parallel threads to use for benchmarking (default N=1 i.e. single threaded evaluation)
---password PWD       Sets the password used for basic authentication
+--parallel N              Sets the number of parallel threads to use for benchmarking (default N=1 i.e. single threaded evaluation)
+--password PWD            Sets the password used for authentication
+--preemptive-auth         Enables use of preemptive authentication, may marginally improve performance when basic authentication is used
 -q
---quiet              Enables quiet mode so only errors will go to the console and no progress messages will be shown
+--quiet                   Enables quiet mode so only errors will go to the console and no progress messages will be shown
 -r N
---runs N             Sets number of runs where N is an integer (default 25)
---results-ask FMT    Sets the format to request for ASK query results (default application/sparql-results+xml)
---results-graph FMT  Sets the format to request for CONSTRUCT/DESCRIBE results (default application/rdf+xml)
---results-select FMT Sets the format to request for SELECT query results (default application/sparql-results+xml)
+--runs N                  Sets number of runs where N is an integer (default 25)
+--results-ask FMT         Sets the format to request for ASK query results (default application/sparql-results+xml)
+--results-graph FMT       Sets the format to request for CONSTRUCT/DESCRIBE results (default application/rdf+xml)
+--results-select FMT      Sets the format to request for SELECT query results (default application/sparql-results+xml)
 -s N
---sanity-checks N    Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=2)
+--sanity-checks N         Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=2)
 -t N
---timeout N          Sets timeout for queries where N is number of seconds (default 300)
---username USER      Sets the username used for basic authentication
+--timeout N               Sets timeout for queries where N is number of seconds (default 300)
+--username USER           Sets the user name used for authentication
 -w N
---warmups N          Sets number of warm up runs to run prior to actual benchmarking runs (default 5)
+--warmups N               Sets number of warm up runs to run prior to actual benchmarking runs (default 5)
 -x filename.xml
---xml filename.xml   Request XML output and sets filename to which the XML results will be output
+--xml filename.xml        Request XML output and sets filename to which the XML results will be output
 
 Notes
 -----
@@ -85,6 +90,15 @@ Currently the following result formats are supported:
  - application/sparql-results+json (SPARQL JSON)
  - text/tab-separated-values (SPARQL TSV)
  - text/csv (SPARQL CSV)
+ 
+ Authentication uses ARQ's HTTP authentication API, this supports standard HTTP authentication methods
+ e.g. Basic and Digest and form based login such as that provided by Apache mod_auth_form.  When only the
+ --username and --password options are specified then standard HTTP authentication is used, if the
+ --form-url option is specified then form based login is used.
+ 
+ The --preemptive-auth option may be used to enabled preemptive authentication when using standard HTTP
+ authentication, note that this only works if the remote server is using Basic authentication, otherwise it
+ has no effect.
  
 Methodology
 ===========

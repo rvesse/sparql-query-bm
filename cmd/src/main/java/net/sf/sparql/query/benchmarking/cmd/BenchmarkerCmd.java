@@ -31,19 +31,18 @@
 
 package net.sf.sparql.query.benchmarking.cmd;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
+import java.net.URI;
+import java.net.URISyntaxException;
 import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.HaltBehaviour;
 import net.sf.sparql.query.benchmarking.monitoring.ConsoleProgressListener;
 import net.sf.sparql.query.benchmarking.queries.BenchmarkQueryMix;
 
+import org.apache.jena.atlas.web.auth.ApacheModAuthFormLogin;
+import org.apache.jena.atlas.web.auth.FormLogin;
+import org.apache.jena.atlas.web.auth.FormsAuthenticator;
+import org.apache.jena.atlas.web.auth.PreemptiveBasicAuthenticator;
+import org.apache.jena.atlas.web.auth.SimpleAuthenticator;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -79,7 +78,7 @@ import com.hp.hpl.jena.query.QueryParseException;
  */
 public class BenchmarkerCmd {
 
-    private static boolean enableLog4jToConsole = false;
+    private static boolean enableLog4jToConsole = false, debug = false;
     private static boolean quiet = false;
 
     /**
@@ -95,16 +94,16 @@ public class BenchmarkerCmd {
 
         // Set up the Benchmark
         Benchmarker b = new Benchmarker();
+        b.setEndpoint(argv[0]);
         parseArgs(argv, b);
-        
+
         // Setup log4j to redirect stuff to stdout if enabled
         if (enableLog4jToConsole) {
             BasicConfigurator.configure();
-            Logger.getRootLogger().setLevel(Level.INFO);
+            Logger.getRootLogger().setLevel(debug ? Level.DEBUG : Level.INFO);
         }
-        
-        // Set endpoint and query mix
-        b.setEndpoint(argv[0]);
+
+        // Set query mix
         try {
             b.setQueryMix(new BenchmarkQueryMix(argv[1]));
         } catch (QueryParseException e) {
@@ -142,6 +141,9 @@ public class BenchmarkerCmd {
     private static void parseArgs(String[] argv, Benchmarker b) {
         if (argv.length <= 2)
             return;
+
+        String user = null, pwd = null, formUrl = null, userField = null, pwdField = null;
+        boolean preemptive = false;
 
         for (int i = 2; i < argv.length; i++) {
             try {
@@ -260,6 +262,8 @@ public class BenchmarkerCmd {
                         b.setLimit(Long.parseLong(argv[i]));
                     } else if (arg.equals("--logging")) {
                         enableLog4jToConsole = true;
+                    } else if (arg.equals("--debug")) {
+                        debug = true;
                     } else if (arg.equals("--quiet")) {
                         quiet = true;
                     } else if (arg.equals("--xml")) {
@@ -281,14 +285,25 @@ public class BenchmarkerCmd {
                     } else if (arg.equals("--username")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setUsername(argv[i]);
+                        user = argv[i];
                     } else if (arg.equals("--password")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setPassword(argv[i]);
-                    } else if (arg.equals("--insecure")) {
-                        System.out.println("WARNING: You have selected insecure mode, SSL certifications will not be validated");
-                        configureForInsecureMode();
+                        pwd = argv[i];
+                    } else if (arg.equals("--form-url")) {
+                        expectNextArg(i, argv, arg);
+                        i++;
+                        formUrl = argv[i];
+                    } else if (arg.equals("--form-user-field")) {
+                        expectNextArg(i, argv, arg);
+                        i++;
+                        userField = argv[i];
+                    } else if (arg.equals("--form-pwd-field")) {
+                        expectNextArg(i, argv, arg);
+                        i++;
+                        pwdField = argv[i];
+                    } else if (arg.equals("--preemptive-auth")) {
+                        preemptive = true;
                     } else {
                         System.err.println("Illegal Option " + arg);
                         System.exit(1);
@@ -303,6 +318,30 @@ public class BenchmarkerCmd {
                 System.err.println("Illegal value '" + argv[i] + "' encountered after option " + argv[i - 1]
                         + " when an integer value was expected");
                 System.exit(1);
+            }
+        }
+        
+        // Finally we will try and configure authentication
+        if (user != null && pwd != null) {
+            if (formUrl != null) {
+                // Configure forms auth
+                if (userField == null)
+                    userField = ApacheModAuthFormLogin.USER_FIELD;
+                if (pwdField == null)
+                    pwdField = ApacheModAuthFormLogin.PASSWORD_FIELD;
+                
+                FormLogin login = new FormLogin(formUrl, userField, pwdField, user, pwd.toCharArray());
+                try {
+                    b.setAuthenticator(new FormsAuthenticator(new URI(b.getEndpoint()), login));
+                } catch (URISyntaxException e) {
+                    System.err.println("Invalid Endpoint URL, unable to configure form based authentication: " + e.getMessage());
+                    System.exit(1);
+                }
+            } else {
+                // Use standard HTTP authentication
+                b.setAuthenticator(new SimpleAuthenticator(user, pwd.toCharArray()));
+                if (preemptive)
+                    b.setAuthenticator(new PreemptiveBasicAuthenticator(b.getAuthenticator()));
             }
         }
     }
@@ -329,107 +368,60 @@ public class BenchmarkerCmd {
      * Prints Usage Summary
      */
     private static void showUsage() {
+        // @formatter:off        
         System.out.println("Runs a benchmark mix of queries against a SPARQL endpoint and generates performance metrics");
         System.out.println("Usage is as follows:");
         System.out.println("query-benchmarker endpoint queryListFile [options]");
         System.out.println();
-        System.out
-                .println("queryListFile is a file listing paths to files containing SPARQL queries to run, 1 filename per line");
+        System.out.println("queryListFile is a file listing paths to files containing SPARQL queries to run, 1 filename per line");
         System.out.println();
         System.out.println("The following options are supported:");
         System.out.println(" -c filename.csv");
-        System.out.println(" --csv filename.csv  Sets filename to which the CSV results summary will be output (default "
-                + Benchmarker.DEFAULT_CSV_RESULTS_FILE + ")");
+        System.out.println(" --csv filename.csv        Sets filename to which the CSV results summary will be output (default " + Benchmarker.DEFAULT_CSV_RESULTS_FILE + ")");
+        System.out.println(" --debug                   Sets log level to DEBUG, use in conjunction with --logging option to see detailed HTTP traces for debugging purposes");
         System.out.println(" -d N");
-        System.out
-                .println(" --delay N            Sets maximum delay between queries in milliseconds, will be random delay up to this maximum, use 0 for no delay (default N="
-                        + Benchmarker.DEFAULT_MAX_DELAY + ")");
-        System.out.println(" --deflate            Sets whether HTTP requests will accept Deflate encoding");
-        System.out.println(" --gzip               Sets whether HTTP requests will accept GZip encoding");
+        System.out.println(" --delay N                 Sets maximum delay between queries in milliseconds, will be random delay up to this maximum, use 0 for no delay (default N=" + Benchmarker.DEFAULT_MAX_DELAY + ")");
+        System.out.println(" --deflate                 Sets whether HTTP requests will accept Deflate encoding");
+        System.out.println(" --form-url URL            Sets the login URL used for form based login");
+        System.out.println(" --form-user-field FIELD   Sets the user name field used for form based login (default httpd_username)");
+        System.out.println(" --form-pwd-field  FIELD   Sets the password field used for form based login (default httpd_password)");
+        System.out.println(" --gzip                    Sets whether HTTP requests will accept GZip encoding");
         System.out.println(" -h");
-        System.out.println(" --help               Prints this usage message and exits");
-        System.out.println(" --halt-on-timeout    Halts and aborts benchmarking if any query times out");
-        System.out.println(" --halt-on-error      Halts and aborts benchmarking if any query errors");
-        System.out.println(" --halt-any           Halts and aborts benchmarking if any issue is encountered");
-        System.out
-                .println(" --insecure           Enables insecure mode, allows benchmarking of servers using invalid/self-signed SSL certifications");
-        System.out
-                .println(" -l N                 Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query");
-        System.out
-                .println(" --limit N            Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query");
-        System.out
-                .println(" --nocsv              Disables CSV output, supercedes any preceding -c/--csv option but may be superceded by a subsequent -c/--csv option");
-        System.out
-                .println(" --nocount            Disables result counting, benchmarking will only record time to receive first result from the endpoint");
-        System.out.println(" --norand             If present the order in which queries are executed will not be randomized");
-        System.out
-                .println(" --noxml              Disables XML output, supercedes any preceding -x/--xml option but may be superceded by a subsequent -x/--xml option");
+        System.out.println(" --help                    Prints this usage message and exits");
+        System.out.println(" --halt-on-timeout         Halts and aborts benchmarking if any query times out");
+        System.out.println(" --halt-on-error           Halts and aborts benchmarking if any query errors");
+        System.out.println(" --halt-any                Halts and aborts benchmarking if any issue is encountered");
+        System.out.println(" -l N                      Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query");
+        System.out.println(" --limit N                 Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query");
+        System.out.println(" --logging                 Enables redirection of log output to console, use with --debug option to get additional information");
+        System.out.println(" --nocsv                   Disables CSV output, supercedes any preceding -c/--csv option but may be superceded by a subsequent -c/--csv option");
+        System.out.println(" --nocount                 Disables result counting, benchmarking will only record time to receive first result from the endpoint");
+        System.out.println(" --norand                  If present the order in which queries are executed will not be randomized");
+        System.out.println(" --noxml                   Disables XML output, supercedes any preceding -x/--xml option but may be superceded by a subsequent -x/--xml option");
         System.out.println(" -o N");
-        System.out
-                .println(" --outliers N         Sets number of outliers to ignore i.e. discards the N best and N worst results when calculating overall averages (default N="
-                        + Benchmarker.DEFAULT_OUTLIERS + ")");
-        System.out
-                .println(" --overwrite          Allows overwriting of existing results files of the same names, if not set and files existing benchmarking will abort immediately");
+        System.out.println(" --outliers N              Sets number of outliers to ignore i.e. discards the N best and N worst results when calculating overall averages (default N=" + Benchmarker.DEFAULT_OUTLIERS + ")");
+        System.out.println(" --overwrite               Allows overwriting of existing results files of the same names, if not set and files existing benchmarking will abort immediately");
         System.out.println(" -p N");
-        System.out
-                .println(" --parallel N         Sets the number of parallel threads to use for benchmarking (default N=1 i.e. single threaded evaluation)");
-        System.out.println(" --password PWD       Sets the password used for basic authentication");
+        System.out.println(" --parallel N              Sets the number of parallel threads to use for benchmarking (default N=1 i.e. single threaded evaluation)");
+        System.out.println(" --password PWD            Sets the password used for basic authentication");
+        System.out.println(" --preemptive-auth         Enables use of preemptive authentication, may marginally improve performance when basic authentication is used");
         System.out.println(" -q");
-        System.out
-                .println(" --quiet              Enables quiet mode so only errors will go to the console and no progress messages will be shown");
+        System.out.println(" --quiet                   Enables quiet mode so only errors will go to the console and no progress messages will be shown");
         System.out.println(" -r N");
-        System.out.println(" --runs N             Sets number of runs where N is an integer (default " + Benchmarker.DEFAULT_RUNS
-                + ")");
-        System.out.println(" --results-ask FMT    Sets the format to request for ASK query results (default "
-                + Benchmarker.DEFAULT_FORMAT_SELECT + ")");
-        System.out.println(" --results-graph FMT  Sets the format to request for CONSTRUCT/DESCRIBE results (default "
-                + Benchmarker.DEFAULT_FORMAT_GRAPH + ")");
-        System.out.println(" --results-select FMT Sets the format to request for SELECT query results (default "
-                + Benchmarker.DEFAULT_FORMAT_ASK + ")");
+        System.out.println(" --runs N                  Sets number of runs where N is an integer (default " + Benchmarker.DEFAULT_RUNS + ")");
+        System.out.println(" --results-ask FMT         Sets the format to request for ASK query results (default " + Benchmarker.DEFAULT_FORMAT_SELECT + ")");
+        System.out.println(" --results-graph FMT       Sets the format to request for CONSTRUCT/DESCRIBE results (default " + Benchmarker.DEFAULT_FORMAT_GRAPH + ")");
+        System.out.println(" --results-select FMT      Sets the format to request for SELECT query results (default " + Benchmarker.DEFAULT_FORMAT_ASK + ")");
         System.out.println(" -s N");
-        System.out
-                .println(" --sanity-checks N    Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N="
-                        + Benchmarker.DEFAULT_SANITY_CHECKS + ")");
+        System.out.println(" --sanity-checks N         Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=" + Benchmarker.DEFAULT_SANITY_CHECKS + ")");
         System.out.println(" -t N");
-        System.out.println(" --timeout N          Sets timeout for queries where N is number of seconds (default "
-                + Benchmarker.DEFAULT_TIMEOUT + ")");
-        System.out.println(" --username USER      Sets the username used for basic authentication");
+        System.out.println(" --timeout N               Sets timeout for queries where N is number of seconds (default " + Benchmarker.DEFAULT_TIMEOUT + ")");
+        System.out.println(" --username USER           Sets the username used for basic authentication");
         System.out.println(" -w N");
-        System.out.println(" --warmups N          Sets number of warm up runs to run prior to actual benchmarking runs (default "
-                + Benchmarker.DEFAULT_WARMUPS + ")");
+        System.out.println(" --warmups N               Sets number of warm up runs to run prior to actual benchmarking runs (default " + Benchmarker.DEFAULT_WARMUPS + ")");
         System.out.println(" -x filename.xml");
-        System.out.println(" --xml filename.xml   Request XML output and sets filename to which the XML results will be output");
+        System.out.println(" --xml filename.xml        Request XML output and sets filename to which the XML results will be output");
         System.out.println();
-    }
-
-    /**
-     * Code for configuring insecure mode taken from
-     * http://stackoverflow.com/questions
-     * /2893819/telling-java-to-accept-self-signed-ssl-certificate
-     */
-    private static void configureForInsecureMode() {
-        // Create a trust manager that does not validate certificate chains
-        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-            }
-
-            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-            }
-        } };
-
-        // Install the all-trusting trust manager
-        try {
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch (GeneralSecurityException e) {
-            System.err.println("Unable to configure insecure mode");
-            System.err.println(e.getMessage());
-            e.printStackTrace(System.err);
-        }
+        // @formatter:on
     }
 }

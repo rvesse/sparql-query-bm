@@ -168,7 +168,7 @@ public class BenchmarkQueryMix {
     /**
      * Gets the Queries in this mix
      * 
-     * @return
+     * @return Queries
      */
     public Iterator<BenchmarkQuery> getQueries() {
         return this.queries.iterator();
@@ -177,7 +177,7 @@ public class BenchmarkQueryMix {
     /**
      * Gets an iterator over the query mix runs
      * 
-     * @return
+     * @return Mix Runs
      */
     public Iterator<QueryMixRun> getRuns() {
         return this.runs.iterator();
@@ -187,16 +187,16 @@ public class BenchmarkQueryMix {
      * Gets the Query with the specified ID
      * 
      * @param id
-     * @return
+     * @return Query
      */
     public BenchmarkQuery getQuery(int id) {
         return this.queries.get(id);
     }
 
     /**
-     * Gets the number of queries in the query set
+     * Gets the number of queries in the query mix
      * 
-     * @return
+     * @return Number of queries
      */
     public int size() {
         return this.queries.size();
@@ -215,6 +215,8 @@ public class BenchmarkQueryMix {
 
     /**
      * Performs a Query Mix run recording the results as a {@link QueryMixRun}
+     * @param b Benchmarker
+     * @return Query Mix run details
      */
     public QueryMixRun run(Benchmarker b) {
         QueryMixRun run = new QueryMixRun(this.queries.size(), b.getGlobalOrder());

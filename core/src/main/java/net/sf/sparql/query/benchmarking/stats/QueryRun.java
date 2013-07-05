@@ -38,6 +38,9 @@ package net.sf.sparql.query.benchmarking.stats;
  */
 public class QueryRun implements Comparable<QueryRun> {
 	
+    /**
+     * Constant used to indicate that a query has not yet been run and thus the statistic retrieved is not available
+     */
 	public static final long NOT_YET_RUN = -1;
 
 	private long runtime = NOT_YET_RUN;
@@ -139,7 +142,7 @@ public class QueryRun implements Comparable<QueryRun> {
 	
 	/**
 	 * Gets the global run order for this query run
-	 * @return
+	 * @return Global Order
 	 */
 	public long getRunOrder()
 	{
@@ -152,6 +155,7 @@ public class QueryRun implements Comparable<QueryRun> {
 	 * Only really used internally, trying to set this once it has been set will lead to an {@link IllegalAccessError}
 	 * </p>
 	 * @param order Order
+	 * @throws IllegalAccessError Thrown if you try to set the run order after it has been set
 	 */
 	public void setRunOrder(long order) throws IllegalAccessError
 	{

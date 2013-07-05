@@ -88,7 +88,7 @@ public class ParallelClientManager implements Callable<Object> {
 	
 	/**
 	 * Gets the Benchmarker
-	 * @return
+	 * @return Benchmarker
 	 */
 	public Benchmarker getBenchmarker()
 	{
@@ -97,7 +97,7 @@ public class ParallelClientManager implements Callable<Object> {
 	
 	/**
 	 * Gets whether the manager is ready for clients to begin executing
-	 * @return
+	 * @return True if the manager is ready, false otherwise
 	 */
 	public boolean isReady()
 	{
@@ -106,7 +106,7 @@ public class ParallelClientManager implements Callable<Object> {
 	
 	/**
 	 * Method that will be called by parallel clients to determine if they should continue to run, calls to this are thread safe
-	 * @return
+	 * @return True if a client should continue to run, false if they should terminate
 	 */
 	public synchronized boolean shouldRun()
 	{
@@ -124,7 +124,7 @@ public class ParallelClientManager implements Callable<Object> {
 	
 	/**
 	 * Method that will be called by parallel clients to indicate they have completed a run and to obtain what run completion it is
-	 * @return
+	 * @return Run completion number
 	 */
 	public synchronized int completeRun()
 	{

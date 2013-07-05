@@ -45,8 +45,7 @@ public class QueryTask extends FutureTask<QueryRun> {
 	
 	/**
 	 * Creates a new Query Task
-	 * @param q Query
-	 * @param b Benchmarker
+	 * @param qr Query runner
 	 */
 	public QueryTask(QueryRunner qr) {
 		super(qr);

@@ -50,8 +50,6 @@ import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QueryParseException;
-
 import org.apache.commons.math.stat.descriptive.moment.GeometricMean;
 import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
@@ -74,7 +72,8 @@ public class BenchmarkQuery {
 	
 	/**
 	 * Creates a new Query
-	 * @param queryString
+	 * @param name Name of the query
+	 * @param queryString Query string
 	 */
 	public BenchmarkQuery(String name, String queryString)
 	{
@@ -85,7 +84,7 @@ public class BenchmarkQuery {
 	
 	/**
 	 * Gets the Name of the Query (typically the filename)
-	 * @return
+	 * @return Name
 	 */
 	public String getName()
 	{
@@ -94,7 +93,7 @@ public class BenchmarkQuery {
 	
 	/**
 	 * Gets the actual Query
-	 * @return
+	 * @return Query
 	 */
 	public Query getQuery()
 	{
@@ -103,7 +102,7 @@ public class BenchmarkQuery {
 	
 	/**
 	 * Gets the Query String used to create this Query
-	 * @return
+	 * @return Query as a string
 	 */
 	public String getQueryString()
 	{
@@ -112,7 +111,7 @@ public class BenchmarkQuery {
 	
 	/**
 	 * Gets an iterator over the query runs
-	 * @return
+	 * @return Runs of the query
 	 */
 	public Iterator<QueryRun> getRuns()
 	{
@@ -148,7 +147,7 @@ public class BenchmarkQuery {
 	 * <p>
 	 * For non-SELECT queries this is identical to {@link #getTotalRuntime()}, for SELECT queries this is the total of the time spent waiting to start getting the response from the HTTP endpoint
 	 * </p>
-	 * @return
+	 * @return Total response time
 	 */
 	public long getTotalResponseTime()
 	{
@@ -289,7 +288,7 @@ public class BenchmarkQuery {
 	}
 	
 	/**
-	 * Calculates how many times this query could be executed multi-threaded per second based upon the {@link BenchmarkerQuery#getActualAverageRuntime()}
+	 * Calculates how many times this query could be executed multi-threaded per second based upon the {@link BenchmarkQuery#getActualAverageRuntime()}
 	 * @return Actual Queries per Second
 	 */
 	public double getActualQueriesPerSecond()
@@ -323,6 +322,7 @@ public class BenchmarkQuery {
 	
 	/**
 	 * Runs the query recording the statistics as a {@link QueryRun}
+	 * @param b Benchmarker
 	 * @return Query Run statistics
 	 */
 	public QueryRun run(Benchmarker b)

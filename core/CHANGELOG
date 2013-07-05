@@ -66,3 +66,9 @@ Version 1.0.1
 
 Version 1.0.2
 - Bumped dependencies to latest Jena and ARQ (Jena 2.10.0-SNAPSHOT and ARQ 2.10.0-SNAPSHOT)
+
+Version 1.2.0
+- Bumped dependencies to latest Jena and ARQ (Jena 2.10.2-SNAPSHOT and ARQ 2.10.2-SNAPSHOT)
+- Added support for wider range of authentication methods
+- Removed --insecure option since it didn't function as documented anyway
+- Added --debug option to be used in conjunction with --logging option to get detailed HTTP traces

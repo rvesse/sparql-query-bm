@@ -92,9 +92,8 @@ public class QueryRunner implements Callable<QueryRun> {
 		exec.setModelContentType(b.getResultsGraphFormat());
 		exec.setAllowDeflate(b.getAllowDeflateEncoding());
 		exec.setAllowGZip(b.getAllowGZipEncoding());
-		if (this.b.getUsername() != null && this.b.getPassword() != null)
-		{
-			exec.setBasicAuthentication(this.b.getUsername(), this.b.getPassword().toCharArray());
+		if (this.b.getAuthenticator() != null) {
+		    exec.setAuthenticator(this.b.getAuthenticator());
 		}
 		
 		try
