@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.sparql-query-bm</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.1.0</version>
 	<name>SPARQL Query Benchmarker</name>
 	<description>Parent project for the Benchmarker Core (API) and the CLI</description>
 	<url>http://sourceforge.net/projects/sparql-query-bm</url>
@@ -23,9 +23,9 @@
 	</licenses>
 
 	<scm>
-		<url>http://svn.code.sf.net/p/sparql-query-bm/code/trunk</url>
-		<developerConnection>scm:svn:https://svn.code.sf.net/p/sparql-query-bm/code/trunk</developerConnection>
-		<connection>scm:svn:http://svn.code.sf.net/p/sparql-query-bm/code/trunk</connection>
+		<url>http://svn.code.sf.net/p/sparql-query-bm/code/tags/1.1.0</url>
+		<developerConnection>scm:svn:https://svn.code.sf.net/p/sparql-query-bm/code/tags/1.1.0</developerConnection>
+		<connection>scm:svn:http://svn.code.sf.net/p/sparql-query-bm/code/tags/1.1.0</connection>
 	</scm>
 	<developers>
 		<developer>
