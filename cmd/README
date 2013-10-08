@@ -91,14 +91,14 @@ Currently the following result formats are supported:
  - text/tab-separated-values (SPARQL TSV)
  - text/csv (SPARQL CSV)
  
- Authentication uses ARQ's HTTP authentication API, this supports standard HTTP authentication methods
- e.g. Basic and Digest and form based login such as that provided by Apache mod_auth_form.  When only the
- --username and --password options are specified then standard HTTP authentication is used, if the
- --form-url option is specified then form based login is used.
+Authentication uses ARQ's HTTP authentication API, this supports standard HTTP authentication methods
+e.g. Basic and Digest and form based login such as that provided by Apache mod_auth_form.  When only the
+--username and --password options are specified then standard HTTP authentication is used, if the
+--form-url option is specified then form based login is used.
  
- The --preemptive-auth option may be used to enabled preemptive authentication when using standard HTTP
- authentication, note that this only works if the remote server is using Basic authentication, otherwise it
- has no effect.
+The --preemptive-auth option may be used to enabled preemptive authentication when using standard HTTP
+authentication, note that this only works if the remote server is using Basic authentication, otherwise it
+has no effect.
  
 Methodology
 ===========
@@ -233,7 +233,7 @@ References
 License
 =======
 
-Copyright 2011-2012 Cray Inc. All Rights Reserved
+Copyright 2011-2013 Cray Inc. All Rights Reserved
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
