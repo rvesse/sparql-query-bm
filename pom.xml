@@ -23,9 +23,9 @@
 	</licenses>
 
 	<scm>
-		<url>http://svn.code.sf.net/p/sparql-query-bm/code/trunk</url>
-		<developerConnection>scm:svn:https://svn.code.sf.net/p/sparql-query-bm/code/trunk</developerConnection>
-		<connection>scm:svn:http://svn.code.sf.net/p/sparql-query-bm/code/trunk</connection>
+		<url>svn://svn.code.sf.net/p/sparql-query-bm/code/trunk</url>
+		<developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/sparql-query-bm/code/trunk</developerConnection>
+		<connection>scm:svn:svn://svn.code.sf.net/p/sparql-query-bm/code/trunk</connection>
 	</scm>
 	<developers>
 		<developer>
