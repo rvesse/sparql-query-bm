@@ -1,0 +1,4 @@
+inequality/lubm-type-filter.rq
+inequality/lubm-type-minus.rq
+inequality/lubm-multiple-filter.rq
+inequality/lubm-multiple-minus.rq
