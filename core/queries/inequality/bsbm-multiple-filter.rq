@@ -1,0 +1,11 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+
+SELECT *
+WHERE
+{
+  ?s a bsbm:Product ;
+     ?p ?o .
+  FILTER (?p != rdf:type && ?p != dc:date && ?p != dc:publisher)
+}

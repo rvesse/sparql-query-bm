@@ -1,0 +1,14 @@
+# Find pairs of authors who have co-authored a paper ignoring those
+# documents co-authored with the dataset super node Paul Erdoes
+
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#> 
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX dc:   <http://purl.org/dc/elements/1.1/>
+
+SELECT DISTINCT ?document
+WHERE {
+  ?document dc:creator ?author .
+  ?document dc:creator ?author2 .
+  FILTER (?author != <http://localhost/persons/Paul_Erdoes> && ?author2 != <http://localhost/persons/Paul_Erdoes> && ?author != ?author2)
+}
