@@ -94,7 +94,6 @@ public class BenchmarkerCmd {
 
         // Set up the Benchmark
         Benchmarker b = new Benchmarker();
-        b.setQueryEndpoint(argv[0]);
         parseArgs(argv, b);
 
         // Setup log4j to redirect stuff to stdout if enabled
@@ -103,16 +102,6 @@ public class BenchmarkerCmd {
             Logger.getRootLogger().setLevel(debug ? Level.DEBUG : Level.INFO);
         }
 
-        // Set query mix
-        try {
-            b.setQueryMix(new BenchmarkQueryMix(argv[1]));
-        } catch (QueryParseException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        } catch (Exception e) {
-            System.err.println("Unexpected Error loading query mix - " + e.getMessage());
-            System.exit(1);
-        }
         b.setHaltBehaviour(HaltBehaviour.EXIT); // When run from command line
                                                 // Halting Behaviour is always
                                                 // to exit
@@ -145,7 +134,7 @@ public class BenchmarkerCmd {
         String user = null, pwd = null, formUrl = null, userField = null, pwdField = null;
         boolean preemptive = false;
 
-        for (int i = 2; i < argv.length; i++) {
+        for (int i = 0; i < argv.length; i++) {
             try {
                 String arg = argv[i];
                 if (arg.equals("-h")) {
@@ -191,6 +180,18 @@ public class BenchmarkerCmd {
                     case 'l':
                         b.setLimit(Long.parseLong(argv[i]));
                         break;
+                    case 'm':
+                        parseOperationMix(b, argv[i]);
+                        break;
+                    case 'q':
+                        b.setQueryEndpoint(argv[i]);
+                        break;
+                    case 'u':
+                        b.setUpdateEndpoint(argv[i]);
+                        break;
+                    case 'g':
+                        b.setGraphStoreEndpoint(argv[i]);
+                        break;
                     default:
                         System.err.println("Illegal Option " + arg);
                         System.exit(1);
@@ -201,6 +202,29 @@ public class BenchmarkerCmd {
                     if (arg.equals("--help")) {
                         showUsage();
                         System.exit(1);
+                    } else if (arg.equals("--mix")) {
+                        expectNextArg(i, argv, arg);
+                        i++;
+                        parseOperationMix(b, argv[i]);
+                    } else if (arg.equals("--query-endpoint")) {
+                        expectNextArg(i, argv, arg);
+                        i++;
+                        b.setQueryEndpoint(argv[i]);
+                    } else if (arg.equals("--update-endpoint")) {
+                        expectNextArg(i, argv, arg);
+                        i++;
+                        b.setUpdateEndpoint(argv[i]);
+                    } else if (arg.equals("--gsp-endpoint")) {
+                        expectNextArg(i, argv, arg);
+                        i++;
+                        b.setGraphStoreEndpoint(argv[i]);
+                    } else if (arg.equals("--custom-endpoint")) {
+                        expectNextArg(i, argv, arg);
+                        i++;
+                        String name = argv[i];
+                        expectNextArg(i, argv, arg);
+                        i++;
+                        b.setCustomEndpoint(name, argv[i]);
                     } else if (arg.equals("--runs")) {
                         expectNextArg(i, argv, arg);
                         i++;
@@ -363,6 +387,20 @@ public class BenchmarkerCmd {
             System.exit(1);
         }
     }
+    
+    private static void parseOperationMix(Benchmarker b, String mixFile) {
+        // Set operation mix
+        try {
+            // TODO Make this flexible
+            b.setQueryMix(new BenchmarkQueryMix(mixFile));
+        } catch (QueryParseException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        } catch (Exception e) {
+            System.err.println("Unexpected Error loading operation mix - " + e.getMessage());
+            System.exit(1);
+        }
+    }
 
     /**
      * Prints Usage Summary
@@ -371,56 +409,69 @@ public class BenchmarkerCmd {
         // @formatter:off        
         System.out.println("Runs a benchmark mix of queries against a SPARQL endpoint and generates performance metrics");
         System.out.println("Usage is as follows:");
-        System.out.println("query-benchmarker endpoint queryListFile [options]");
+        System.out.println("query-benchmarker [required options] [options]");
         System.out.println();
-        System.out.println("queryListFile is a file listing paths to files containing SPARQL queries to run, 1 filename per line");
+        System.out.println("The following options are required:");
         System.out.println();
-        System.out.println("The following options are supported:");
+        System.out.println(" -m mixfile");
+        System.out.println(" --mix mixfile             Sets the filename of the operation mix file which contains the operations to be run");
+        System.out.println();
+        System.out.println("One/more of the following options are also required, exact requirements will depend on your operation mix:");
+        System.out.println();
+        System.out.println(" -q uri");
+        System.out.println(" --query-endpoint uri        Sets the SPARQL query endpoint to use");
+        System.out.println(" -u uri");
+        System.out.println(" --update-endpoint uri       Sets the SPARQL update endpoint to use");
+        System.out.println(" -g uri");
+        System.out.println(" --gsp-endpoint uri          Sets the SPARQL graph store protocol endpoint to use");
+        System.out.println(" --custom-endpoint name uri  Sets a custom endpoint to use for custom operations");
+        System.out.println();
+        System.out.println("The following optional options are also supported:");
         System.out.println(" -c filename.csv");
-        System.out.println(" --csv filename.csv        Sets filename to which the CSV results summary will be output (default " + Benchmarker.DEFAULT_CSV_RESULTS_FILE + ")");
-        System.out.println(" --debug                   Sets log level to DEBUG, use in conjunction with --logging option to see detailed HTTP traces for debugging purposes");
+        System.out.println(" --csv filename.csv          Sets filename to which the CSV results summary will be output (default " + Benchmarker.DEFAULT_CSV_RESULTS_FILE + ")");
+        System.out.println(" --debug                     Sets log level to DEBUG, use in conjunction with --logging option to see detailed HTTP traces for debugging purposes");
         System.out.println(" -d N");
-        System.out.println(" --delay N                 Sets maximum delay between queries in milliseconds, will be random delay up to this maximum, use 0 for no delay (default N=" + Benchmarker.DEFAULT_MAX_DELAY + ")");
-        System.out.println(" --deflate                 Sets whether HTTP requests will accept Deflate encoding");
-        System.out.println(" --form-url URL            Sets the login URL used for form based login");
-        System.out.println(" --form-user-field FIELD   Sets the user name field used for form based login (default httpd_username)");
-        System.out.println(" --form-pwd-field  FIELD   Sets the password field used for form based login (default httpd_password)");
-        System.out.println(" --gzip                    Sets whether HTTP requests will accept GZip encoding");
+        System.out.println(" --delay N                   Sets maximum delay between queries in milliseconds, will be random delay up to this maximum, use 0 for no delay (default N=" + Benchmarker.DEFAULT_MAX_DELAY + ")");
+        System.out.println(" --deflate                   Sets whether HTTP requests will accept Deflate encoding");
+        System.out.println(" --form-url URL              Sets the login URL used for form based login");
+        System.out.println(" --form-user-field FIELD     Sets the user name field used for form based login (default httpd_username)");
+        System.out.println(" --form-pwd-field  FIELD     Sets the password field used for form based login (default httpd_password)");
+        System.out.println(" --gzip                      Sets whether HTTP requests will accept GZip encoding");
         System.out.println(" -h");
-        System.out.println(" --help                    Prints this usage message and exits");
-        System.out.println(" --halt-on-timeout         Halts and aborts benchmarking if any query times out");
-        System.out.println(" --halt-on-error           Halts and aborts benchmarking if any query errors");
-        System.out.println(" --halt-any                Halts and aborts benchmarking if any issue is encountered");
-        System.out.println(" -l N                      Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query");
-        System.out.println(" --limit N                 Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query");
-        System.out.println(" --logging                 Enables redirection of log output to console, use with --debug option to get additional information");
-        System.out.println(" --nocsv                   Disables CSV output, supercedes any preceding -c/--csv option but may be superceded by a subsequent -c/--csv option");
-        System.out.println(" --nocount                 Disables result counting, benchmarking will only record time to receive first result from the endpoint");
-        System.out.println(" --norand                  If present the order in which queries are executed will not be randomized");
-        System.out.println(" --noxml                   Disables XML output, supercedes any preceding -x/--xml option but may be superceded by a subsequent -x/--xml option");
+        System.out.println(" --help                      Prints this usage message and exits");
+        System.out.println(" --halt-on-timeout           Halts and aborts benchmarking if any query times out");
+        System.out.println(" --halt-on-error             Halts and aborts benchmarking if any query errors");
+        System.out.println(" --halt-any                  Halts and aborts benchmarking if any issue is encountered");
+        System.out.println(" -l N                        Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query");
+        System.out.println(" --limit N                   Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query");
+        System.out.println(" --logging                   Enables redirection of log output to console, use with --debug option to get additional information");
+        System.out.println(" --nocsv                     Disables CSV output, supercedes any preceding -c/--csv option but may be superceded by a subsequent -c/--csv option");
+        System.out.println(" --nocount                   Disables result counting, benchmarking will only record time to receive first result from the endpoint");
+        System.out.println(" --norand                    If present the order in which queries are executed will not be randomized");
+        System.out.println(" --noxml                     Disables XML output, supercedes any preceding -x/--xml option but may be superceded by a subsequent -x/--xml option");
         System.out.println(" -o N");
-        System.out.println(" --outliers N              Sets number of outliers to ignore i.e. discards the N best and N worst results when calculating overall averages (default N=" + Benchmarker.DEFAULT_OUTLIERS + ")");
-        System.out.println(" --overwrite               Allows overwriting of existing results files of the same names, if not set and files existing benchmarking will abort immediately");
+        System.out.println(" --outliers N                Sets number of outliers to ignore i.e. discards the N best and N worst results when calculating overall averages (default N=" + Benchmarker.DEFAULT_OUTLIERS + ")");
+        System.out.println(" --overwrite                 Allows overwriting of existing results files of the same names, if not set and files existing benchmarking will abort immediately");
         System.out.println(" -p N");
-        System.out.println(" --parallel N              Sets the number of parallel threads to use for benchmarking (default N=1 i.e. single threaded evaluation)");
-        System.out.println(" --password PWD            Sets the password used for basic authentication");
-        System.out.println(" --preemptive-auth         Enables use of preemptive authentication, may marginally improve performance when basic authentication is used");
+        System.out.println(" --parallel N                Sets the number of parallel threads to use for benchmarking (default N=1 i.e. single threaded evaluation)");
+        System.out.println(" --password PWD              Sets the password used for basic authentication");
+        System.out.println(" --preemptive-auth           Enables use of preemptive authentication, may marginally improve performance when basic authentication is used");
         System.out.println(" -q");
-        System.out.println(" --quiet                   Enables quiet mode so only errors will go to the console and no progress messages will be shown");
+        System.out.println(" --quiet                     Enables quiet mode so only errors will go to the console and no progress messages will be shown");
         System.out.println(" -r N");
-        System.out.println(" --runs N                  Sets number of runs where N is an integer (default " + Benchmarker.DEFAULT_RUNS + ")");
-        System.out.println(" --results-ask FMT         Sets the format to request for ASK query results (default " + Benchmarker.DEFAULT_FORMAT_SELECT + ")");
-        System.out.println(" --results-graph FMT       Sets the format to request for CONSTRUCT/DESCRIBE results (default " + Benchmarker.DEFAULT_FORMAT_GRAPH + ")");
-        System.out.println(" --results-select FMT      Sets the format to request for SELECT query results (default " + Benchmarker.DEFAULT_FORMAT_ASK + ")");
+        System.out.println(" --runs N                    Sets number of runs where N is an integer (default " + Benchmarker.DEFAULT_RUNS + ")");
+        System.out.println(" --results-ask FMT           Sets the format to request for ASK query results (default " + Benchmarker.DEFAULT_FORMAT_SELECT + ")");
+        System.out.println(" --results-graph FMT         Sets the format to request for CONSTRUCT/DESCRIBE results (default " + Benchmarker.DEFAULT_FORMAT_GRAPH + ")");
+        System.out.println(" --results-select FMT        Sets the format to request for SELECT query results (default " + Benchmarker.DEFAULT_FORMAT_ASK + ")");
         System.out.println(" -s N");
-        System.out.println(" --sanity-checks N         Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=" + Benchmarker.DEFAULT_SANITY_CHECKS + ")");
+        System.out.println(" --sanity-checks N           Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=" + Benchmarker.DEFAULT_SANITY_CHECKS + ")");
         System.out.println(" -t N");
-        System.out.println(" --timeout N               Sets timeout for queries where N is number of seconds (default " + Benchmarker.DEFAULT_TIMEOUT + ")");
-        System.out.println(" --username USER           Sets the username used for basic authentication");
+        System.out.println(" --timeout N                 Sets timeout for queries where N is number of seconds (default " + Benchmarker.DEFAULT_TIMEOUT + ")");
+        System.out.println(" --username USER             Sets the username used for basic authentication");
         System.out.println(" -w N");
-        System.out.println(" --warmups N               Sets number of warm up runs to run prior to actual benchmarking runs (default " + Benchmarker.DEFAULT_WARMUPS + ")");
+        System.out.println(" --warmups N                 Sets number of warm up runs to run prior to actual benchmarking runs (default " + Benchmarker.DEFAULT_WARMUPS + ")");
         System.out.println(" -x filename.xml");
-        System.out.println(" --xml filename.xml        Request XML output and sets filename to which the XML results will be output");
+        System.out.println(" --xml filename.xml          Request XML output and sets filename to which the XML results will be output");
         System.out.println();
         // @formatter:on
     }
