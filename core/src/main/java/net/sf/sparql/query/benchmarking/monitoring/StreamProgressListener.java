@@ -172,6 +172,7 @@ public class StreamProgressListener implements ProgressListener {
      * explicit stream
      * </p>
      */
+    @SuppressWarnings("javadoc")
     @Override
     public void handleStarted(Benchmarker b) {
         // If the stream is null then use the openStream() method to try and get

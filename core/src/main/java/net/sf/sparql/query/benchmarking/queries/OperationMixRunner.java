@@ -34,34 +34,35 @@ package net.sf.sparql.query.benchmarking.queries;
 import java.util.concurrent.Callable;
 
 import net.sf.sparql.query.benchmarking.Benchmarker;
-import net.sf.sparql.query.benchmarking.stats.QueryMixRun;
-
+import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 
 /**
- * A callable for Query Mixes so we can execute them in parallel to do multi-threaded benchmarks
+ * A callable for operation mixes so we can execute them in parallel to do
+ * multi-threaded benchmarks
+ * 
  * @author rvesse
- *
+ * 
  */
-public class QueryMixRunner implements Callable<QueryMixRun> {
-	
-	private Benchmarker b;
-	
-	/**
-	 * Creates a new Query Mix Runner
-	 * @param b Benchmarker
-	 */
-	public QueryMixRunner(Benchmarker b)
-	{
-		this.b = b;
-	}
+public class OperationMixRunner implements Callable<OperationMixRun> {
 
-	/**
-	 * Runs the Query Mix returning the results of the run
-	 */
-	@Override
-	public QueryMixRun call()
-	{
-		return this.b.getQueryMix().run(this.b);
-	}
+    private Benchmarker b;
+
+    /**
+     * Creates a new operation mix runner
+     * 
+     * @param b
+     *            Benchmarker
+     */
+    public OperationMixRunner(Benchmarker b) {
+        this.b = b;
+    }
+
+    /**
+     * Runs the operation mix returning the results of the run
+     */
+    @Override
+    public OperationMixRun call() {
+        return this.b.getOperationMix().run(this.b);
+    }
 
 }

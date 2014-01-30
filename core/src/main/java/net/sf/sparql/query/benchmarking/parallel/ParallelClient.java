@@ -36,7 +36,7 @@ import java.util.concurrent.Callable;
 import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
-import net.sf.sparql.query.benchmarking.queries.QueryMixTask;
+import net.sf.sparql.query.benchmarking.queries.OperationMixTask;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 
 import org.apache.log4j.Logger;
@@ -74,12 +74,12 @@ public class ParallelClient implements Callable<Object> {
 	}
 	
 	/**
-	 * Runs query mixes while the Client Manager indicates there are still mixes to be run
+	 * Runs operation mixes while the Client Manager indicates there are still mixes to be run
 	 */
 	@Override
 	public Object call() throws Exception {
 		Benchmarker b = manager.getBenchmarker();
-		BenchmarkOperationMix queryMix = b.getQueryMix();
+		BenchmarkOperationMix operationMix = b.getOperationMix();
 		
 		//Firstly wait for the manager to tell us it is ready, this is to ensure all clients launch near simultaneously
 		while (!manager.isReady())
@@ -92,24 +92,24 @@ public class ParallelClient implements Callable<Object> {
 		{
 			try
 			{
-				b.reportProgress("Client " + id + " starting new query mix run");
+				b.reportProgress("Client " + id + " starting new operation mix run");
 				
 				//Run a query mix
-				QueryMixTask task = new QueryMixTask(b);
+				OperationMixTask task = new OperationMixTask(b);
 				b.getExecutor().submit(task);
 				OperationMixRun r = task.get();
 
 				//Report completed run
 				int completedRun = manager.completeRun();
-				b.reportProgress("Query Mix Run " + completedRun + " of " + b.getRuns() + " by Client " + id);
+				b.reportProgress("Operation Mix Run " + completedRun + " of " + b.getRuns() + " by Client " + id);
 				b.reportProgress(r);
 				b.reportProgress();
 				b.reportProgress("Total Response Time: " + BenchmarkerUtils.formatTime(r.getTotalResponseTime()));
 				b.reportProgress("Total Runtime: " + BenchmarkerUtils.formatTime(r.getTotalRuntime()));
-				int minQueryId = r.getMinimumRuntimeOperationID();
-				int maxQueryId = r.getMaximumRuntimeOperationID();
-				b.reportProgress("Minimum Query Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime()) + " (Query " + queryMix.getQuery(minQueryId).getName() + ")");
-				b.reportProgress("Maximum Query Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime()) + " (Query " + queryMix.getQuery(maxQueryId).getName() + ")");
+				int minOperationId = r.getMinimumRuntimeOperationID();
+				int maxOperationId = r.getMaximumRuntimeOperationID();
+				b.reportProgress("Minimum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime()) + " (Operation " + operationMix.getOperation(minOperationId).getName() + ")");
+				b.reportProgress("Maximum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime()) + " (Operation " + operationMix.getOperation(maxOperationId).getName() + ")");
 				b.reportProgress();
 			}
 			catch (Exception e)
@@ -121,7 +121,7 @@ public class ParallelClient implements Callable<Object> {
 				logger.error(e.getMessage());
 				if (b.getHaltOnError() || b.getHaltAny())
 				{
-					b.halt("Query Mix run failed in Client " + id + " - " + e.getMessage());
+					b.halt("Operation Mix run failed in Client " + id + " - " + e.getMessage());
 				}
 			}
 		}

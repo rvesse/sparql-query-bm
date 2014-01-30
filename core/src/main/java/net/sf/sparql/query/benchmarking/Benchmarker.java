@@ -221,7 +221,7 @@ public class Benchmarker {
      * 
      * @return Query Mix
      */
-    public BenchmarkOperationMix getQueryMix() {
+    public BenchmarkOperationMix getOperationMix() {
         return queryMix;
     }
 

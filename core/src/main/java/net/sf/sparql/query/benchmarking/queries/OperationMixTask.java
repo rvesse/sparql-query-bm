@@ -1,5 +1,5 @@
 /** 
- * Copyright 2011-2012 Cray Inc. All Rights Reserved
+ * Copyright 2011-2014 Cray Inc. All Rights Reserved
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -34,22 +34,22 @@ package net.sf.sparql.query.benchmarking.queries;
 import java.util.concurrent.FutureTask;
 
 import net.sf.sparql.query.benchmarking.Benchmarker;
-import net.sf.sparql.query.benchmarking.stats.QueryMixRun;
+import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 
 
 /**
- * A Query Mix task that can be executed
+ * An operation mix task that can be executed
  * @author rvesse
  *
  */
-public class QueryMixTask extends FutureTask<QueryMixRun> {
+public class OperationMixTask extends FutureTask<OperationMixRun> {
 
 	/**
 	 * Creates a new Task
 	 * @param b Benchmarker
 	 */
-	public QueryMixTask(Benchmarker b)
+	public OperationMixTask(Benchmarker b)
 	{
-		super(new QueryMixRunner(b));
+		super(new OperationMixRunner(b));
 	}
 }

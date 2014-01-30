@@ -202,4 +202,19 @@ public interface BenchmarkOperation {
      */
     public abstract void trim(int outliers);
 
+    /**
+     * Gets a descriptive type string for the operation
+     * 
+     * @return Type string
+     */
+    public abstract String getType();
+
+    /**
+     * Gets a string that shows the content of the operation e.g. SPARQL Query
+     * string, SPARQL Update string etc.
+     * 
+     * @return Content string
+     */
+    public abstract String getContentString();
+
 }

@@ -131,4 +131,14 @@ public class BenchmarkQuery extends AbstractBenchmarkOperation implements Benchm
     public String toString() {
         return this.getName();
     }
+
+    @Override
+    public String getType() {
+        return "SPARQL Query";
+    }
+
+    @Override
+    public String getContentString() {
+        return this.getQueryString();
+    }
 }
