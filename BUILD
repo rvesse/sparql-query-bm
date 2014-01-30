@@ -1,7 +1,7 @@
 Build
 =====
 
-SPARQL Query Benchmarker uses a mutli-module maven build.
+SPARQL Query Benchmarker uses a multi-module maven build.
 
 Running mvn package in this directory will build all components.  You will
 find the API under core/target and the CLI under cmd/target
@@ -18,7 +18,7 @@ excludes any built artifacts (the target directories)
 License
 =======
 
-Copyright 2011-2012 Cray Inc. All Rights Reserved
+Copyright 2011-2014 Cray Inc. All Rights Reserved
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are

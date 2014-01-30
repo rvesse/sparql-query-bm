@@ -78,6 +78,8 @@ import com.hp.hpl.jena.query.QueryParseException;
  */
 public class BenchmarkerCmd {
 
+    // TODO Refactor to use Airline
+
     private static boolean enableLog4jToConsole = false, debug = false;
     private static boolean quiet = false;
 
@@ -344,7 +346,7 @@ public class BenchmarkerCmd {
                 System.exit(1);
             }
         }
-        
+
         // Finally we will try and configure authentication
         if (user != null && pwd != null) {
             if (formUrl != null) {
@@ -353,7 +355,7 @@ public class BenchmarkerCmd {
                     userField = ApacheModAuthFormLogin.USER_FIELD;
                 if (pwdField == null)
                     pwdField = ApacheModAuthFormLogin.PASSWORD_FIELD;
-                
+
                 FormLogin login = new FormLogin(formUrl, userField, pwdField, user, pwd.toCharArray());
                 try {
                     b.setAuthenticator(new FormsAuthenticator(new URI(b.getQueryEndpoint()), login));
@@ -387,7 +389,7 @@ public class BenchmarkerCmd {
             System.exit(1);
         }
     }
-    
+
     private static void parseOperationMix(Benchmarker b, String mixFile) {
         // Set operation mix
         try {
@@ -414,7 +416,7 @@ public class BenchmarkerCmd {
         System.out.println("The following options are required:");
         System.out.println();
         System.out.println(" -m mixfile");
-        System.out.println(" --mix mixfile             Sets the filename of the operation mix file which contains the operations to be run");
+        System.out.println(" --mix mixfile               Sets the filename of the operation mix file which contains the operations to be run");
         System.out.println();
         System.out.println("One/more of the following options are also required, exact requirements will depend on your operation mix:");
         System.out.println();

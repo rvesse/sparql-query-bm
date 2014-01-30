@@ -26,16 +26,16 @@ Basic Usage
 To run a benchmark you need to do the following as a minimum:
 1 - Create an instance of the Benchmarker class
 2 - Use the setter methods to set at least the following:
- - Query Mix - setQueryMix()
- - Endpoint - setEndpoint()
+ - Operation Mix - setOperationMix()
+ - One/more endpoints - setQueryEndpoint(), setUpdateEndpoint(), setGraphStoreEndpoint(), setCustomEndpoint()
  - Note that (Outliers * 2) must be less than number of Runs - setOutliers() and setRuns()
 3 - Call runBenchmark()
 
 e.g.
 
 	Benchmarker b = new Benchmarker();
-	b.setQueryMix(new BenchmarkQueryMix("queries/sp2b.txt"));
-	b.setEndpoint("http://example.org/sparql");
+	b.setOperationMix(new BenchmarkQueryMix("queries/sp2b.txt"));
+	b.setQueryEndpoint("http://example.org/sparql");
 	b.setOutliers(1);
 	b.setRuns(25);
 	b.runBenchmark();
@@ -43,18 +43,18 @@ e.g.
 There are many more setters that can be used to configure many aspects of the behaviour of the API
 
 After the benchmark has completed you can then get various statistics for the benchmark by accessing the
-query mix object using getQueryMix() to get a BenchmarkQueryMix instance.  This instance provides access
-to various aggregate statistics such as getAverageRuntime() and getQueryMixesPerHour()
+query mix object using getOperationMix() to get a BenchmarkOperationMix instance.  This instance provides access
+to various aggregate statistics such as getAverageRuntime() and getOperationMixesPerHour()
 
-You can access more fine grained statistics by calling getRuns() on the BenchmarkQueryMix instance.  This will
-give you an iterator of QueryMixRun instances, each instance represents the statistics from a single run of
-the query mix and can give you information like which query from the mix ran slowest/fastest.
+You can access more fine grained statistics by calling getRuns() on the BenchmarkOperationMix instance.  This will
+give you an iterator of OperationMixRun instances, each instance represents the statistics from a single run of
+the operation mix and can give you information like which operation from the mix ran slowest/fastest.
 
-You can also access fine grained statistics on individual queries by accessing the iterator of queries using
-the getQueries() method or by using getQuery(N) to get a specific query when N is the ID of the query (zero based
-index).  Either of these methods provides access to a BenchmarkQuery instance which gives you various aggregate
-stats for the query.  As with a query mix you can use getRuns() to get an iterator of QueryRun instances where
-each instance represents a single run of the query.
+You can also access fine grained statistics on individual operations by accessing the iterator of operations using
+the getOperations() method or by using getOperation(N) to get a specific operation when N is the ID of the operation
+(zero based index).  Either of these methods provides access to a BenchmarkOperation instance which gives you various 
+aggregate stats for the operation.  As with an operation mix you can use getRuns() to get an iterator of OpertionRun
+instances where each instance represents a single run of the operation.
 
 Advanced Usage (Progress Listeners)
 ===================================
@@ -102,17 +102,17 @@ This is called whenever an informational message is generated, listeners that ar
 stats will typically just do nothing for this method.  Listeners concerned with reporting progress
 to the user should usually perform some action here.
 
-handleProgress(BenchmarkQuery query, QueryRun run)
+handleProgress(BenchmarkOperation operation, OperationRun run)
 --------------------------------------------------
 
-This is called when a single run of a query is completed, it receives a reference both to the query that
+This is called when a single run of an operation is completed, it receives a reference both to the operation that
 was run and to the stats for that single run.  Listeners concerned with stats will typically want to take
 some actions in this method.
 
-handleProgress(QueryMixRun run)
+handleProgress(OperationMixRun run)
 -------------------------------
 
-This is called when a single run of the query mix is completed i.e. all queries in the mix have been run.
+This is called when a single run of the operation mix is completed i.e. all queries in the mix have been run.
 It receives a reference to the stats for that run, listeners concerned with stats will typically want to 
 take some actions in this method.
 
@@ -127,7 +127,7 @@ available for the benchmark.
 License
 =======
 
-Copyright 2011-2012 Cray Inc. All Rights Reserved
+Copyright 2011-2014 Cray Inc. All Rights Reserved
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are

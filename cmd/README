@@ -6,20 +6,28 @@ of a SPARQL engine via HTTP
 
 On *nix systems you can invoke the benchmarker like so:
 
-  ./benchmark endpoint queryListFile [options]
+  ./benchmark [required options] [options]
 
 On Windows systems you can invoke the benchmarker like so:
 
-  benchmark.bat endpoint queryListFile [options]
+  benchmark.bat [required options] [options]
 
 Or you can invoke the jar directly using Java as follows:
 
-  java -jar sparql-query-bm-cli.jar endpoint queryListFile [options]
+  java -jar sparql-query-bm-cli.jar [required options] [options]
 
-Required arguments are:
+The following options are required:
+-m mixfile
+--mix mixfile               Sets the filename of the operation mix file which contains the operations to be run
 
-endpoint 		The URI of a HTTP accessible SPARQL endpoint
-queryListFile	Path to a file containing a list of paths to actual query files (1 per line)
+One/more of the following options are also required, exact requirements will depend on your operation mix:
+-q uri
+--query-endpoint uri        Sets the SPARQL query endpoint to use
+-u uri
+--update-endpoint uri       Sets the SPARQL update endpoint to use
+-g uri
+--gsp-endpoint uri          Sets the SPARQL graph store protocol endpoint to use
+--custom-endpoint name uri  Sets a custom endpoint to use for custom operations
 
 Supported Options are as follows:
 -c filename.csv
@@ -233,7 +241,7 @@ References
 License
 =======
 
-Copyright 2011-2013 Cray Inc. All Rights Reserved
+Copyright 2011-2014 Cray Inc. All Rights Reserved
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
