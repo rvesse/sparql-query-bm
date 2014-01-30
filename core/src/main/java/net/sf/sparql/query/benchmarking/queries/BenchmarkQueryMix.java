@@ -44,7 +44,10 @@ import java.util.PriorityQueue;
 
 import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
+import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
+import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
 import net.sf.sparql.query.benchmarking.parallel.ParallelTimer;
+import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.query.benchmarking.stats.QueryMixRun;
 import net.sf.sparql.query.benchmarking.stats.QueryRun;
 
@@ -62,7 +65,7 @@ import com.hp.hpl.jena.util.FileUtils;
  * @author rvesse
  * 
  */
-public class BenchmarkQueryMix {
+public class BenchmarkQueryMix implements BenchmarkOperationMix {
 
     private static final Logger logger = Logger.getLogger(BenchmarkQueryMix.class);
 
@@ -165,59 +168,50 @@ public class BenchmarkQueryMix {
         }
     }
 
-    /**
-     * Gets the Queries in this mix
-     * 
-     * @return Queries
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getQueries()
      */
+    @Override
     public Iterator<BenchmarkQuery> getQueries() {
         return this.queries.iterator();
     }
 
-    /**
-     * Gets an iterator over the query mix runs
-     * 
-     * @return Mix Runs
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getRuns()
      */
+    @Override
     public Iterator<QueryMixRun> getRuns() {
         return this.runs.iterator();
     }
 
-    /**
-     * Gets the Query with the specified ID
-     * 
-     * @param id
-     * @return Query
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getQuery(int)
      */
-    public BenchmarkQuery getQuery(int id) {
+    @Override
+    public BenchmarkOperation getQuery(int id) {
         return this.queries.get(id);
     }
 
-    /**
-     * Gets the number of queries in the query mix
-     * 
-     * @return Number of queries
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#size()
      */
+    @Override
     public int size() {
         return this.queries.size();
     }
 
-    /**
-     * Sets whether the Query Mix is being run as a thread, if so it will prefix
-     * thread identifier to its progress messages
-     * 
-     * @param asThread
-     *            Whether the Query Mix is being run as a thread
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#setRunAsThread(boolean)
      */
+    @Override
     public void setRunAsThread(boolean asThread) {
         this.asThread = asThread;
     }
 
-    /**
-     * Performs a Query Mix run recording the results as a {@link QueryMixRun}
-     * @param b Benchmarker
-     * @return Query Mix run details
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#run(net.sf.sparql.query.benchmarking.Benchmarker)
      */
+    @Override
     public QueryMixRun run(Benchmarker b) {
         QueryMixRun run = new QueryMixRun(this.queries.size(), b.getGlobalOrder());
 
@@ -289,23 +283,23 @@ public class BenchmarkQueryMix {
         return run;
     }
 
-    /**
-     * Clears all run statistics
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#clear()
      */
+    @Override
     public void clear() {
         this.runs.clear();
         Iterator<BenchmarkQuery> qs = this.queries.iterator();
         while (qs.hasNext()) {
-            BenchmarkQuery q = qs.next();
+            BenchmarkOperation q = qs.next();
             q.clear();
         }
     }
 
-    /**
-     * Trims the worst and best N results
-     * 
-     * @param outliers
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#trim(int)
      */
+    @Override
     public void trim(int outliers) {
         if (outliers <= 0)
             return;
@@ -320,19 +314,18 @@ public class BenchmarkQueryMix {
         while (rs.size() > outliers) {
             rs.remove();
         }
-        for (QueryMixRun r : rs) {
+        for (OperationMixRun r : rs) {
             this.runs.remove(r);
         }
     }
 
-    /**
-     * Gets the total runtime over all runs
-     * 
-     * @return Total Runtime in nanoseconds
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getTotalRuntime()
      */
+    @Override
     public long getTotalRuntime() {
         long total = 0;
-        for (QueryMixRun r : this.runs) {
+        for (OperationMixRun r : this.runs) {
             if (r.getTotalRuntime() == Long.MAX_VALUE)
                 return Long.MAX_VALUE;
             total += r.getTotalRuntime();
@@ -340,24 +333,21 @@ public class BenchmarkQueryMix {
         return total;
     }
 
-    /**
-     * Gets the actual runtime for the query over all runs (takes into account
-     * queries that run in parallel)
-     * 
-     * @return Actual Runtime in nanoseconds
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getActualRuntime()
      */
+    @Override
     public long getActualRuntime() {
         return this.timer.getActualRuntime();
     }
 
-    /**
-     * Gets the total response time over all runs
-     * 
-     * @return Total Response Time in nanoseconds
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getTotalResponseTime()
      */
+    @Override
     public long getTotalResponseTime() {
         long total = 0;
-        for (QueryMixRun r : this.runs) {
+        for (OperationMixRun r : this.runs) {
             if (r.getTotalResponseTime() == Long.MAX_VALUE)
                 return Long.MAX_VALUE;
             total += r.getTotalResponseTime();
@@ -365,11 +355,10 @@ public class BenchmarkQueryMix {
         return total;
     }
 
-    /**
-     * Gets the average runtime over all runs
-     * 
-     * @return Arithmetic Average Runtime in nanoseconds
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getAverageRuntime()
      */
+    @Override
     public long getAverageRuntime() {
         if (this.runs.size() == 0)
             return 0;
@@ -377,12 +366,10 @@ public class BenchmarkQueryMix {
         return total / this.runs.size();
     }
 
-    /**
-     * Gets the average actual runtime (takes into account parallization of
-     * queries)
-     * 
-     * @return Arithmetic Actual Average Runtime in nanoseconds
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getActualAverageRuntime()
      */
+    @Override
     public long getActualAverageRuntime() {
         if (this.runs.size() == 0)
             return 0;
@@ -390,11 +377,10 @@ public class BenchmarkQueryMix {
         return total / this.runs.size();
     }
 
-    /**
-     * Gets the average response time
-     * 
-     * @return Arithmetic Average Response in nanoseconds
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getAverageResponseTime()
      */
+    @Override
     public long getAverageResponseTime() {
         if (this.runs.size() == 0)
             return 0;
@@ -402,31 +388,29 @@ public class BenchmarkQueryMix {
         return total / this.runs.size();
     }
 
-    /**
-     * Gets the average runtime for the query over all runs (geometric mean)
-     * 
-     * @return Geometric Average Runtime in nanoseconds
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getGeometricAverageRuntime()
      */
+    @Override
     public double getGeometricAverageRuntime() {
         if (this.runs.size() == 0)
             return 0;
         double[] values = new double[this.runs.size()];
         int i = 0;
-        for (QueryMixRun r : this.runs) {
+        for (OperationMixRun r : this.runs) {
             values[i] = (double) r.getTotalRuntime();
             i++;
         }
         return BenchmarkQueryMix.gmean.evaluate(values);
     }
 
-    /**
-     * Gets the minimum runtime for a run
-     * 
-     * @return Minimum Runtime in nanoseconds
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getMinimumRuntime()
      */
+    @Override
     public long getMinimumRuntime() {
         long min = Long.MAX_VALUE;
-        for (QueryMixRun r : this.runs) {
+        for (OperationMixRun r : this.runs) {
             if (r.getTotalRuntime() < min) {
                 min = r.getTotalRuntime();
             }
@@ -434,14 +418,13 @@ public class BenchmarkQueryMix {
         return min;
     }
 
-    /**
-     * Gets the maximum runtime for a run
-     * 
-     * @return Maximum Runtime in nanoseconds
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getMaximumRuntime()
      */
+    @Override
     public long getMaximumRuntime() {
         long max = Long.MIN_VALUE;
-        for (QueryMixRun r : this.runs) {
+        for (OperationMixRun r : this.runs) {
             if (r.getTotalRuntime() > max) {
                 max = r.getTotalRuntime();
             }
@@ -449,56 +432,50 @@ public class BenchmarkQueryMix {
         return max;
     }
 
-    /**
-     * Gets the Variance in Mix Runtime
-     * 
-     * @return Runtime Variance in nanoseconds
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getVariance()
      */
+    @Override
     public double getVariance() {
         double[] values = new double[this.runs.size()];
         int i = 0;
-        for (QueryMixRun r : this.runs) {
+        for (OperationMixRun r : this.runs) {
             values[i] = (double) r.getTotalRuntime();
             i++;
         }
         return var.evaluate(values);
     }
 
-    /**
-     * Gets the Standard Deviation in Mix Runtime
-     * 
-     * @return Runtime Standard Deviation in nanoseconds
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getStandardDeviation()
      */
+    @Override
     public double getStandardDeviation() {
         double[] values = new double[this.runs.size()];
         int i = 0;
-        for (QueryMixRun r : this.runs) {
+        for (OperationMixRun r : this.runs) {
             values[i] = (double) r.getTotalRuntime();
             i++;
         }
         return sdev.evaluate(values);
     }
 
-    /**
-     * Calculates the number of query mixes per hour that could be executed
-     * based on the average runtime of the query mix
-     * 
-     * @return Query Mixes per Hour
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getQueryMixesPerHour()
      */
-    public double getQueryMixesPerHour() {
+    @Override
+    public double getOperationMixesPerHour() {
         double avgRuntime = BenchmarkerUtils.toSeconds(this.getAverageRuntime());
         if (avgRuntime == 0)
             return 0;
         return BenchmarkerUtils.SECONDS_PER_HOUR / avgRuntime;
     }
 
-    /**
-     * Calculates the number of query mixes per hour that could be executed
-     * based on the {@link BenchmarkQueryMix#getActualAverageRuntime()}
-     * 
-     * @return Query Mixes per Hour
+    /* (non-Javadoc)
+     * @see net.sf.sparql.query.benchmarking.queries.BenchmarkOperation#getActualQueryMixesPerHour()
      */
-    public double getActualQueryMixesPerHour() {
+    @Override
+    public double getActualOperationMixesPerHour() {
         double avgRuntime = BenchmarkerUtils.toSeconds(this.getActualAverageRuntime());
         if (avgRuntime == 0)
             return 0;

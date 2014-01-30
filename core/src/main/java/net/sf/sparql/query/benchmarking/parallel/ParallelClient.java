@@ -35,9 +35,9 @@ import java.util.concurrent.Callable;
 
 import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
-import net.sf.sparql.query.benchmarking.queries.BenchmarkQueryMix;
+import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
 import net.sf.sparql.query.benchmarking.queries.QueryMixTask;
-import net.sf.sparql.query.benchmarking.stats.QueryMixRun;
+import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 
 import org.apache.log4j.Logger;
 
@@ -79,7 +79,7 @@ public class ParallelClient implements Callable<Object> {
 	@Override
 	public Object call() throws Exception {
 		Benchmarker b = manager.getBenchmarker();
-		BenchmarkQueryMix queryMix = b.getQueryMix();
+		BenchmarkOperationMix queryMix = b.getQueryMix();
 		
 		//Firstly wait for the manager to tell us it is ready, this is to ensure all clients launch near simultaneously
 		while (!manager.isReady())
@@ -97,7 +97,7 @@ public class ParallelClient implements Callable<Object> {
 				//Run a query mix
 				QueryMixTask task = new QueryMixTask(b);
 				b.getExecutor().submit(task);
-				QueryMixRun r = task.get();
+				OperationMixRun r = task.get();
 
 				//Report completed run
 				int completedRun = manager.completeRun();
@@ -106,8 +106,8 @@ public class ParallelClient implements Callable<Object> {
 				b.reportProgress();
 				b.reportProgress("Total Response Time: " + BenchmarkerUtils.formatTime(r.getTotalResponseTime()));
 				b.reportProgress("Total Runtime: " + BenchmarkerUtils.formatTime(r.getTotalRuntime()));
-				int minQueryId = r.getMinimumRuntimeQueryID();
-				int maxQueryId = r.getMaximumRuntimeQueryID();
+				int minQueryId = r.getMinimumRuntimeOperationID();
+				int maxQueryId = r.getMaximumRuntimeOperationID();
 				b.reportProgress("Minimum Query Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime()) + " (Query " + queryMix.getQuery(minQueryId).getName() + ")");
 				b.reportProgress("Maximum Query Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime()) + " (Query " + queryMix.getQuery(maxQueryId).getName() + ")");
 				b.reportProgress();

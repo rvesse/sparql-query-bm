@@ -37,9 +37,11 @@ import java.util.Iterator;
 
 import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
+import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
+import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
 import net.sf.sparql.query.benchmarking.queries.BenchmarkQuery;
-import net.sf.sparql.query.benchmarking.queries.BenchmarkQueryMix;
-import net.sf.sparql.query.benchmarking.stats.QueryMixRun;
+import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
+import net.sf.sparql.query.benchmarking.stats.OperationRun;
 import net.sf.sparql.query.benchmarking.stats.QueryRun;
 
 
@@ -180,12 +182,12 @@ public class XmlProgressListener implements ProgressListener
 			
 			//Print Queries
 			openTag(TAG_QUERIES);
-			BenchmarkQueryMix mix = b.getQueryMix();
+			BenchmarkOperationMix mix = b.getQueryMix();
 			Iterator<BenchmarkQuery> qs = mix.getQueries();
 			int id = 0;
 			while (qs.hasNext())
 			{
-				BenchmarkQuery q = qs.next();
+				BenchmarkOperation q = qs.next();
 				openTag(TAG_QUERY, true);
 				addAttribute(ATTR_ID, id);
 				addAttribute(ATTR_NAME, q.getName());
@@ -255,12 +257,12 @@ public class XmlProgressListener implements ProgressListener
 			
 			//Query Summary
 			openTag(TAG_QUERIES);		
-			BenchmarkQueryMix queryMix = this.b.getQueryMix();
+			BenchmarkOperationMix queryMix = this.b.getQueryMix();
 			Iterator<BenchmarkQuery> qs = queryMix.getQueries();
 			int id = 0;
 			while (qs.hasNext())
 			{
-				BenchmarkQuery q = qs.next();
+				BenchmarkOperation q = qs.next();
 				openTag(TAG_QUERY, true);
 				
 				//CSV Summary
@@ -277,10 +279,10 @@ public class XmlProgressListener implements ProgressListener
 				addAttribute(ATTR_MAX_QUERY_RUNTIME, q.getMaximumRuntime());
 				addAttribute(ATTR_VARIANCE, q.getVariance());
 				addAttribute(ATTR_STD_DEV, q.getStandardDeviation());
-				addAttribute(ATTR_QPS, q.getQueriesPerSecond());
-				if (wasMultithreaded) addAttribute(ATTR_ACTUAL_QPS, q.getActualQueriesPerSecond());
-				addAttribute(ATTR_QPH, q.getQueriesPerHour());		
-				if (wasMultithreaded) addAttribute(ATTR_ACTUAL_QPH, q.getActualQueriesPerHour());
+				addAttribute(ATTR_QPS, q.getOperationsPerSecond());
+				if (wasMultithreaded) addAttribute(ATTR_ACTUAL_QPS, q.getActualOperationsPerSecond());
+				addAttribute(ATTR_QPH, q.getOperationsPerHour());		
+				if (wasMultithreaded) addAttribute(ATTR_ACTUAL_QPH, q.getActualOperationsPerHour());
 				finishAttributes(true);
 				
 				id++;
@@ -300,8 +302,8 @@ public class XmlProgressListener implements ProgressListener
 			addAttribute(ATTR_MAX_MIX_RUNTIME, queryMix.getMaximumRuntime());
 			addAttribute(ATTR_VARIANCE, queryMix.getVariance());
 			addAttribute(ATTR_STD_DEV, queryMix.getStandardDeviation());
-			addAttribute(ATTR_QMPH, queryMix.getQueryMixesPerHour());
-			if (wasMultithreaded) addAttribute(ATTR_ACTUAL_QMPH, queryMix.getActualQueryMixesPerHour());
+			addAttribute(ATTR_QMPH, queryMix.getOperationMixesPerHour());
+			if (wasMultithreaded) addAttribute(ATTR_ACTUAL_QMPH, queryMix.getActualOperationMixesPerHour());
 			finishAttributes(true);
 			
 			closeTag(TAG_STATS);
@@ -325,13 +327,13 @@ public class XmlProgressListener implements ProgressListener
 	}
 
 	@Override
-	public void handleProgress(BenchmarkQuery query, QueryRun run) 
+	public void handleProgress(BenchmarkOperation query, OperationRun run) 
 	{
 		//We don't handle individual query run stats, we only handle mix and aggregate stats
 	}
 
 	@Override
-	public synchronized void handleProgress(QueryMixRun run) 
+	public synchronized void handleProgress(OperationMixRun run) 
 	{
 		//Print run information
 		openTag(TAG_MIX_RUN, true);
@@ -341,8 +343,8 @@ public class XmlProgressListener implements ProgressListener
 		this.addAttribute(ATTR_TOTAL_RUNTIME, run.getTotalRuntime());
 		this.addAttribute(ATTR_MIN_QUERY_RUNTIME, run.getMinimumRuntime());
 		this.addAttribute(ATTR_MAX_QUERY_RUNTIME, run.getMaximumRuntime());
-		this.addAttribute(ATTR_FASTEST_QUERY, run.getMinimumRuntimeQueryID());
-		this.addAttribute(ATTR_SLOWEST_QUERY, run.getMaximumRuntimeQueryID());
+		this.addAttribute(ATTR_FASTEST_QUERY, run.getMinimumRuntimeOperationID());
+		this.addAttribute(ATTR_SLOWEST_QUERY, run.getMaximumRuntimeOperationID());
 		
 		finishAttributes();
 		
@@ -350,7 +352,7 @@ public class XmlProgressListener implements ProgressListener
 		int id = 0;
 		while (rs.hasNext())
 		{
-			QueryRun r = rs.next();
+			OperationRun r = rs.next();
 			openTag(TAG_QUERY, true);
 			addAttribute(ATTR_ID, id);
 			id++;

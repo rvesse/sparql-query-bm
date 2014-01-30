@@ -35,6 +35,7 @@ import java.util.concurrent.Callable;
 
 import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
+import net.sf.sparql.query.benchmarking.stats.OperationRun;
 import net.sf.sparql.query.benchmarking.stats.QueryRun;
 
 import org.apache.log4j.Logger;
@@ -99,7 +100,7 @@ public class QueryRunner implements Callable<QueryRun> {
 		try
 		{
 			long numResults = 0;
-			long responseTime = QueryRun.NOT_YET_RUN;
+			long responseTime = OperationRun.NOT_YET_RUN;
 			long startTime = System.nanoTime();
 			if (this.query.isAskType())
 			{

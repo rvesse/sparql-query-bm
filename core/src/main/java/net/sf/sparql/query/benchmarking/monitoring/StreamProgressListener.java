@@ -35,9 +35,9 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import net.sf.sparql.query.benchmarking.Benchmarker;
-import net.sf.sparql.query.benchmarking.queries.BenchmarkQuery;
-import net.sf.sparql.query.benchmarking.stats.QueryMixRun;
-import net.sf.sparql.query.benchmarking.stats.QueryRun;
+import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
+import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
+import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
 /**
  * A Progress Listener that prints informational messages to a
@@ -151,14 +151,14 @@ public class StreamProgressListener implements ProgressListener {
      * Does nothing, you may wish to override in derived classes
      */
     @Override
-    public void handleProgress(BenchmarkQuery query, QueryRun run) {
+    public void handleProgress(BenchmarkOperation query, OperationRun run) {
     }
 
     /**
      * Does nothing, you may wish to override in derived classes
      */
     @Override
-    public void handleProgress(QueryMixRun run) {
+    public void handleProgress(OperationMixRun run) {
     }
 
     /**

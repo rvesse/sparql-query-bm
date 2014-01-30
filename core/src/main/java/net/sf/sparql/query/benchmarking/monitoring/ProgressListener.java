@@ -32,9 +32,9 @@
 package net.sf.sparql.query.benchmarking.monitoring;
 
 import net.sf.sparql.query.benchmarking.Benchmarker;
-import net.sf.sparql.query.benchmarking.queries.BenchmarkQuery;
-import net.sf.sparql.query.benchmarking.stats.QueryMixRun;
-import net.sf.sparql.query.benchmarking.stats.QueryRun;
+import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
+import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
+import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
 
 /**
@@ -67,11 +67,11 @@ public interface ProgressListener
 	 * @param query
 	 * @param run
 	 */
-	void handleProgress(BenchmarkQuery query, QueryRun run);
+	void handleProgress(BenchmarkOperation query, OperationRun run);
 	
 	/**
 	 * Handles statistics for a single run of the query set
 	 * @param run
 	 */
-	void handleProgress(QueryMixRun run);
+	void handleProgress(OperationMixRun run);
 }

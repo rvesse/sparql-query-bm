@@ -37,10 +37,11 @@ import java.util.Iterator;
 
 import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
+import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
+import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
 import net.sf.sparql.query.benchmarking.queries.BenchmarkQuery;
-import net.sf.sparql.query.benchmarking.queries.BenchmarkQueryMix;
-import net.sf.sparql.query.benchmarking.stats.QueryMixRun;
-import net.sf.sparql.query.benchmarking.stats.QueryRun;
+import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
+import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
 import org.apache.log4j.Logger;
 
@@ -123,11 +124,11 @@ public class CsvProgressListener implements ProgressListener
 			this.buffer.append("Query,Total Response Time,Average Response Time (Arithmetic),Total Runtime,Average Runtime (Arithmetic),Average Runtime (Geometric),Min Runtime,Max Runtime,Variance,Standard Deviation,Queries per Second,Queries per Hour\n");
 		}
 		
-		BenchmarkQueryMix queryMix = this.b.getQueryMix();
+		BenchmarkOperationMix queryMix = this.b.getQueryMix();
 		Iterator<BenchmarkQuery> qs = queryMix.getQueries();
 		while (qs.hasNext())
 		{
-			BenchmarkQuery q = qs.next();
+			BenchmarkOperation q = qs.next();
 			//CSV Summary
 			this.buffer.append(BenchmarkerUtils.toCsv(q.getName()) + ",");
 			this.buffer.append(BenchmarkerUtils.toSeconds(q.getTotalResponseTime()) + ",");
@@ -141,10 +142,10 @@ public class CsvProgressListener implements ProgressListener
 			this.buffer.append(BenchmarkerUtils.toSeconds(q.getMaximumRuntime()) + ",");
 			this.buffer.append(BenchmarkerUtils.toSeconds(q.getVariance()) + ",");
 			this.buffer.append(BenchmarkerUtils.toSeconds(q.getStandardDeviation()) + ",");
-			this.buffer.append(q.getQueriesPerSecond() + ",");
-			if (wasMultithreaded) this.buffer.append(q.getActualQueriesPerSecond() + ",");
-			this.buffer.append(q.getQueriesPerHour());
-			if (wasMultithreaded) this.buffer.append("," + q.getActualQueriesPerHour());
+			this.buffer.append(q.getOperationsPerSecond() + ",");
+			if (wasMultithreaded) this.buffer.append(q.getActualOperationsPerSecond() + ",");
+			this.buffer.append(q.getOperationsPerHour());
+			if (wasMultithreaded) this.buffer.append("," + q.getActualOperationsPerHour());
 			this.buffer.append("\n");
 		}
 		
@@ -173,8 +174,8 @@ public class CsvProgressListener implements ProgressListener
 			results.append(BenchmarkerUtils.toSeconds(queryMix.getMaximumRuntime()) + ",");
 			results.append(BenchmarkerUtils.toSeconds(queryMix.getVariance()) + ",");
 			results.append(BenchmarkerUtils.toSeconds(queryMix.getStandardDeviation()) + ",");
-			results.append(Double.toString(queryMix.getQueryMixesPerHour()));
-			if (wasMultithreaded) results.append("," + queryMix.getActualQueryMixesPerHour());
+			results.append(Double.toString(queryMix.getOperationMixesPerHour()));
+			if (wasMultithreaded) results.append("," + queryMix.getActualOperationMixesPerHour());
 			results.append("\n");
 			results.append(buffer.toString());
 			results.close();
@@ -203,7 +204,7 @@ public class CsvProgressListener implements ProgressListener
 	 * @param run Query Run statistics
 	 */
 	@Override
-	public void handleProgress(BenchmarkQuery query, QueryRun run) {
+	public void handleProgress(BenchmarkOperation query, OperationRun run) {
 		//We don't handle query run stats as they are produced, we're only interested in aggregate stats at the end		
 	}
 
@@ -211,7 +212,7 @@ public class CsvProgressListener implements ProgressListener
 	 * Handles the Mix progress event by recording the run statistics for later printing to the CSV file
 	 */
 	@Override
-	public synchronized void handleProgress(QueryMixRun run) {
+	public synchronized void handleProgress(OperationMixRun run) {
 		this.buffer.append(this.run + ",");
 		this.buffer.append(BenchmarkerUtils.toSeconds(run.getTotalResponseTime()) + ",");
 		this.buffer.append(BenchmarkerUtils.toSeconds(run.getTotalRuntime()) + ",");

@@ -46,13 +46,14 @@ import java.util.concurrent.atomic.AtomicLong;
 import net.sf.sparql.query.benchmarking.monitoring.CsvProgressListener;
 import net.sf.sparql.query.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.query.benchmarking.monitoring.XmlProgressListener;
+import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
+import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
 import net.sf.sparql.query.benchmarking.parallel.ParallelClientManagerTask;
 import net.sf.sparql.query.benchmarking.queries.BenchmarkQuery;
-import net.sf.sparql.query.benchmarking.queries.BenchmarkQueryMix;
 import net.sf.sparql.query.benchmarking.queries.QueryRunner;
 import net.sf.sparql.query.benchmarking.queries.QueryTask;
-import net.sf.sparql.query.benchmarking.stats.QueryMixRun;
-import net.sf.sparql.query.benchmarking.stats.QueryRun;
+import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
+import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
 import org.apache.log4j.Logger;
 import org.apache.jena.atlas.web.auth.HttpAuthenticator;
@@ -126,7 +127,7 @@ public class Benchmarker {
      */
     public static final long DEFAULT_LIMIT = 0;
 
-    private BenchmarkQueryMix queryMix;
+    private BenchmarkOperationMix queryMix;
     private String endpoint;
     private int runs = DEFAULT_RUNS, warmups = DEFAULT_WARMUPS;
     private String csvResultsFile = DEFAULT_CSV_RESULTS_FILE;
@@ -211,7 +212,7 @@ public class Benchmarker {
      * @param queries
      *            Query Mix
      */
-    public void setQueryMix(BenchmarkQueryMix queries) {
+    public void setQueryMix(BenchmarkOperationMix queries) {
         queryMix = queries;
     }
 
@@ -220,7 +221,7 @@ public class Benchmarker {
      * 
      * @return Query Mix
      */
-    public BenchmarkQueryMix getQueryMix() {
+    public BenchmarkOperationMix getQueryMix() {
         return queryMix;
     }
 
@@ -886,7 +887,7 @@ public class Benchmarker {
         int i = 0;
         Iterator<BenchmarkQuery> qs = queryMix.getQueries();
         while (qs.hasNext()) {
-            BenchmarkQuery q = qs.next();
+            BenchmarkOperation q = qs.next();
             reportProgress("Query ID " + i + " (" + q.getName() + ")");
             reportProgress(q.getQuery().toString());
             reportProgress();
@@ -898,12 +899,12 @@ public class Benchmarker {
         reportProgress();
         for (i = 0; i < warmups; i++) {
             reportProgress("Warmup Run " + (i + 1) + " of " + warmups);
-            QueryMixRun r = queryMix.run(this);
+            OperationMixRun r = queryMix.run(this);
             reportProgress();
             reportProgress("Total Response Time: " + BenchmarkerUtils.formatTime(r.getTotalResponseTime()));
             reportProgress("Total Runtime: " + BenchmarkerUtils.formatTime(r.getTotalRuntime()));
-            int minQueryId = r.getMinimumRuntimeQueryID();
-            int maxQueryId = r.getMaximumRuntimeQueryID();
+            int minQueryId = r.getMinimumRuntimeOperationID();
+            int maxQueryId = r.getMaximumRuntimeOperationID();
             reportProgress("Minimum Query Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime()) + " (Query "
                     + queryMix.getQuery(minQueryId).getName() + ")");
             reportProgress("Maximum Query Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime()) + " (Query "
@@ -923,13 +924,13 @@ public class Benchmarker {
             // Single Threaded Benchmark
             for (i = 0; i < runs; i++) {
                 reportProgress("Query Mix Run " + (i + 1) + " of " + runs);
-                QueryMixRun r = queryMix.run(this);
+                OperationMixRun r = queryMix.run(this);
                 reportProgress(r);
                 reportProgress();
                 reportProgress("Total Response Time: " + BenchmarkerUtils.formatTime(r.getTotalResponseTime()));
                 reportProgress("Total Runtime: " + BenchmarkerUtils.formatTime(r.getTotalRuntime()));
-                int minQueryId = r.getMinimumRuntimeQueryID();
-                int maxQueryId = r.getMaximumRuntimeQueryID();
+                int minQueryId = r.getMinimumRuntimeOperationID();
+                int maxQueryId = r.getMaximumRuntimeOperationID();
                 reportProgress("Minimum Query Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime()) + " (Query "
                         + queryMix.getQuery(minQueryId).getName() + ")");
                 reportProgress("Maximum Query Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime()) + " (Query "
@@ -969,7 +970,7 @@ public class Benchmarker {
         qs = queryMix.getQueries();
         i = 0;
         while (qs.hasNext()) {
-            BenchmarkQuery q = qs.next();
+            BenchmarkOperation q = qs.next();
             // Trim outliers
             q.trim(outliers);
 
@@ -988,12 +989,12 @@ public class Benchmarker {
             reportProgress("Maximum Runtime: " + BenchmarkerUtils.formatTime(q.getMaximumRuntime()));
             reportProgress("Runtime Variance: " + BenchmarkerUtils.formatTime(q.getVariance()));
             reportProgress("Runtime Standard Deviation: " + BenchmarkerUtils.formatTime(q.getStandardDeviation()));
-            reportProgress("Queries per Second: " + q.getQueriesPerSecond());
+            reportProgress("Queries per Second: " + q.getOperationsPerSecond());
             if (parallelThreads > 1)
-                reportProgress("Actual Queries per Second: " + q.getActualQueriesPerSecond());
-            reportProgress("Queries per Hour: " + q.getQueriesPerHour());
+                reportProgress("Actual Queries per Second: " + q.getActualOperationsPerSecond());
+            reportProgress("Queries per Hour: " + q.getOperationsPerHour());
             if (parallelThreads > 1)
-                reportProgress("Actual Queries per Hour: " + q.getActualQueriesPerHour());
+                reportProgress("Actual Queries per Hour: " + q.getActualOperationsPerHour());
             reportProgress();
             i++;
         }
@@ -1018,9 +1019,9 @@ public class Benchmarker {
         reportProgress("Maximum Mix Runtime: " + BenchmarkerUtils.formatTime(queryMix.getMaximumRuntime()));
         reportProgress("Mix Runtime Variance: " + BenchmarkerUtils.formatTime(queryMix.getVariance()));
         reportProgress("Mix Runtime Standard Deviation: " + BenchmarkerUtils.formatTime(queryMix.getStandardDeviation()));
-        reportProgress("Query Mixes per Hour: " + queryMix.getQueryMixesPerHour());
+        reportProgress("Query Mixes per Hour: " + queryMix.getOperationMixesPerHour());
         if (parallelThreads > 1)
-            reportProgress("Actual Query Mixes per Hour: " + queryMix.getActualQueryMixesPerHour());
+            reportProgress("Actual Query Mixes per Hour: " + queryMix.getActualOperationMixesPerHour());
         reportProgress();
 
         // Finally inform listeners that benchmarking finished OK
@@ -1200,7 +1201,7 @@ public class Benchmarker {
      * @param run
      *            Run statistics
      */
-    public void reportProgress(BenchmarkQuery query, QueryRun run) {
+    public void reportProgress(BenchmarkOperation query, OperationRun run) {
         for (ProgressListener l : this.listeners) {
             try {
                 l.handleProgress(query, run);
@@ -1220,7 +1221,7 @@ public class Benchmarker {
      * @param run
      *            Query Set Run statistics
      */
-    public void reportProgress(QueryMixRun run) {
+    public void reportProgress(OperationMixRun run) {
         for (ProgressListener l : this.listeners) {
             try {
                 l.handleProgress(run);
