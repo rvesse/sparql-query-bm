@@ -82,6 +82,15 @@ public class BenchmarkQuery extends AbstractBenchmarkOperation implements Benchm
     }
 
     @Override
+    public boolean canRun(Benchmarker b) {
+        if (b.getQueryEndpoint() == null) {
+            b.reportProgress("Benchmark Queries cannot run with no query endpoint specified");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public QueryRun run(Benchmarker b) {
         timer.start();
         long order = b.getGlobalOrder();

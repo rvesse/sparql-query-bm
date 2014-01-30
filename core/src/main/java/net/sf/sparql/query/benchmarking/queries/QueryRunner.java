@@ -87,7 +87,7 @@ public class QueryRunner implements Callable<QueryRun> {
 		}
 		
 		//Create a QueryEngineHTTP directly as we want to set a bunch of parameters on it
-		QueryEngineHTTP exec = new QueryEngineHTTP(this.b.getEndpoint(), this.query);
+		QueryEngineHTTP exec = new QueryEngineHTTP(this.b.getQueryEndpoint(), this.query);
 		exec.setSelectContentType(b.getResultsSelectFormat());
 		exec.setAskContentType(b.getResultsAskFormat());
 		exec.setModelContentType(b.getResultsGraphFormat());

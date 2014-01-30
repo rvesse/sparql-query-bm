@@ -170,7 +170,7 @@ public class XmlProgressListener implements ProgressListener {
 
             // Generate an <configuration> element detailing configuration
             openTag(TAG_CONFIGURATION);
-            printProperty("endpoint", b.getEndpoint());
+            printProperty("endpoint", b.getQueryEndpoint());
             printProperty("sanityChecking", b.getSanityCheckLevel());
             printProperty("warmups", b.getWarmups());
             printProperty("runs", b.getRuns());

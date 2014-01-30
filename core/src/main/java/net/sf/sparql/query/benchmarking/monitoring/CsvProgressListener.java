@@ -34,6 +34,7 @@ package net.sf.sparql.query.benchmarking.monitoring;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Map;
 
 import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
@@ -78,14 +79,22 @@ public class CsvProgressListener implements ProgressListener {
 
         // Information on Benchmark Options
         this.buffer.append("Options Summary,\n");
-        this.buffer.append("Endpoint," + this.b.getEndpoint() + "\n");
+        this.buffer.append("Query Endpoint," + this.b.getQueryEndpoint() + "\n");
+        this.buffer.append("Update Endpoint," + this.b.getUpdateEndpoint() + "\n");
+        this.buffer.append("Graph Store Endpoint," + this.b.getGraphStoreEndpoint() + "\n");
+        Map<String, String> customEndpoints = this.b.getCustomEndpoints();
+        if (customEndpoints.size() > 0) {
+            for (String key : customEndpoints.keySet()) {
+                this.buffer.append("Custom Endpoint (" + key + ")," + customEndpoints.get(key) + "\n");
+            }
+        }
         this.buffer.append("Sanity Checking Level," + this.b.getSanityCheckLevel() + "\n");
         this.buffer.append("Warmups," + this.b.getWarmups() + "\n");
         this.buffer.append("Runs," + this.b.getRuns() + "\n");
-        this.buffer.append("Random Query Order," + this.b.getRandomizeOrder() + "\n");
+        this.buffer.append("Random Operation Order," + this.b.getRandomizeOrder() + "\n");
         this.buffer.append("Outliers," + this.b.getOutliers() + "\n");
         this.buffer.append("Timeout," + this.b.getTimeout() + "s\n");
-        this.buffer.append("Max Delay between Queries," + this.b.getMaxDelay() + "s\n");
+        this.buffer.append("Max Delay between Operations," + this.b.getMaxDelay() + "s\n");
         this.buffer.append("Result Limit," + (this.b.getLimit() <= 0 ? "Query Specified" : this.b.getLimit()) + "\n");
         this.buffer.append("ASK Results Format," + this.b.getResultsAskFormat() + "\n");
         this.buffer.append("Graph Results Format," + this.b.getResultsGraphFormat() + "\n");

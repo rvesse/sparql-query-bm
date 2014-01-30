@@ -34,8 +34,11 @@ package net.sf.sparql.query.benchmarking;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,7 +52,6 @@ import net.sf.sparql.query.benchmarking.monitoring.XmlProgressListener;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
 import net.sf.sparql.query.benchmarking.parallel.ParallelClientManagerTask;
-import net.sf.sparql.query.benchmarking.queries.BenchmarkQuery;
 import net.sf.sparql.query.benchmarking.queries.QueryRunner;
 import net.sf.sparql.query.benchmarking.queries.QueryTask;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
@@ -127,8 +129,9 @@ public class Benchmarker {
      */
     public static final long DEFAULT_LIMIT = 0;
 
-    private BenchmarkOperationMix queryMix;
-    private String endpoint;
+    private BenchmarkOperationMix operationMix;
+    private String queryEndpoint, updateEndpoint, graphStoreEndpoint;
+    private Map<String, String> customEndpoints = new HashMap<String, String>();
     private int runs = DEFAULT_RUNS, warmups = DEFAULT_WARMUPS;
     private String csvResultsFile = DEFAULT_CSV_RESULTS_FILE;
     private String xmlResultsFile = DEFAULT_XML_RESULTS_FILE;
@@ -188,22 +191,91 @@ public class Benchmarker {
     }
 
     /**
-     * Sets the SPARQL endpoint to be used
+     * Sets the SPARQL query endpoint to be used
      * 
      * @param endpoint
-     *            SPARQL Endpoint URI
+     *            SPARQL query endpoint URI
      */
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
+    public void setQueryEndpoint(String endpoint) {
+        this.queryEndpoint = endpoint;
     }
 
     /**
-     * Gets the SPARQL endpoint that is in use
+     * Gets the SPARQL query endpoint that is in use
      * 
-     * @return SPARQL Endpoint URI
+     * @return SPARQL query endpoint URI
      */
-    public String getEndpoint() {
-        return endpoint;
+    public String getQueryEndpoint() {
+        return queryEndpoint;
+    }
+
+    /**
+     * Sets the SPARQL update endpoint that is in use
+     * 
+     * @param endpoint
+     *            SPARQL update endpoint URI
+     */
+    public void setUpdateEndpoint(String endpoint) {
+        this.updateEndpoint = endpoint;
+    }
+
+    /**
+     * Gets the SPARQL Update endpoint that is in use
+     * 
+     * @return SPARQL update endpoint URI
+     */
+    public String getUpdateEndpoint() {
+        return updateEndpoint;
+    }
+
+    /**
+     * Gets the SPARQL graph store protocol endpoint that is in use
+     * 
+     * @param endpoint
+     */
+    public void setGraphStoreEndpoint(String endpoint) {
+        this.graphStoreEndpoint = endpoint;
+    }
+
+    /**
+     * Gets the SPARQL graph store protocol endpoint that is in use
+     * 
+     * @return SPARQL graph store endpoint URI
+     */
+    public String getGraphStoreEndpoint() {
+        return graphStoreEndpoint;
+    }
+
+    /**
+     * Sets a custom defined endpoint
+     * 
+     * @param name
+     *            Name
+     * @param endpoint
+     *            Endpoint URI
+     */
+    public void setCustomEndpoint(String name, String endpoint) {
+        this.customEndpoints.put(name, endpoint);
+    }
+
+    /**
+     * Gets a custom defined endpoint
+     * 
+     * @param name
+     *            Endpoint name
+     * @return Endpoint URI
+     */
+    public String getCustomEndpoint(String name) {
+        return customEndpoints.get(name);
+    }
+
+    /**
+     * Gets an unmodifiable copy of the defined custom endpoints
+     * 
+     * @return Map of custom endpoints
+     */
+    public Map<String, String> getCustomEndpoints() {
+        return Collections.unmodifiableMap(this.customEndpoints);
     }
 
     /**
@@ -213,7 +285,7 @@ public class Benchmarker {
      *            Query Mix
      */
     public void setQueryMix(BenchmarkOperationMix queries) {
-        queryMix = queries;
+        operationMix = queries;
     }
 
     /**
@@ -222,7 +294,7 @@ public class Benchmarker {
      * @return Query Mix
      */
     public BenchmarkOperationMix getOperationMix() {
-        return queryMix;
+        return operationMix;
     }
 
     /**
@@ -584,60 +656,6 @@ public class Benchmarker {
     }
 
     /**
-     * <s>Gets the Username used for HTTP Basic Authentication</s>
-     * 
-     * @return null
-     */
-    @Deprecated
-    public String getUsername() {
-        return null;
-    }
-
-    /**
-     * Sets the User name used for HTTP Basic Authentication, set to null to
-     * disable authentication
-     * <p>
-     * Deprecated - use the new {@link #setAuthenticator(HttpAuthenticator)}
-     * method
-     * </p>
-     * 
-     * @param user
-     *            User name
-     * 
-     */
-    @Deprecated
-    public void setUsername(String user) {
-        // No longer functions
-    }
-
-    /**
-     * <s>Gets the Password used for HTTP Basic Authentication</s>
-     * <p>
-     * Deprecated - non longer functional as of 1.1.0
-     * </p>
-     * 
-     * @return null
-     */
-    @Deprecated
-    public String getPassword() {
-        return null;
-    }
-
-    /**
-     * <s>Sets the Password used for HTTP Basic Authentication</s>
-     * <p>
-     * Deprecated - use the new {@link #setAuthenticator(HttpAuthenticator)}
-     * method
-     * </p>
-     * 
-     * @param password
-     *            Password
-     */
-    public void setPassword(String password) {
-        // No longer functions
-    }
-
-    /**
      * Sets the HTTP authenticator used
      * 
      * @param authenticator
@@ -806,10 +824,6 @@ public class Benchmarker {
      * {@link ProgressListener} instances registered via the
      * {@link Benchmarker#addListener(ProgressListener)} method
      * </p>
-     * <p>
-     * At the conclusion of the benchmarking process a CSV and an XML file will
-     * be generated with full result details
-     * </p>
      */
     public void runBenchmark() {
         // Inform Listeners that we are starting benchmarking
@@ -825,13 +839,13 @@ public class Benchmarker {
         }
 
         // Validate Options
-        if (endpoint == null) {
-            System.err.println("SPARQL Endpoint has not been set");
-            halt("No SPARQL Endpoint was set");
+        if (queryEndpoint == null || updateEndpoint == null || graphStoreEndpoint == null || customEndpoints.size() == 0) {
+            System.err.println("At least one endpoint must be set");
+            halt("No endpoint was set");
         }
-        if (queryMix == null) {
-            System.err.println("Query Mix has not been set");
-            halt("No Query Mix was set");
+        if (operationMix == null) {
+            System.err.println("Operation Mix has not been set");
+            halt("No Operation Mix was set");
         }
         if (outliers * 2 >= runs) {
             System.err
@@ -839,18 +853,36 @@ public class Benchmarker {
             halt("Number of Outliers too high");
         }
 
+        Iterator<BenchmarkOperation> ops = operationMix.getOperations();
+        while (ops.hasNext()) {
+            BenchmarkOperation op = ops.next();
+            if (!op.canRun(this)) {
+                System.err.println("A specified operation cannot run with the available benchmark options");
+                halt("Operation " + op.getName() + " of type " + op.getType()
+                        + " cannot run with the available benchmark options");
+            }
+        }
+
         // Print Options for User Reference
         reportProgress("Benchmark Options");
         reportProgress("-----------------");
         reportProgress();
-        reportProgress("Endpoint = " + endpoint);
+        reportProgress("Query Endpoint = " + (queryEndpoint == null ? "not specified" : queryEndpoint));
+        reportProgress("Update Endpoint = " + (updateEndpoint == null ? "not specified" : updateEndpoint));
+        reportProgress("Graph Store Protocol Endpoint = " + (graphStoreEndpoint == null ? "not specified" : graphStoreEndpoint));
+        if (customEndpoints.size() > 0) {
+            for (String key : customEndpoints.keySet()) {
+                String value = customEndpoints.get(key);
+                reportProgress("Custom Endpoint (" + key + ") = " + (value == null ? "not specified" : value));
+            }
+        }
         reportProgress("Sanity Checking Level = " + sanity);
         reportProgress("Warmups = " + warmups);
         reportProgress("Runs = " + runs);
-        reportProgress("Random Query Order = " + (randomize ? "On" : "Off"));
+        reportProgress("Random Operation Order = " + (randomize ? "On" : "Off"));
         reportProgress("Outliers = " + outliers);
         reportProgress("Timeout = " + timeout + " seconds");
-        reportProgress("Max Delay between Queries = " + delay + " milliseconds");
+        reportProgress("Max Delay between Operations = " + delay + " milliseconds");
         reportProgress("Result Limit = " + (limit <= 0 ? "Query Specified" : limit));
         reportProgress("CSV Results File = " + (csvResultsFile == null ? "disabled" : csvResultsFile));
         reportProgress("XML Results File = " + (xmlResultsFile == null ? "disabled" : xmlResultsFile));
@@ -882,14 +914,14 @@ public class Benchmarker {
 
         // Summarise Queries to be used
         reportProgress("Starting Benchmarking...");
-        reportProgress(queryMix.size() + " Queries were loaded:");
+        reportProgress(operationMix.size() + " Queries were loaded:");
 
         int i = 0;
-        Iterator<BenchmarkQuery> qs = queryMix.getQueries();
-        while (qs.hasNext()) {
-            BenchmarkOperation q = qs.next();
-            reportProgress("Query ID " + i + " (" + q.getName() + ")");
-            reportProgress(q.getQuery().toString());
+        ops = operationMix.getOperations();
+        while (ops.hasNext()) {
+            BenchmarkOperation op = ops.next();
+            reportProgress("Operation ID " + i + " of type " + op.getType() + " (" + op.getName() + ")");
+            reportProgress(op.getContentString());
             reportProgress();
             i++;
         }
@@ -899,19 +931,19 @@ public class Benchmarker {
         reportProgress();
         for (i = 0; i < warmups; i++) {
             reportProgress("Warmup Run " + (i + 1) + " of " + warmups);
-            OperationMixRun r = queryMix.run(this);
+            OperationMixRun r = operationMix.run(this);
             reportProgress();
             reportProgress("Total Response Time: " + BenchmarkerUtils.formatTime(r.getTotalResponseTime()));
             reportProgress("Total Runtime: " + BenchmarkerUtils.formatTime(r.getTotalRuntime()));
-            int minQueryId = r.getMinimumRuntimeOperationID();
-            int maxQueryId = r.getMaximumRuntimeOperationID();
-            reportProgress("Minimum Query Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime()) + " (Query "
-                    + queryMix.getQuery(minQueryId).getName() + ")");
-            reportProgress("Maximum Query Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime()) + " (Query "
-                    + queryMix.getQuery(maxQueryId).getName() + ")");
+            int minOperationId = r.getMinimumRuntimeOperationID();
+            int maxOperationId = r.getMaximumRuntimeOperationID();
+            reportProgress("Minimum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime()) + " (Operation "
+                    + operationMix.getOperation(minOperationId).getName() + ")");
+            reportProgress("Maximum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime()) + " (Operation "
+                    + operationMix.getOperation(maxOperationId).getName() + ")");
             reportProgress();
         }
-        queryMix.clear();
+        operationMix.clear();
 
         // Actual Runs
         reportProgress("Running Benchmarks...");
@@ -923,24 +955,23 @@ public class Benchmarker {
         if (parallelThreads == 1) {
             // Single Threaded Benchmark
             for (i = 0; i < runs; i++) {
-                reportProgress("Query Mix Run " + (i + 1) + " of " + runs);
-                OperationMixRun r = queryMix.run(this);
+                reportProgress("Operation Mix Run " + (i + 1) + " of " + runs);
+                OperationMixRun r = operationMix.run(this);
                 reportProgress(r);
                 reportProgress();
                 reportProgress("Total Response Time: " + BenchmarkerUtils.formatTime(r.getTotalResponseTime()));
                 reportProgress("Total Runtime: " + BenchmarkerUtils.formatTime(r.getTotalRuntime()));
-                int minQueryId = r.getMinimumRuntimeOperationID();
-                int maxQueryId = r.getMaximumRuntimeOperationID();
-                reportProgress("Minimum Query Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime()) + " (Query "
-                        + queryMix.getQuery(minQueryId).getName() + ")");
-                reportProgress("Maximum Query Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime()) + " (Query "
-                        + queryMix.getQuery(maxQueryId).getName() + ")");
+                int minOperationId = r.getMinimumRuntimeOperationID();
+                int maxOperationId = r.getMaximumRuntimeOperationID();
+                reportProgress("Minimum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime()) + " (Query "
+                        + operationMix.getOperation(minOperationId).getName() + ")");
+                reportProgress("Maximum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime()) + " (Query "
+                        + operationMix.getOperation(maxOperationId).getName() + ")");
                 reportProgress();
             }
         } else {
-
             // Multi Threaded Benchmark
-            queryMix.setRunAsThread(true);
+            operationMix.setRunAsThread(true);
             ParallelClientManagerTask task = new ParallelClientManagerTask(this);
             this.executor.submit(task);
             try {
@@ -963,65 +994,67 @@ public class Benchmarker {
         reportProgress("Finished Benchmarking, calculating statistics...");
         reportProgress();
 
-        // Query Summary
-        reportProgress("Query Summary");
+        // Operation Summary
+        reportProgress("Operation Summary");
         reportProgress("-------------");
         reportProgress();
-        qs = queryMix.getQueries();
+        ops = operationMix.getOperations();
         i = 0;
-        while (qs.hasNext()) {
-            BenchmarkOperation q = qs.next();
+        while (ops.hasNext()) {
+            BenchmarkOperation op = ops.next();
             // Trim outliers
-            q.trim(outliers);
+            op.trim(outliers);
 
             // Print Summary
-            reportProgress("Query ID " + i + " (" + q.getName() + ")");
-            reportProgress("Total Response Time: " + BenchmarkerUtils.formatTime(q.getTotalResponseTime()));
-            reportProgress("Average Response Time (Arithmetic): " + BenchmarkerUtils.formatTime(q.getAverageResponseTime()));
-            reportProgress("Total Runtime: " + BenchmarkerUtils.formatTime(q.getTotalRuntime()));
+            reportProgress("Operation ID " + i + " of type " + op.getType() + " (" + op.getName() + ")");
+            reportProgress("Total Response Time: " + BenchmarkerUtils.formatTime(op.getTotalResponseTime()));
+            reportProgress("Average Response Time (Arithmetic): " + BenchmarkerUtils.formatTime(op.getAverageResponseTime()));
+            reportProgress("Total Runtime: " + BenchmarkerUtils.formatTime(op.getTotalRuntime()));
             if (parallelThreads > 1)
-                reportProgress("Actual Runtime: " + BenchmarkerUtils.formatTime(q.getActualRuntime()));
-            reportProgress("Average Runtime (Arithmetic): " + BenchmarkerUtils.formatTime(q.getAverageRuntime()));
+                reportProgress("Actual Runtime: " + BenchmarkerUtils.formatTime(op.getActualRuntime()));
+            reportProgress("Average Runtime (Arithmetic): " + BenchmarkerUtils.formatTime(op.getAverageRuntime()));
             if (parallelThreads > 1)
-                reportProgress("Actual Average Runtime (Arithmetic): " + BenchmarkerUtils.formatTime(q.getActualAverageRuntime()));
-            reportProgress("Average Runtime (Geometric): " + BenchmarkerUtils.formatTime(q.getGeometricAverageRuntime()));
-            reportProgress("Minimum Runtime: " + BenchmarkerUtils.formatTime(q.getMinimumRuntime()));
-            reportProgress("Maximum Runtime: " + BenchmarkerUtils.formatTime(q.getMaximumRuntime()));
-            reportProgress("Runtime Variance: " + BenchmarkerUtils.formatTime(q.getVariance()));
-            reportProgress("Runtime Standard Deviation: " + BenchmarkerUtils.formatTime(q.getStandardDeviation()));
-            reportProgress("Queries per Second: " + q.getOperationsPerSecond());
+                reportProgress("Actual Average Runtime (Arithmetic): "
+                        + BenchmarkerUtils.formatTime(op.getActualAverageRuntime()));
+            reportProgress("Average Runtime (Geometric): " + BenchmarkerUtils.formatTime(op.getGeometricAverageRuntime()));
+            reportProgress("Minimum Runtime: " + BenchmarkerUtils.formatTime(op.getMinimumRuntime()));
+            reportProgress("Maximum Runtime: " + BenchmarkerUtils.formatTime(op.getMaximumRuntime()));
+            reportProgress("Runtime Variance: " + BenchmarkerUtils.formatTime(op.getVariance()));
+            reportProgress("Runtime Standard Deviation: " + BenchmarkerUtils.formatTime(op.getStandardDeviation()));
+            reportProgress("Operations per Second: " + op.getOperationsPerSecond());
             if (parallelThreads > 1)
-                reportProgress("Actual Queries per Second: " + q.getActualOperationsPerSecond());
-            reportProgress("Queries per Hour: " + q.getOperationsPerHour());
+                reportProgress("Actual Operations per Second: " + op.getActualOperationsPerSecond());
+            reportProgress("Operations per Hour: " + op.getOperationsPerHour());
             if (parallelThreads > 1)
-                reportProgress("Actual Queries per Hour: " + q.getActualOperationsPerHour());
+                reportProgress("Actual Operations per Hour: " + op.getActualOperationsPerHour());
             reportProgress();
             i++;
         }
 
         // Benchmark Summary
-        queryMix.trim(outliers);
-        reportProgress("Query Mix Summary");
+        operationMix.trim(outliers);
+        reportProgress("Operation Mix Summary");
         reportProgress("-----------------");
         reportProgress();
-        reportProgress("Ran Query Mix containing " + queryMix.size() + " queries a total of " + runs + " times");
-        reportProgress("Total Response Time: " + BenchmarkerUtils.formatTime(queryMix.getTotalResponseTime()));
-        reportProgress("Average Response Time (Arithmetic): " + BenchmarkerUtils.formatTime(queryMix.getAverageResponseTime()));
-        reportProgress("Total Runtime: " + BenchmarkerUtils.formatTime(queryMix.getTotalRuntime()));
+        reportProgress("Ran Operation Mix containing " + operationMix.size() + " operations a total of " + runs + " times");
+        reportProgress("Total Response Time: " + BenchmarkerUtils.formatTime(operationMix.getTotalResponseTime()));
+        reportProgress("Average Response Time (Arithmetic): "
+                + BenchmarkerUtils.formatTime(operationMix.getAverageResponseTime()));
+        reportProgress("Total Runtime: " + BenchmarkerUtils.formatTime(operationMix.getTotalRuntime()));
         if (parallelThreads > 1)
-            reportProgress("Actual Runtime: " + BenchmarkerUtils.formatTime(queryMix.getActualRuntime()));
-        reportProgress("Average Runtime (Arithmetic): " + BenchmarkerUtils.formatTime(queryMix.getAverageRuntime()));
+            reportProgress("Actual Runtime: " + BenchmarkerUtils.formatTime(operationMix.getActualRuntime()));
+        reportProgress("Average Runtime (Arithmetic): " + BenchmarkerUtils.formatTime(operationMix.getAverageRuntime()));
         if (parallelThreads > 1)
             reportProgress("Actual Average Runtime (Arithmetic): "
-                    + BenchmarkerUtils.formatTime(queryMix.getActualAverageRuntime()));
-        reportProgress("Average Runtime (Geometric): " + queryMix.getGeometricAverageRuntime() + "s");
-        reportProgress("Minimum Mix Runtime: " + BenchmarkerUtils.formatTime(queryMix.getMinimumRuntime()));
-        reportProgress("Maximum Mix Runtime: " + BenchmarkerUtils.formatTime(queryMix.getMaximumRuntime()));
-        reportProgress("Mix Runtime Variance: " + BenchmarkerUtils.formatTime(queryMix.getVariance()));
-        reportProgress("Mix Runtime Standard Deviation: " + BenchmarkerUtils.formatTime(queryMix.getStandardDeviation()));
-        reportProgress("Query Mixes per Hour: " + queryMix.getOperationMixesPerHour());
+                    + BenchmarkerUtils.formatTime(operationMix.getActualAverageRuntime()));
+        reportProgress("Average Runtime (Geometric): " + operationMix.getGeometricAverageRuntime() + "s");
+        reportProgress("Minimum Mix Runtime: " + BenchmarkerUtils.formatTime(operationMix.getMinimumRuntime()));
+        reportProgress("Maximum Mix Runtime: " + BenchmarkerUtils.formatTime(operationMix.getMaximumRuntime()));
+        reportProgress("Mix Runtime Variance: " + BenchmarkerUtils.formatTime(operationMix.getVariance()));
+        reportProgress("Mix Runtime Standard Deviation: " + BenchmarkerUtils.formatTime(operationMix.getStandardDeviation()));
+        reportProgress("Operation Mixes per Hour: " + operationMix.getOperationMixesPerHour());
         if (parallelThreads > 1)
-            reportProgress("Actual Query Mixes per Hour: " + queryMix.getActualOperationMixesPerHour());
+            reportProgress("Actual Operation Mixes per Hour: " + operationMix.getActualOperationMixesPerHour());
         reportProgress();
 
         // Finally inform listeners that benchmarking finished OK

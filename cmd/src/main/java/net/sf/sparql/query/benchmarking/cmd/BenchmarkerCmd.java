@@ -94,7 +94,7 @@ public class BenchmarkerCmd {
 
         // Set up the Benchmark
         Benchmarker b = new Benchmarker();
-        b.setEndpoint(argv[0]);
+        b.setQueryEndpoint(argv[0]);
         parseArgs(argv, b);
 
         // Setup log4j to redirect stuff to stdout if enabled
@@ -332,7 +332,7 @@ public class BenchmarkerCmd {
                 
                 FormLogin login = new FormLogin(formUrl, userField, pwdField, user, pwd.toCharArray());
                 try {
-                    b.setAuthenticator(new FormsAuthenticator(new URI(b.getEndpoint()), login));
+                    b.setAuthenticator(new FormsAuthenticator(new URI(b.getQueryEndpoint()), login));
                 } catch (URISyntaxException e) {
                     System.err.println("Invalid Endpoint URL, unable to configure form based authentication: " + e.getMessage());
                     System.exit(1);

@@ -181,6 +181,16 @@ public interface BenchmarkOperation {
     public abstract double getActualOperationsPerHour();
 
     /**
+     * Report whether the operation can run based on the available benchmarker
+     * options
+     * 
+     * @param b
+     *            Benchmarker
+     * @return True if the operation can run, false otherwise
+     */
+    public abstract boolean canRun(Benchmarker b);
+
+    /**
      * Runs the operation recording the statistics as a {@link OperationRun}
      * 
      * @param b
