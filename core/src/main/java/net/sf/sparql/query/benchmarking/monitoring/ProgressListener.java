@@ -31,47 +31,63 @@
 
 package net.sf.sparql.query.benchmarking.monitoring;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
+import net.sf.sparql.query.benchmarking.options.BenchmarkOptions;
+import net.sf.sparql.query.benchmarking.options.Options;
+import net.sf.sparql.query.benchmarking.runners.Runner;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
-
 /**
- * Interface for Progress Listeners that can be used to monitor progress of benchmarking
+ * Interface for Progress Listeners that can be used to monitor progress of
+ * benchmarking
+ * 
  * @author rvesse
- *
+ * 
  */
-public interface ProgressListener 
-{
-	/**
-	 * Handles starting of benchmarking
-	 * @param b Benchmarker
-	 */
-	void handleStarted(Benchmarker b);
-	
-	/**
-	 * Handles finishing of benchmarking
-	 * @param ok Indicates whether benchmarking finished normally, if false then some error condition caused benchmarking to be halted
-	 */
-	void handleFinished(boolean ok);
-	
-	/**
-	 * Handles an informational progress message
-	 * @param message
-	 */
-	void handleProgress(String message);
-	
-	/**
-	 * Handles statistics for a single run of a query
-	 * @param query
-	 * @param run
-	 */
-	void handleProgress(BenchmarkOperation query, OperationRun run);
-	
-	/**
-	 * Handles statistics for a single run of the query set
-	 * @param run
-	 */
-	void handleProgress(OperationMixRun run);
+public interface ProgressListener {
+    /**
+     * Handles starting of running
+     * 
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
+     */
+    <T extends Options> void handleStarted(Runner<T> runner, T options);
+
+    /**
+     * Handles finishing of running
+     * 
+     * @param ok
+     *            Indicates whether running finished normally, if false then
+     *            some error condition caused running to be halted
+     */
+    void handleFinished(boolean ok);
+
+    /**
+     * Handles an informational progress message
+     * 
+     * @param message
+     *            Message
+     */
+    void handleProgress(String message);
+
+    /**
+     * Handles statistics for a single run of an operation
+     * 
+     * @param operation
+     *            Operation
+     * @param run
+     *            Run information
+     */
+    void handleProgress(BenchmarkOperation operation, OperationRun run);
+
+    /**
+     * Handles statistics for a single run of the operation mix
+     * 
+     * @param run
+     *            Mix run information
+     */
+    void handleProgress(OperationMixRun run);
 }

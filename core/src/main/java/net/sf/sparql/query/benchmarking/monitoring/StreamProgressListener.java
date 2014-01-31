@@ -34,8 +34,8 @@ package net.sf.sparql.query.benchmarking.monitoring;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
+import net.sf.sparql.query.benchmarking.options.Options;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
@@ -174,7 +174,7 @@ public class StreamProgressListener implements ProgressListener {
      */
     @SuppressWarnings("javadoc")
     @Override
-    public void handleStarted(Benchmarker b) {
+    public void handleStarted(Options b) {
         // If the stream is null then use the openStream() method to try and get
         if (this.output == null) {
             this.output = new PrintStream(this.openStream());

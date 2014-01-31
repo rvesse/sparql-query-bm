@@ -37,8 +37,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.operations.AbstractBenchmarkOperation;
+import net.sf.sparql.query.benchmarking.options.BenchmarkOptions;
+import net.sf.sparql.query.benchmarking.options.Options;
+import net.sf.sparql.query.benchmarking.runners.BenchmarkRunner;
+import net.sf.sparql.query.benchmarking.runners.Runner;
+import net.sf.sparql.query.benchmarking.stats.OperationRun;
 import net.sf.sparql.query.benchmarking.stats.QueryRun;
 
 import org.apache.log4j.Logger;
@@ -82,39 +86,39 @@ public class BenchmarkQuery extends AbstractBenchmarkOperation implements Benchm
     }
 
     @Override
-    public boolean canRun(Benchmarker b) {
-        if (b.getQueryEndpoint() == null) {
-            b.reportProgress("Benchmark Queries cannot run with no query endpoint specified");
+    public <T extends Options> boolean canRun(Runner<T> runner, T options) {
+        if (options.getQueryEndpoint() == null) {
+            runner.reportProgress(options, "Benchmark Queries cannot run with no query endpoint specified");
             return false;
         }
         return true;
     }
 
     @Override
-    public QueryRun run(Benchmarker b) {
+    public <T extends Options> OperationRun run(Runner<T> runner, T options) {
         timer.start();
-        long order = b.getGlobalOrder();
-        QueryRunner runner = new QueryRunner(this.query, b);
-        QueryTask task = new QueryTask(runner);
-        b.getExecutor().submit(task);
+        long order = options.getGlobalOrder();
+        QueryRunner<T> queryRunner = new QueryRunner<T>(this.query, runner, options);
+        QueryTask<T> task = new QueryTask<T>(queryRunner);
+        options.getExecutor().submit(task);
         QueryRun r;
         long startTime = System.nanoTime();
         try {
-            r = task.get(b.getTimeout(), TimeUnit.SECONDS);
+            r = task.get(options.getTimeout(), TimeUnit.SECONDS);
         } catch (TimeoutException tEx) {
             logger.error("Query Runner execeeded Timeout - " + tEx.getMessage());
-            if (b.getHaltOnTimeout() || b.getHaltAny())
-                b.halt(tEx);
+            if (options.getHaltOnTimeout() || options.getHaltAny())
+                runner.halt(options, tEx);
             r = new QueryRun("Query Runner execeeded Timeout - " + tEx.getMessage(), System.nanoTime() - startTime);
 
             // If the query times out but we aren't halting cancel further
             // evaluation of the query
             task.cancel(true);
-            runner.cancel();
+            queryRunner.cancel();
         } catch (InterruptedException e) {
             logger.error("Query Runner was interrupted - " + e.getMessage());
-            if (b.getHaltAny())
-                b.halt(e);
+            if (options.getHaltAny())
+                runner.halt(options, e);
             r = new QueryRun("Query Runner was interrupted - " + e.getMessage(), System.nanoTime() - startTime);
         } catch (ExecutionException e) {
             logger.error("Query Runner encountered an error - " + e.getMessage());
@@ -123,8 +127,8 @@ public class BenchmarkQuery extends AbstractBenchmarkOperation implements Benchm
             e.printStackTrace(new PrintWriter(sw));
             logger.error(sw.toString());
 
-            if (b.getHaltOnError() || b.getHaltAny())
-                b.halt(e);
+            if (options.getHaltOnError() || options.getHaltAny())
+                runner.halt(options, e);
             r = new QueryRun("Query Runner encountered an error - " + e.getMessage(), System.nanoTime() - startTime);
         }
         timer.stop();

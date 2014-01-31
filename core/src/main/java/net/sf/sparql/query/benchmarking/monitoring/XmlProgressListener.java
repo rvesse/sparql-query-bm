@@ -35,10 +35,11 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.Iterator;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
+import net.sf.sparql.query.benchmarking.options.BenchmarkOptions;
+import net.sf.sparql.query.benchmarking.options.Options;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
@@ -48,7 +49,7 @@ import net.sf.sparql.query.benchmarking.stats.OperationRun;
  * @author rvesse
  */
 public class XmlProgressListener implements ProgressListener {
-    private Benchmarker b;
+    private Options b;
     private File file;
     private PrintWriter writer;
     private int indent = 0;
@@ -101,7 +102,7 @@ public class XmlProgressListener implements ProgressListener {
 
     /**
      * Constructor to be called when the file to write to should be detected at
-     * benchmarking start time using the {@link Benchmarker#getXmlResultsFile()}
+     * benchmarking start time using the {@link BenchmarkOptions#getXmlResultsFile()}
      * method
      */
     public XmlProgressListener() {
@@ -153,7 +154,7 @@ public class XmlProgressListener implements ProgressListener {
      *            Benchmarker
      */
     @Override
-    public void handleStarted(Benchmarker b) {
+    public void handleStarted(BenchmarkOptions b) {
         if (file == null) {
             this.setup(b.getXmlResultsFile(), b.getAllowOverwrite());
         }

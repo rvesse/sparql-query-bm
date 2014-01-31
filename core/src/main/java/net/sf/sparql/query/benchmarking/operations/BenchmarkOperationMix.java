@@ -32,7 +32,8 @@ package net.sf.sparql.query.benchmarking.operations;
 
 import java.util.Iterator;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
+import net.sf.sparql.query.benchmarking.options.Options;
+import net.sf.sparql.query.benchmarking.runners.Runner;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 
 /**
@@ -85,11 +86,13 @@ public interface BenchmarkOperationMix {
      * Performs a operation mix run recording the results as a
      * {@link OperationMixRun}
      * 
-     * @param b
-     *            Benchmarker
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      * @return Operation Mix run details
      */
-    public abstract OperationMixRun run(Benchmarker b);
+    public abstract <T extends Options> OperationMixRun run(Runner<T> runner, T options);
 
     /**
      * Clears all run statistics

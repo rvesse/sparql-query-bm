@@ -29,11 +29,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package net.sf.sparql.query.benchmarking.queries;
+package net.sf.sparql.query.benchmarking.runners;
 
 import java.util.concurrent.Callable;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
+import net.sf.sparql.query.benchmarking.options.Options;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 
 /**
@@ -41,20 +41,26 @@ import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
  * multi-threaded benchmarks
  * 
  * @author rvesse
+ * @param <T>
+ *            Options type
  * 
  */
-public class OperationMixRunner implements Callable<OperationMixRun> {
+public class OperationMixRunner<T extends Options> implements Callable<OperationMixRun> {
 
-    private Benchmarker b;
+    private T options;
+    private Runner<T> runner;
 
     /**
      * Creates a new operation mix runner
      * 
-     * @param b
-     *            Benchmarker
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      */
-    public OperationMixRunner(Benchmarker b) {
-        this.b = b;
+    public OperationMixRunner(Runner<T> runner, T options) {
+        this.runner = runner;
+        this.options = options;
     }
 
     /**
@@ -62,7 +68,7 @@ public class OperationMixRunner implements Callable<OperationMixRun> {
      */
     @Override
     public OperationMixRun call() {
-        return this.b.getOperationMix().run(this.b);
+        return this.options.getOperationMix().run(this.runner, this.options);
     }
 
 }

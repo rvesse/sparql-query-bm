@@ -29,27 +29,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package net.sf.sparql.query.benchmarking.queries;
+package net.sf.sparql.query.benchmarking.runners;
 
 import java.util.concurrent.FutureTask;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
+import net.sf.sparql.query.benchmarking.options.Options;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
-
 
 /**
  * An operation mix task that can be executed
+ * 
  * @author rvesse
- *
+ * @param <T>
+ *            Options type
+ * 
  */
-public class OperationMixTask extends FutureTask<OperationMixRun> {
+public class OperationMixTask<T extends Options> extends FutureTask<OperationMixRun> {
 
-	/**
-	 * Creates a new Task
-	 * @param b Benchmarker
-	 */
-	public OperationMixTask(Benchmarker b)
-	{
-		super(new OperationMixRunner(b));
-	}
+    /**
+     * Creates a new Task
+     * 
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
+     */
+    public OperationMixTask(Runner<T> runner, T options) {
+        super(new OperationMixRunner<T>(runner, options));
+    }
 }

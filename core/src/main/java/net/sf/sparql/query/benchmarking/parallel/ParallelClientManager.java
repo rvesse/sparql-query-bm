@@ -33,112 +33,130 @@ package net.sf.sparql.query.benchmarking.parallel;
 
 import java.util.concurrent.Callable;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
+import net.sf.sparql.query.benchmarking.options.Options;
+import net.sf.sparql.query.benchmarking.runners.AbstractRunner;
 
 /**
- * A Callable uses to manage the running of parallel clients for multi-threaded testing
+ * A Callable uses to manage the running of parallel clients for multi-threaded
+ * testing
+ * 
  * @author rvesse
- *
+ * 
  */
 public class ParallelClientManager implements Callable<Object> {
 
-	private Benchmarker b;
-	private int startedRuns = 0, completedRuns = 0;
-	private boolean ready = false, halt = false;
-	
-	/**
-	 * Creates a new Parallel Client Manager
-	 * @param b Benchmarker
-	 */
-	public ParallelClientManager(Benchmarker b)
-	{
-		this.b = b;
-	}
-	
-	/**
-	 * Runs the parallel clients
-	 */
-	@Override
-	public Object call() throws Exception {
-		startedRuns = 0;
-		completedRuns = 0;
-		ready = false;
-		b.reportProgress("Parallel Client manager starting...");
-		
-		//Start the required number of clients, they won't start doing any work until we finish this as they
-		//rely on the isReady() method to determine when to start work and it will return false until
-		//after this loop
-		for (int i = 1; i <= b.getParallelThreads(); i++)
-		{
-			ParallelClientTask task = new ParallelClientTask(this, i);
-			b.getExecutor().submit(task);
-			b.reportProgress("Created Parallel Client ID " + i);
-		}	
-		b.reportProgress("Parallel Client manager is starting clients...");
-		ready = true;
-		
-		//Now the manager should wait until all runs have completed
-		while (completedRuns < b.getRuns())
-		{
-			Thread.sleep(100);
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Gets the Benchmarker
-	 * @return Benchmarker
-	 */
-	public Benchmarker getBenchmarker()
-	{
-		return b;
-	}
-	
-	/**
-	 * Gets whether the manager is ready for clients to begin executing
-	 * @return True if the manager is ready, false otherwise
-	 */
-	public boolean isReady()
-	{
-		return ready;
-	}
-	
-	/**
-	 * Method that will be called by parallel clients to determine if they should continue to run, calls to this are thread safe
-	 * @return True if a client should continue to run, false if they should terminate
-	 */
-	public synchronized boolean shouldRun()
-	{
-		if (halt) return false;
-		if (startedRuns < b.getRuns())
-		{
-			startedRuns++;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	
-	/**
-	 * Method that will be called by parallel clients to indicate they have completed a run and to obtain what run completion it is
-	 * @return Run completion number
-	 */
-	public synchronized int completeRun()
-	{
-		completedRuns++;
-		int x = completedRuns;
-		return x;
-	}
-	
-	/**
-	 * Method called by parallel clients to tell the manager that they encountered a halting condition and thus all clients should halt
-	 */
-	public void halt()
-	{
-		halt = true;
-	}
+    private AbstractRunner runner;
+    private Options options;
+    private int startedRuns = 0, completedRuns = 0;
+    private boolean ready = false, halt = false;
+
+    /**
+     * Creates a new Parallel Client Manager
+     * 
+     * @param runner
+     *            Benchmark runner
+     * @param options
+     *            Options
+     */
+    public ParallelClientManager(AbstractRunner runner, Options options) {
+        this.runner = runner;
+        this.options = options;
+    }
+
+    /**
+     * Runs the parallel clients
+     */
+    @Override
+    public Object call() throws Exception {
+        startedRuns = 0;
+        completedRuns = 0;
+        ready = false;
+        runner.reportProgress(options, "Parallel Client manager starting...");
+
+        // Start the required number of clients, they won't start doing any work
+        // until we finish this as they
+        // rely on the isReady() method to determine when to start work and it
+        // will return false until
+        // after this loop
+        for (int i = 1; i <= options.getParallelThreads(); i++) {
+            ParallelClientTask task = new ParallelClientTask(this, i);
+            options.getExecutor().submit(task);
+            runner.reportProgress(options, "Created Parallel Client ID " + i);
+        }
+        runner.reportProgress(options, "Parallel Client manager is starting clients...");
+        ready = true;
+
+        // Now the manager should wait until all runs have completed
+        while (completedRuns < options.getRuns()) {
+            Thread.sleep(100);
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets the options
+     * 
+     * @return Options
+     */
+    public Options getOptions() {
+        return options;
+    }
+
+    /**
+     * Gets the runner
+     * 
+     * @return Runner
+     */
+    public AbstractRunner getRunner() {
+        return runner;
+    }
+
+    /**
+     * Gets whether the manager is ready for clients to begin executing
+     * 
+     * @return True if the manager is ready, false otherwise
+     */
+    public boolean isReady() {
+        return ready;
+    }
+
+    /**
+     * Method that will be called by parallel clients to determine if they
+     * should continue to run, calls to this are thread safe
+     * 
+     * @return True if a client should continue to run, false if they should
+     *         terminate
+     */
+    public synchronized boolean shouldRun() {
+        if (halt)
+            return false;
+        if (startedRuns < options.getRuns()) {
+            startedRuns++;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Method that will be called by parallel clients to indicate they have
+     * completed a run and to obtain what run completion it is
+     * 
+     * @return Run completion number
+     */
+    public synchronized int completeRun() {
+        completedRuns++;
+        int x = completedRuns;
+        return x;
+    }
+
+    /**
+     * Method called by parallel clients to tell the manager that they
+     * encountered a halting condition and thus all clients should halt
+     */
+    public void halt() {
+        halt = true;
+    }
 
 }

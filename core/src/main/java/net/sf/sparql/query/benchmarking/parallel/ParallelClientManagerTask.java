@@ -33,22 +33,26 @@ package net.sf.sparql.query.benchmarking.parallel;
 
 import java.util.concurrent.FutureTask;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
-
+import net.sf.sparql.query.benchmarking.options.Options;
+import net.sf.sparql.query.benchmarking.runners.AbstractRunner;
 
 /**
  * Task for running a Parallel Client Manager
+ * 
  * @author rvesse
- *
+ * 
  */
 public class ParallelClientManagerTask extends FutureTask<Object> {
 
-	/**
-	 * Creates a new Parallel Client Manager Task
-	 * @param b Benchmarker
-	 */
-	public ParallelClientManagerTask(Benchmarker b)
-	{
-		super(new ParallelClientManager(b));
-	}
+    /**
+     * Creates a new Parallel Client Manager Task
+     * 
+     * @param runner
+     *            Test runner
+     * @param options
+     *            Options
+     */
+    public ParallelClientManagerTask(AbstractRunner runner, Options options) {
+        super(new ParallelClientManager(runner, options));
+    }
 }

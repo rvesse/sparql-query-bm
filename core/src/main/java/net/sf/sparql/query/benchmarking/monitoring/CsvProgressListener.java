@@ -36,10 +36,10 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
+import net.sf.sparql.query.benchmarking.options.BenchmarkOptions;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
@@ -54,7 +54,7 @@ import org.apache.log4j.Logger;
 public class CsvProgressListener implements ProgressListener {
     private static final Logger logger = Logger.getLogger(CsvProgressListener.class);
 
-    private Benchmarker b;
+    private BenchmarkOptions b;
     private StringBuffer buffer;
     private int run = 1;
     private boolean ready = false;
@@ -67,7 +67,7 @@ public class CsvProgressListener implements ProgressListener {
      *            Benchmarker object
      */
     @Override
-    public void handleStarted(Benchmarker b) {
+    public void handleStarted(BenchmarkOptions b) {
         this.b = b;
         this.buffer = new StringBuffer();
         this.run = 1;

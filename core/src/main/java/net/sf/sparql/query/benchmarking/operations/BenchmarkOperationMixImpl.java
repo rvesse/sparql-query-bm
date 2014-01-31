@@ -40,22 +40,24 @@ import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.apache.log4j.Logger;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
+import net.sf.sparql.query.benchmarking.options.Options;
 import net.sf.sparql.query.benchmarking.parallel.ParallelTimer;
+import net.sf.sparql.query.benchmarking.runners.Runner;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRunImpl;
 import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
 /**
  * A basic implementation of a benchmark operation mix
+ * 
  * @author rvesse
- *
+ * 
  */
 public class BenchmarkOperationMixImpl implements BenchmarkOperationMix {
 
     protected static final Logger logger = Logger.getLogger(BenchmarkOperationMixImpl.class);
-    
+
     private List<BenchmarkOperation> operations = new ArrayList<BenchmarkOperation>();
     private List<OperationMixRun> runs = new ArrayList<OperationMixRun>();
     private boolean asThread = false;
@@ -94,18 +96,18 @@ public class BenchmarkOperationMixImpl implements BenchmarkOperationMix {
     }
 
     @Override
-    public OperationMixRun run(Benchmarker b) {
-        OperationMixRun run = new OperationMixRunImpl(this.operations.size(), b.getGlobalOrder());
-    
+    public <T extends Options> OperationMixRun run(Runner<T> runner, T options) {
+        OperationMixRun run = new OperationMixRunImpl(this.operations.size(), options.getGlobalOrder());
+
         // If running as thread then we prefix all our progress messages with a
         // Thread ID
         String prefix = this.asThread ? "[Thread " + Thread.currentThread().getId() + "] " : "";
-    
+
         // Generate a random sequence of integers so we execute the queries in a
         // random order
         // each time the query set is run
         List<Integer> ids = new ArrayList<Integer>();
-        if (b.getRandomizeOrder()) {
+        if (options.getRandomizeOrder()) {
             // Randomize the Order
             List<Integer> unallocatedIds = new ArrayList<Integer>();
             for (int i = 0; i < this.operations.size(); i++) {
@@ -129,31 +131,34 @@ public class BenchmarkOperationMixImpl implements BenchmarkOperationMix {
             if (i < ids.size() - 1)
                 operationOrder.append(", ");
         }
-        b.reportProgress(operationOrder.toString());
-    
+        runner.reportProgress(options, operationOrder.toString());
+
         // Now run each query recording its run details
         for (Integer id : ids) {
-            b.reportPartialProgress(prefix + "Running Operation " + this.operations.get(id).getName() + "...");
+            runner.reportPartialProgress(options, prefix + "Running Operation " + this.operations.get(id).getName() + "...");
             timer.start();
-            OperationRun r = this.operations.get(id).run(b);
+            OperationRun r = this.operations.get(id).run(runner, options);
             timer.stop();
             if (r.wasSuccessful()) {
-                b.reportProgress(prefix + "got " + r.getResultCount() + " result(s) in "
-                        + BenchmarkerUtils.toSeconds(r.getRuntime()) + "s");
+                runner.reportProgress(options,
+                        prefix + "got " + r.getResultCount() + " result(s) in " + BenchmarkerUtils.toSeconds(r.getRuntime())
+                                + "s");
             } else {
-                b.reportProgress(prefix + "got error after " + BenchmarkerUtils.toSeconds(r.getRuntime()) + "s: "
+                runner.reportProgress(options, prefix + "got error after " + BenchmarkerUtils.toSeconds(r.getRuntime()) + "s: "
                         + r.getErrorMessage());
             }
-            b.reportProgress(this.operations.get(id), r);
+            runner.reportProgress(options, this.operations.get(id), r);
             run.setRunStats(id, r);
-    
+
             // Apply delay between operations
-            if (b.getMaxDelay() > 0) {
+            if (options.getMaxDelay() > 0) {
                 try {
-                    long delay = (long) (Math.random() * b.getMaxDelay());
-                    b.reportProgress(prefix + "Sleeping for "
-                            + BenchmarkerUtils.toSeconds((long) (delay * BenchmarkerUtils.NANOSECONDS_PER_MILLISECONDS))
-                            + "s before next operation");
+                    long delay = (long) (Math.random() * options.getMaxDelay());
+                    runner.reportProgress(
+                            options,
+                            prefix + "Sleeping for "
+                                    + BenchmarkerUtils.toSeconds((long) (delay * BenchmarkerUtils.NANOSECONDS_PER_MILLISECONDS))
+                                    + "s before next operation");
                     Thread.sleep(delay);
                 } catch (InterruptedException e) {
                     // We don't care if we get interrupted while delaying
@@ -179,7 +184,7 @@ public class BenchmarkOperationMixImpl implements BenchmarkOperationMix {
     public void trim(int outliers) {
         if (outliers <= 0)
             return;
-    
+
         PriorityQueue<OperationMixRun> rs = new PriorityQueue<OperationMixRun>();
         rs.addAll(this.runs);
         // Discard Best N

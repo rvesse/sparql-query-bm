@@ -33,10 +33,11 @@ package net.sf.sparql.query.benchmarking.parallel;
 
 import java.util.concurrent.Callable;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
 import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
-import net.sf.sparql.query.benchmarking.queries.OperationMixTask;
+import net.sf.sparql.query.benchmarking.options.Options;
+import net.sf.sparql.query.benchmarking.runners.AbstractRunner;
+import net.sf.sparql.query.benchmarking.runners.OperationMixTask;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 
 import org.apache.log4j.Logger;
@@ -78,8 +79,9 @@ public class ParallelClient implements Callable<Object> {
 	 */
 	@Override
 	public Object call() throws Exception {
-		Benchmarker b = manager.getBenchmarker();
-		BenchmarkOperationMix operationMix = b.getOperationMix();
+		Options options = manager.getOptions();
+		AbstractRunner runner = manager.getRunner();
+		BenchmarkOperationMix operationMix = options.getOperationMix();
 		
 		//Firstly wait for the manager to tell us it is ready, this is to ensure all clients launch near simultaneously
 		while (!manager.isReady())
@@ -92,25 +94,25 @@ public class ParallelClient implements Callable<Object> {
 		{
 			try
 			{
-				b.reportProgress("Client " + id + " starting new operation mix run");
+				runner.reportProgress(options, "Client " + id + " starting new operation mix run");
 				
 				//Run a query mix
-				OperationMixTask task = new OperationMixTask(b);
-				b.getExecutor().submit(task);
+				OperationMixTask task = new OperationMixTask(runner, options);
+				options.getExecutor().submit(task);
 				OperationMixRun r = task.get();
 
 				//Report completed run
 				int completedRun = manager.completeRun();
-				b.reportProgress("Operation Mix Run " + completedRun + " of " + b.getRuns() + " by Client " + id);
-				b.reportProgress(r);
-				b.reportProgress();
-				b.reportProgress("Total Response Time: " + BenchmarkerUtils.formatTime(r.getTotalResponseTime()));
-				b.reportProgress("Total Runtime: " + BenchmarkerUtils.formatTime(r.getTotalRuntime()));
+				runner.reportProgress(options, "Operation Mix Run " + completedRun + " of " + options.getRuns() + " by Client " + id);
+				runner.reportProgress(options, r);
+				runner.reportProgress(options);
+				runner.reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatTime(r.getTotalResponseTime()));
+				runner.reportProgress(options, "Total Runtime: " + BenchmarkerUtils.formatTime(r.getTotalRuntime()));
 				int minOperationId = r.getMinimumRuntimeOperationID();
 				int maxOperationId = r.getMaximumRuntimeOperationID();
-				b.reportProgress("Minimum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime()) + " (Operation " + operationMix.getOperation(minOperationId).getName() + ")");
-				b.reportProgress("Maximum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime()) + " (Operation " + operationMix.getOperation(maxOperationId).getName() + ")");
-				b.reportProgress();
+				runner.reportProgress(options, "Minimum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime()) + " (Operation " + operationMix.getOperation(minOperationId).getName() + ")");
+				runner.reportProgress(options, "Maximum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime()) + " (Operation " + operationMix.getOperation(maxOperationId).getName() + ")");
+				runner.reportProgress(options);
 			}
 			catch (Exception e)
 			{
@@ -119,9 +121,9 @@ public class ParallelClient implements Callable<Object> {
 				
 				//Log Error
 				logger.error(e.getMessage());
-				if (b.getHaltOnError() || b.getHaltAny())
+				if (options.getHaltOnError() || options.getHaltAny())
 				{
-					b.halt("Operation Mix run failed in Client " + id + " - " + e.getMessage());
+					runner.halt(options, "Operation Mix run failed in Client " + id + " - " + e.getMessage());
 				}
 			}
 		}

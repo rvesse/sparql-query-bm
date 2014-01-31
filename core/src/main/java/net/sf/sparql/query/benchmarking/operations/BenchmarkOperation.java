@@ -32,7 +32,8 @@ package net.sf.sparql.query.benchmarking.operations;
 
 import java.util.Iterator;
 
-import net.sf.sparql.query.benchmarking.Benchmarker;
+import net.sf.sparql.query.benchmarking.options.Options;
+import net.sf.sparql.query.benchmarking.runners.Runner;
 import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
 /**
@@ -181,23 +182,26 @@ public interface BenchmarkOperation {
     public abstract double getActualOperationsPerHour();
 
     /**
-     * Report whether the operation can run based on the available benchmarker
-     * options
+     * Report whether the operation can run based on the available options
      * 
-     * @param b
-     *            Benchmarker
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      * @return True if the operation can run, false otherwise
      */
-    public abstract boolean canRun(Benchmarker b);
+    public abstract <T extends Options> boolean canRun(Runner<T> runner, T options);
 
     /**
      * Runs the operation recording the statistics as a {@link OperationRun}
      * 
-     * @param b
-     *            Benchmarker
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      * @return Operation Run statistics
      */
-    public abstract OperationRun run(Benchmarker b);
+    public abstract <T extends Options> OperationRun run(Runner<T> runner, T options);
 
     /**
      * Clears all run statistics

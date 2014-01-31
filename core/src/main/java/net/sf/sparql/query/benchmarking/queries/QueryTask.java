@@ -33,23 +33,27 @@ package net.sf.sparql.query.benchmarking.queries;
 
 import java.util.concurrent.FutureTask;
 
+import net.sf.sparql.query.benchmarking.options.Options;
 import net.sf.sparql.query.benchmarking.stats.QueryRun;
-
 
 /**
  * A Query Task that can be executed
+ * 
  * @author rvesse
- *
+ * @param <T>
+ *            Options type
+ * 
  */
-public class QueryTask extends FutureTask<QueryRun> {
-	
-	/**
-	 * Creates a new Query Task
-	 * @param qr Query runner
-	 */
-	public QueryTask(QueryRunner qr) {
-		super(qr);
-	}
+public class QueryTask<T extends Options> extends FutureTask<QueryRun> {
 
+    /**
+     * Creates a new Query Task
+     * 
+     * @param qr
+     *            Query runner
+     */
+    public QueryTask(QueryRunner<T> qr) {
+        super(qr);
+    }
 
 }
