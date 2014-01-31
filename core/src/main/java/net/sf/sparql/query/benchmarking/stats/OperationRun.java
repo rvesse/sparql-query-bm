@@ -39,10 +39,15 @@ package net.sf.sparql.query.benchmarking.stats;
 public interface OperationRun extends Comparable<OperationRun> {
 
     /**
-     * Constant used to indicate that a query has not yet been run and thus the
-     * statistic retrieved is not available
+     * Constant used to indicate that an operation has not yet been run and thus
+     * the statistic retrieved is not available
      */
-    public static final long NOT_YET_RUN = -1;
+    public static final long NOT_YET_RUN = Long.MIN_VALUE;
+
+    /**
+     * Constant used to indicate that an operation has some unknown statistic
+     */
+    public static final long UNKNOWN = -1;
 
     /**
      * Gets the runtime in nanoseconds

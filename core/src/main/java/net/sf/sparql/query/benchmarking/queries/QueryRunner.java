@@ -137,7 +137,7 @@ public class QueryRunner<T extends Options> implements Callable<QueryRun> {
                 // Result Counting may be skipped depending on user options
                 if (bOps != null) {
                     if (!bOps.getNoCount()) {
-                        return new QueryRun(System.nanoTime() - startTime, responseTime, OperationRun.NOT_YET_RUN);
+                        return new QueryRun(System.nanoTime() - startTime, responseTime, OperationRun.UNKNOWN);
                     }
                 }
 
@@ -161,7 +161,7 @@ public class QueryRunner<T extends Options> implements Callable<QueryRun> {
     }
 
     /**
-     * Cancels a Query Runner, used to tell queries
+     * Cancels a Query Runner
      */
     public void cancel() {
         cancelled = true;
