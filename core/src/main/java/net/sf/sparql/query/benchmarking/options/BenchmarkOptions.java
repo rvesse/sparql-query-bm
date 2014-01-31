@@ -31,7 +31,6 @@
 
 package net.sf.sparql.query.benchmarking.options;
 
-
 import net.sf.sparql.query.benchmarking.monitoring.CsvProgressListener;
 import net.sf.sparql.query.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.query.benchmarking.monitoring.XmlProgressListener;
@@ -73,8 +72,8 @@ public class BenchmarkOptions extends OptionsImpl {
     private long limit = DEFAULT_LIMIT;
     private boolean noCount = false;
     private boolean allowOverwite = false;
-    private ProgressListener csvListener = new CsvProgressListener();
-    private ProgressListener xmlListener = new XmlProgressListener();
+    private ProgressListener csvListener = null;
+    private ProgressListener xmlListener = null;
 
     /**
      * Creates a new Benchmarker
@@ -124,12 +123,14 @@ public class BenchmarkOptions extends OptionsImpl {
     public void setCsvResultsFile(String file) {
         if (csvResultsFile == null && file != null) {
             // Add CsvProgressListener if not already present
+            this.csvListener = new CsvProgressListener(file, this.getAllowOverwrite());
             this.addListener(this.csvListener);
         }
         csvResultsFile = file;
-        if (file == null) {
+        if (file == null && this.csvListener != null) {
             // Remove CsvProgressListener if present
             this.removeListener(this.csvListener);
+            this.csvListener = null;
         }
     }
 
@@ -151,12 +152,14 @@ public class BenchmarkOptions extends OptionsImpl {
     public void setXmlResultsFile(String xmlFile) {
         if (xmlResultsFile == null && xmlFile != null) {
             // Add XmlProgressListener if not already present
+            this.xmlListener = new XmlProgressListener(xmlFile, this.getAllowOverwrite());
             this.addListener(this.xmlListener);
         }
         xmlResultsFile = xmlFile;
-        if (xmlFile == null) {
+        if (xmlFile == null && this.xmlListener != null) {
             // Remove XmlProgressListener if present
             this.removeListener(this.xmlListener);
+            this.xmlListener = null;
         }
     }
 

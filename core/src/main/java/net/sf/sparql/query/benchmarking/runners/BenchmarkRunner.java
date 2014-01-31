@@ -286,7 +286,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         // Finally inform listeners that benchmarking finished OK
         for (ProgressListener l : options.getListeners()) {
             try {
-                l.handleFinished(true);
+                l.handleFinished(this, options, true);
             } catch (Exception e) {
                 System.err.println(l.getClass().getName() + " encountered an error during handleFinish() - " + e.getMessage());
                 if (options.getHaltOnError() || options.getHaltAny()) {

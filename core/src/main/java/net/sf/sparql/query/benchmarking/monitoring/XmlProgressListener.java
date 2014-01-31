@@ -49,8 +49,7 @@ import net.sf.sparql.query.benchmarking.stats.OperationRun;
  * 
  * @author rvesse
  */
-public class XmlProgressListener<T extends Options> implements ProgressListener {
-    private T options;
+public class XmlProgressListener implements ProgressListener {
     private File file;
     private PrintWriter writer;
     private int indent = 0;
@@ -134,27 +133,25 @@ public class XmlProgressListener<T extends Options> implements ProgressListener 
      *            Output File Path
      */
     private void setup(String outputPath, boolean allowOverwrite) {
-        if (!BenchmarkerUtils.checkFile(outputPath, allowOverwrite)) {
-            throw new RuntimeException("XML Output File is not a file, already exists or is not writable");
-        }
-        file = new File(outputPath);
+        this.file = new File(outputPath);
+        this.allowOverwrite = allowOverwrite;
     }
 
     /**
      * Handles the started event by printing run configuration to the XML file
-     * 
-     * @param b
-     *            Benchmarker
      */
     @Override
     public <T extends Options> void handleStarted(Runner<T> runner, T options) {
-        if (file == null) {
-            this.setup(options.getXmlResultsFile(), options.getAllowOverwrite());
+        if (!BenchmarkerUtils.checkFile(this.file, allowOverwrite)) {
+            throw new RuntimeException("XML Output File is not a file, already exists or is not writable");
+        }
+
+        BenchmarkOptions bOps = null;
+        if (options instanceof BenchmarkOptions) {
+            bOps = (BenchmarkOptions) options;
         }
 
         try {
-            this.options = b;
-
             // Open Print Writer
             writer = new PrintWriter(file);
 
@@ -164,26 +161,32 @@ public class XmlProgressListener<T extends Options> implements ProgressListener 
 
             // Generate an <configuration> element detailing configuration
             openTag(TAG_CONFIGURATION);
-            printProperty("endpoint", b.getQueryEndpoint());
-            printProperty("sanityChecking", b.getSanityCheckLevel());
-            printProperty("warmups", b.getWarmups());
-            printProperty("runs", b.getRuns());
-            printProperty("randomOrder", b.getRandomizeOrder());
-            printProperty("outliers", b.getOutliers());
-            printProperty("timeout", b.getTimeout());
-            printProperty("maxDelay", b.getMaxDelay());
-            printProperty("askFormat", b.getResultsAskFormat());
-            printProperty("graphFormat", b.getResultsGraphFormat());
-            printProperty("selectFormat", b.getResultsSelectFormat());
-            printProperty("threads", b.getParallelThreads());
-            printProperty("counting", !b.getNoCount());
-            printProperty("limit", b.getLimit());
-            printProperty("gzip", b.getAllowGZipEncoding());
-            printProperty("deflate", b.getAllowDeflateEncoding());
+            printProperty("endpoint", options.getQueryEndpoint());
+            if (bOps != null) {
+                printProperty("sanityChecking", bOps.getSanityCheckLevel());
+            }
+            printProperty("warmups", options.getWarmups());
+            printProperty("runs", options.getRuns());
+            printProperty("randomOrder", options.getRandomizeOrder());
+            if (bOps != null) {
+                printProperty("outliers", bOps.getOutliers());
+            }
+            printProperty("timeout", options.getTimeout());
+            printProperty("maxDelay", options.getMaxDelay());
+            printProperty("askFormat", options.getResultsAskFormat());
+            printProperty("graphFormat", options.getResultsGraphFormat());
+            printProperty("selectFormat", options.getResultsSelectFormat());
+            printProperty("threads", options.getParallelThreads());
+            if (bOps != null) {
+                printProperty("counting", !bOps.getNoCount());
+                printProperty("limit", bOps.getLimit());
+            }
+            printProperty("gzip", options.getAllowGZipEncoding());
+            printProperty("deflate", options.getAllowDeflateEncoding());
 
             // Print Queries
             openTag(TAG_OPERATIONS);
-            BenchmarkOperationMix mix = b.getOperationMix();
+            BenchmarkOperationMix mix = options.getOperationMix();
             Iterator<BenchmarkOperation> ops = mix.getOperations();
             int id = 0;
             while (ops.hasNext()) {
@@ -210,7 +213,7 @@ public class XmlProgressListener<T extends Options> implements ProgressListener 
             writer.flush();
         } catch (Exception e) {
             System.err.println("Unexpected error writing XML stats");
-            b.halt(e.getMessage());
+            runner.halt(options, e.getMessage());
         }
     }
 
@@ -246,6 +249,11 @@ public class XmlProgressListener<T extends Options> implements ProgressListener 
         if (writer == null)
             throw new RuntimeException(
                     "handleFinished() on XmlProgressListener was called but it appears handleStarted() was never called, another listener may have caused handleStarted() to be bypassed for this listener");
+
+        if (!BenchmarkerUtils.checkFile(this.file, allowOverwrite)) {
+            throw new RuntimeException("XML Output File is not a file, already exists or is not writable");
+        }
+
         try {
             closeTag(TAG_MIX_RUNS);
 
@@ -255,7 +263,7 @@ public class XmlProgressListener<T extends Options> implements ProgressListener 
 
             // Query Summary
             openTag(TAG_OPERATIONS);
-            BenchmarkOperationMix mix = this.options.getOperationMix();
+            BenchmarkOperationMix mix = options.getOperationMix();
             Iterator<BenchmarkOperation> ops = mix.getOperations();
             int id = 0;
             while (ops.hasNext()) {
@@ -320,7 +328,7 @@ public class XmlProgressListener<T extends Options> implements ProgressListener 
             System.err.println("Unexpected error writing XML stats " + e);
             e.printStackTrace();
             if (options.getHaltAny() || options.getHaltOnError())
-                options.halt(e.getMessage());
+                runner.halt(options, e.getMessage());
         }
     }
 
