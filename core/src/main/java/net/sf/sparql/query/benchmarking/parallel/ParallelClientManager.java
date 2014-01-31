@@ -34,19 +34,21 @@ package net.sf.sparql.query.benchmarking.parallel;
 import java.util.concurrent.Callable;
 
 import net.sf.sparql.query.benchmarking.options.Options;
-import net.sf.sparql.query.benchmarking.runners.AbstractRunner;
+import net.sf.sparql.query.benchmarking.runners.Runner;
 
 /**
  * A Callable uses to manage the running of parallel clients for multi-threaded
  * testing
  * 
  * @author rvesse
+ * @param <T>
+ *            Options type
  * 
  */
-public class ParallelClientManager implements Callable<Object> {
+public class ParallelClientManager<T extends Options> implements Callable<Object> {
 
-    private AbstractRunner runner;
-    private Options options;
+    private Runner<T> runner;
+    private T options;
     private int startedRuns = 0, completedRuns = 0;
     private boolean ready = false, halt = false;
 
@@ -58,7 +60,7 @@ public class ParallelClientManager implements Callable<Object> {
      * @param options
      *            Options
      */
-    public ParallelClientManager(AbstractRunner runner, Options options) {
+    public ParallelClientManager(Runner<T> runner, T options) {
         this.runner = runner;
         this.options = options;
     }
@@ -79,7 +81,7 @@ public class ParallelClientManager implements Callable<Object> {
         // will return false until
         // after this loop
         for (int i = 1; i <= options.getParallelThreads(); i++) {
-            ParallelClientTask task = new ParallelClientTask(this, i);
+            ParallelClientTask<T> task = new ParallelClientTask<T>(this, i);
             options.getExecutor().submit(task);
             runner.reportProgress(options, "Created Parallel Client ID " + i);
         }
@@ -99,7 +101,7 @@ public class ParallelClientManager implements Callable<Object> {
      * 
      * @return Options
      */
-    public Options getOptions() {
+    public T getOptions() {
         return options;
     }
 
@@ -108,7 +110,7 @@ public class ParallelClientManager implements Callable<Object> {
      * 
      * @return Runner
      */
-    public AbstractRunner getRunner() {
+    public Runner<T> getRunner() {
         return runner;
     }
 

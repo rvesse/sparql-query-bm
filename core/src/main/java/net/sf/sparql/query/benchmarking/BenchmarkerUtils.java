@@ -39,9 +39,9 @@ import java.util.concurrent.TimeUnit;
  * Utility Functions for Benchmarking
  * <p>
  * Note some of these functions mimic the functionality of
- * {@link TimeUnit#convert(long, TimeUnit)} except they keep the calculations as doubles which
- * is important for us because we want as much precision in our measurements as
- * possible
+ * {@link TimeUnit#convert(long, TimeUnit)} except they keep the calculations as
+ * doubles which is important for us because we want as much precision in our
+ * measurements as possible
  * </p>
  * 
  * @author rvesse
@@ -155,7 +155,7 @@ public class BenchmarkerUtils {
     }
 
     /**
-     * Checks whether a given path is a File, does not exist (unless
+     * Checks whether a given path is a file, does not exist (unless
      * {@code allowOverwrite} is true) and is writable
      * 
      * @param filename
@@ -166,6 +166,20 @@ public class BenchmarkerUtils {
      */
     public static boolean checkFile(String filename, boolean allowOverwrite) {
         File f = new File(filename);
+        return checkFile(f, allowOverwrite);
+    }
+
+    /**
+     * Checks whether a given path is a file, does not exist (unless
+     * {@code allowOverwrite} is true) and is writable
+     * 
+     * @param f
+     *            File to check
+     * @param allowOverwrite
+     *            Whether overwriting of existing files is allowed
+     * @return True if the file is usable, false otherwise
+     */
+    public static boolean checkFile(File f, boolean allowOverwrite) {
 
         // Must not exist or allowOverwrite must be true
         if (f.exists() && !allowOverwrite)

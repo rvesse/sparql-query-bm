@@ -38,9 +38,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import net.sf.sparql.query.benchmarking.operations.AbstractBenchmarkOperation;
-import net.sf.sparql.query.benchmarking.options.BenchmarkOptions;
 import net.sf.sparql.query.benchmarking.options.Options;
-import net.sf.sparql.query.benchmarking.runners.BenchmarkRunner;
 import net.sf.sparql.query.benchmarking.runners.Runner;
 import net.sf.sparql.query.benchmarking.stats.OperationRun;
 import net.sf.sparql.query.benchmarking.stats.QueryRun;

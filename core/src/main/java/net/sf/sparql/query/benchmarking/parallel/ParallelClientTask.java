@@ -33,21 +33,28 @@ package net.sf.sparql.query.benchmarking.parallel;
 
 import java.util.concurrent.FutureTask;
 
+import net.sf.sparql.query.benchmarking.options.Options;
+
 /**
  * Task for running parallel clients
+ * 
  * @author rvesse
- *
+ * @param <T>
+ *            Options type
+ * 
  */
-public class ParallelClientTask extends FutureTask<Object> {
+public class ParallelClientTask<T extends Options> extends FutureTask<Object> {
 
-	/**
-	 * Creates a new Parallel Client Task
-	 * @param manager Client Manager
-	 * @param id Client ID
-	 */
-	public ParallelClientTask(ParallelClientManager manager, int id)
-	{
-		super(new ParallelClient(manager, id));
-	}
+    /**
+     * Creates a new Parallel Client Task
+     * 
+     * @param manager
+     *            Client Manager
+     * @param id
+     *            Client ID
+     */
+    public ParallelClientTask(ParallelClientManager<T> manager, int id) {
+        super(new ParallelClient<T>(manager, id));
+    }
 
 }

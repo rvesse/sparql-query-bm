@@ -31,6 +31,7 @@
 
 package net.sf.sparql.query.benchmarking.monitoring;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
@@ -40,6 +41,8 @@ import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
 import net.sf.sparql.query.benchmarking.options.BenchmarkOptions;
+import net.sf.sparql.query.benchmarking.options.Options;
+import net.sf.sparql.query.benchmarking.runners.Runner;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
@@ -54,53 +57,83 @@ import org.apache.log4j.Logger;
 public class CsvProgressListener implements ProgressListener {
     private static final Logger logger = Logger.getLogger(CsvProgressListener.class);
 
-    private BenchmarkOptions b;
+    private File f;
+    private boolean allowOverwrite = false;
     private StringBuffer buffer;
     private int run = 1;
     private boolean ready = false;
 
     /**
+     * Creates a new CSV progress listener which writes to the given file
+     * provided it does not already exist
+     * 
+     * @param file
+     *            File
+     */
+    public CsvProgressListener(String file) {
+        this(file, false);
+    }
+
+    /**
+     * Creates a new CSV progress listener which writes to the given file
+     * optionally overwriting it if it exists
+     * 
+     * @param file
+     *            File
+     * @param allowOverwrite
+     *            Whether to allow overwrites
+     */
+    public CsvProgressListener(String file, boolean allowOverwrite) {
+        this.f = new File(file);
+        this.allowOverwrite = allowOverwrite;
+    }
+
+    /**
      * Handles the started event by preparing a record of the run configuration
      * which will eventually be printed to the CSV file
      * 
-     * @param b
-     *            Benchmarker object
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      */
     @Override
-    public void handleStarted(BenchmarkOptions b) {
-        this.b = b;
+    public <T extends Options> void handleStarted(Runner<T> runner, T options) {
+        if (f.exists() && !allowOverwrite)
+            throw new RuntimeException("Cannot overwrite an existing CSV results file");
+
         this.buffer = new StringBuffer();
         this.run = 1;
 
-        // Check whether File already exists
-        if (!BenchmarkerUtils.checkFile(this.b.getCsvResultsFile(), this.b.getAllowOverwrite())) {
-            throw new RuntimeException("CSV Results File is not a file, already exists or is not writable");
+        BenchmarkOptions bOps = null;
+        if (options instanceof BenchmarkOptions) {
+            bOps = (BenchmarkOptions) options;
         }
 
         // Information on Benchmark Options
         this.buffer.append("Options Summary,\n");
-        this.buffer.append("Query Endpoint," + this.b.getQueryEndpoint() + "\n");
-        this.buffer.append("Update Endpoint," + this.b.getUpdateEndpoint() + "\n");
-        this.buffer.append("Graph Store Endpoint," + this.b.getGraphStoreEndpoint() + "\n");
-        Map<String, String> customEndpoints = this.b.getCustomEndpoints();
+        this.buffer.append("Query Endpoint," + options.getQueryEndpoint() + "\n");
+        this.buffer.append("Update Endpoint," + options.getUpdateEndpoint() + "\n");
+        this.buffer.append("Graph Store Endpoint," + options.getGraphStoreEndpoint() + "\n");
+        Map<String, String> customEndpoints = options.getCustomEndpoints();
         if (customEndpoints.size() > 0) {
             for (String key : customEndpoints.keySet()) {
                 this.buffer.append("Custom Endpoint (" + key + ")," + customEndpoints.get(key) + "\n");
             }
         }
-        this.buffer.append("Sanity Checking Level," + this.b.getSanityCheckLevel() + "\n");
-        this.buffer.append("Warmups," + this.b.getWarmups() + "\n");
-        this.buffer.append("Runs," + this.b.getRuns() + "\n");
-        this.buffer.append("Random Operation Order," + this.b.getRandomizeOrder() + "\n");
-        this.buffer.append("Outliers," + this.b.getOutliers() + "\n");
-        this.buffer.append("Timeout," + this.b.getTimeout() + "s\n");
-        this.buffer.append("Max Delay between Operations," + this.b.getMaxDelay() + "s\n");
-        this.buffer.append("Result Limit," + (this.b.getLimit() <= 0 ? "Query Specified" : this.b.getLimit()) + "\n");
-        this.buffer.append("ASK Results Format," + this.b.getResultsAskFormat() + "\n");
-        this.buffer.append("Graph Results Format," + this.b.getResultsGraphFormat() + "\n");
-        this.buffer.append("SELECT Results Format," + this.b.getResultsSelectFormat() + "\n");
-        this.buffer.append("Parallel Threads," + this.b.getParallelThreads() + "\n");
-        this.buffer.append("Result Counting," + this.b.getNoCount() + "\n");
+        this.buffer.append("Sanity Checking Level," + bOps.getSanityCheckLevel() + "\n");
+        this.buffer.append("Warmups," + options.getWarmups() + "\n");
+        this.buffer.append("Runs," + options.getRuns() + "\n");
+        this.buffer.append("Random Operation Order," + options.getRandomizeOrder() + "\n");
+        this.buffer.append("Outliers," + bOps.getOutliers() + "\n");
+        this.buffer.append("Timeout," + options.getTimeout() + "s\n");
+        this.buffer.append("Max Delay between Operations," + options.getMaxDelay() + "s\n");
+        this.buffer.append("Result Limit," + (bOps.getLimit() <= 0 ? "Query Specified" : bOps.getLimit()) + "\n");
+        this.buffer.append("ASK Results Format," + options.getResultsAskFormat() + "\n");
+        this.buffer.append("Graph Results Format," + options.getResultsGraphFormat() + "\n");
+        this.buffer.append("SELECT Results Format," + options.getResultsSelectFormat() + "\n");
+        this.buffer.append("Parallel Threads," + options.getParallelThreads() + "\n");
+        this.buffer.append("Result Counting," + bOps.getNoCount() + "\n");
         this.buffer.append(",\n");
 
         // Header for Run Summary
@@ -120,12 +153,15 @@ public class CsvProgressListener implements ProgressListener {
      *            Whether benchmarking finished OK
      */
     @Override
-    public void handleFinished(boolean ok) {
+    public <T extends Options> void handleFinished(Runner<T> runner, T options, boolean ok) {
         if (!this.ready)
             throw new RuntimeException(
                     "handleFinished() was called on CsvProgressListener but it appears handleStarted() was not called or encountered an error, another listener may be the cause of this issue");
 
-        boolean wasMultithreaded = b.getParallelThreads() > 1;
+        if (!BenchmarkerUtils.checkFile(this.f, this.allowOverwrite))
+            throw new RuntimeException("Cannot overwrite an existing CSV results file");
+
+        boolean wasMultithreaded = options.getParallelThreads() > 1;
 
         // Operation Summary Header
         this.buffer.append(",\nOperation Summary,\n");
@@ -137,7 +173,7 @@ public class CsvProgressListener implements ProgressListener {
                     .append("Operation,Type,Total Response Time,Average Response Time (Arithmetic),Total Runtime,Average Runtime (Arithmetic),Average Runtime (Geometric),Min Runtime,Max Runtime,Variance,Standard Deviation,Queries per Second,Queries per Hour\n");
         }
 
-        BenchmarkOperationMix operationMix = this.b.getOperationMix();
+        BenchmarkOperationMix operationMix = options.getOperationMix();
         Iterator<BenchmarkOperation> ops = operationMix.getOperations();
         while (ops.hasNext()) {
             BenchmarkOperation op = ops.next();
@@ -168,7 +204,7 @@ public class CsvProgressListener implements ProgressListener {
 
         try {
             // Benchmark Summary
-            FileWriter results = new FileWriter(this.b.getCsvResultsFile());
+            FileWriter results = new FileWriter(this.f);
 
             if (wasMultithreaded) {
                 results.append("Total Response Time,Average Response Time (Arithmetic),Total Runtime,Actual Runtime,Average Runtime (Arithmetic),Actual Average Runtime (Arithmetic),Average Runtime (Geometric),Minimum Mix Runtime,Maximum Mix Runtime,Variance,Standard Deviation,Operation Mixes per Hour,Actual Operation Mixes per Hour\n");
@@ -194,12 +230,11 @@ public class CsvProgressListener implements ProgressListener {
             results.append("\n");
             results.append(buffer.toString());
             results.close();
-            this.b.reportProgress("Results for this run output to " + this.b.getCsvResultsFile());
         } catch (IOException e) {
-            System.err.println("Error created CSV results file " + this.b.getCsvResultsFile());
-            logger.error("Error creating CSV results file" + this.b.getCsvResultsFile(), e);
-            if (b.getHaltAny() || b.getHaltOnError())
-                this.b.halt(e.getMessage());
+            System.err.println("Error created CSV results file " + this.f.getAbsolutePath());
+            logger.error("Error creating CSV results file" + this.f.getAbsolutePath());
+            if (options.getHaltOnError() || options.getHaltAny())
+                runner.halt(options, e);
         }
     }
 
@@ -210,7 +245,7 @@ public class CsvProgressListener implements ProgressListener {
      *            Informational Message
      */
     @Override
-    public void handleProgress(String message) {
+    public <T extends Options> void handleProgress(Runner<T> runner, T options, String message) {
         // We don't handle informational messages
     }
 
@@ -224,7 +259,7 @@ public class CsvProgressListener implements ProgressListener {
      *            Operation Run statistics
      */
     @Override
-    public void handleProgress(BenchmarkOperation operation, OperationRun run) {
+    public <T extends Options> void handleProgress(Runner<T> runner, T options, BenchmarkOperation operation, OperationRun run) {
         // We don't handle query run stats as they are produced, we're only
         // interested in aggregate stats at the end
     }
@@ -234,7 +269,7 @@ public class CsvProgressListener implements ProgressListener {
      * printing to the CSV file
      */
     @Override
-    public synchronized void handleProgress(OperationMixRun run) {
+    public synchronized <T extends Options> void handleProgress(Runner<T> runner, T options, OperationMixRun run) {
         this.buffer.append(this.run + ",");
         this.buffer.append(BenchmarkerUtils.toSeconds(run.getTotalResponseTime()) + ",");
         this.buffer.append(BenchmarkerUtils.toSeconds(run.getTotalRuntime()) + ",");

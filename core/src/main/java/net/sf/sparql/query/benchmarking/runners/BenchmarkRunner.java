@@ -193,7 +193,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         } else {
             // Multi Threaded Benchmark
             options.getOperationMix().setRunAsThread(true);
-            ParallelClientManagerTask task = new ParallelClientManagerTask(this, options);
+            ParallelClientManagerTask<BenchmarkOptions> task = new ParallelClientManagerTask<BenchmarkOptions>(this, options);
             options.getExecutor().submit(task);
             try {
                 task.get();

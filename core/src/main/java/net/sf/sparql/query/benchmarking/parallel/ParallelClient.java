@@ -36,97 +36,100 @@ import java.util.concurrent.Callable;
 import net.sf.sparql.query.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
 import net.sf.sparql.query.benchmarking.options.Options;
-import net.sf.sparql.query.benchmarking.runners.AbstractRunner;
 import net.sf.sparql.query.benchmarking.runners.OperationMixTask;
+import net.sf.sparql.query.benchmarking.runners.Runner;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 
 import org.apache.log4j.Logger;
 
-
 /**
  * Parallel Client for running multi-threaded benchmarks
+ * 
  * @author rvesse
+ * @param <T>
+ *            Options type
  */
-public class ParallelClient implements Callable<Object> {
-	
-	private static final Logger logger = Logger.getLogger(ParallelClient.class);
+public class ParallelClient<T extends Options> implements Callable<Object> {
 
-	private ParallelClientManager manager;
-	private int id;
-	
-	/**
-	 * Creates a new Parallel Client
-	 * @param manager Client Manager
-	 * @param id Client ID
-	 */
-	public ParallelClient(ParallelClientManager manager, int id)
-	{
-		this.manager = manager;
-		this.id = id;
-	}
-	
-	/**
-	 * Gets the ID of this client
-	 * @return ID
-	 */
-	public int getID()
-	{
-		return id;
-	}
-	
-	/**
-	 * Runs operation mixes while the Client Manager indicates there are still mixes to be run
-	 */
-	@Override
-	public Object call() throws Exception {
-		Options options = manager.getOptions();
-		AbstractRunner runner = manager.getRunner();
-		BenchmarkOperationMix operationMix = options.getOperationMix();
-		
-		//Firstly wait for the manager to tell us it is ready, this is to ensure all clients launch near simultaneously
-		while (!manager.isReady())
-		{
-			Thread.sleep(50);
-		}
-		
-		//While there is work to do run benchmarks
-		while (manager.shouldRun())
-		{
-			try
-			{
-				runner.reportProgress(options, "Client " + id + " starting new operation mix run");
-				
-				//Run a query mix
-				OperationMixTask task = new OperationMixTask(runner, options);
-				options.getExecutor().submit(task);
-				OperationMixRun r = task.get();
+    private static final Logger logger = Logger.getLogger(ParallelClient.class);
 
-				//Report completed run
-				int completedRun = manager.completeRun();
-				runner.reportProgress(options, "Operation Mix Run " + completedRun + " of " + options.getRuns() + " by Client " + id);
-				runner.reportProgress(options, r);
-				runner.reportProgress(options);
-				runner.reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatTime(r.getTotalResponseTime()));
-				runner.reportProgress(options, "Total Runtime: " + BenchmarkerUtils.formatTime(r.getTotalRuntime()));
-				int minOperationId = r.getMinimumRuntimeOperationID();
-				int maxOperationId = r.getMaximumRuntimeOperationID();
-				runner.reportProgress(options, "Minimum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime()) + " (Operation " + operationMix.getOperation(minOperationId).getName() + ")");
-				runner.reportProgress(options, "Maximum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime()) + " (Operation " + operationMix.getOperation(maxOperationId).getName() + ")");
-				runner.reportProgress(options);
-			}
-			catch (Exception e)
-			{
-				//Inform manager it needs to halt other clients
-				manager.halt();
-				
-				//Log Error
-				logger.error(e.getMessage());
-				if (options.getHaltOnError() || options.getHaltAny())
-				{
-					runner.halt(options, "Operation Mix run failed in Client " + id + " - " + e.getMessage());
-				}
-			}
-		}
-		return null;
-	}
+    private ParallelClientManager<T> manager;
+    private int id;
+
+    /**
+     * Creates a new Parallel Client
+     * 
+     * @param manager
+     *            Client Manager
+     * @param id
+     *            Client ID
+     */
+    public ParallelClient(ParallelClientManager<T> manager, int id) {
+        this.manager = manager;
+        this.id = id;
+    }
+
+    /**
+     * Gets the ID of this client
+     * 
+     * @return ID
+     */
+    public int getID() {
+        return id;
+    }
+
+    /**
+     * Runs operation mixes while the Client Manager indicates there are still
+     * mixes to be run
+     */
+    @Override
+    public Object call() throws Exception {
+        T options = manager.getOptions();
+        Runner<T> runner = manager.getRunner();
+        BenchmarkOperationMix operationMix = options.getOperationMix();
+
+        // Firstly wait for the manager to tell us it is ready, this is to
+        // ensure all clients launch near simultaneously
+        while (!manager.isReady()) {
+            Thread.sleep(50);
+        }
+
+        // While there is work to do run benchmarks
+        while (manager.shouldRun()) {
+            try {
+                runner.reportProgress(options, "Client " + id + " starting new operation mix run");
+
+                // Run a query mix
+                OperationMixTask<T> task = new OperationMixTask<T>(runner, options);
+                options.getExecutor().submit(task);
+                OperationMixRun r = task.get();
+
+                // Report completed run
+                int completedRun = manager.completeRun();
+                runner.reportProgress(options, "Operation Mix Run " + completedRun + " of " + options.getRuns() + " by Client "
+                        + id);
+                runner.reportProgress(options, r);
+                runner.reportProgress(options);
+                runner.reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatTime(r.getTotalResponseTime()));
+                runner.reportProgress(options, "Total Runtime: " + BenchmarkerUtils.formatTime(r.getTotalRuntime()));
+                int minOperationId = r.getMinimumRuntimeOperationID();
+                int maxOperationId = r.getMaximumRuntimeOperationID();
+                runner.reportProgress(options, "Minimum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime())
+                        + " (Operation " + operationMix.getOperation(minOperationId).getName() + ")");
+                runner.reportProgress(options, "Maximum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime())
+                        + " (Operation " + operationMix.getOperation(maxOperationId).getName() + ")");
+                runner.reportProgress(options);
+            } catch (Exception e) {
+                // Inform manager it needs to halt other clients
+                manager.halt();
+
+                // Log Error
+                logger.error(e.getMessage());
+                if (options.getHaltOnError() || options.getHaltAny()) {
+                    runner.halt(options, "Operation Mix run failed in Client " + id + " - " + e.getMessage());
+                }
+            }
+        }
+        return null;
+    }
 }

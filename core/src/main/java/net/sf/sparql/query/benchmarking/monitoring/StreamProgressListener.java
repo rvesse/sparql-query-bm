@@ -36,6 +36,7 @@ import java.io.PrintStream;
 
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
 import net.sf.sparql.query.benchmarking.options.Options;
+import net.sf.sparql.query.benchmarking.runners.Runner;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
@@ -142,7 +143,7 @@ public class StreamProgressListener implements ProgressListener {
      *            Informational Message
      */
     @Override
-    public void handleProgress(String message) {
+    public <T extends Options> void handleProgress(Runner<T> runner, T options, String message) {
         if (this.output != null)
             this.output.print(message);
     }
@@ -151,14 +152,14 @@ public class StreamProgressListener implements ProgressListener {
      * Does nothing, you may wish to override in derived classes
      */
     @Override
-    public void handleProgress(BenchmarkOperation query, OperationRun run) {
+    public <T extends Options> void handleProgress(Runner<T> runner, T options, BenchmarkOperation operation, OperationRun run) {
     }
 
     /**
      * Does nothing, you may wish to override in derived classes
      */
     @Override
-    public void handleProgress(OperationMixRun run) {
+    public <T extends Options> void handleProgress(Runner<T> runner, T options, OperationMixRun run) {
     }
 
     /**
@@ -172,9 +173,8 @@ public class StreamProgressListener implements ProgressListener {
      * explicit stream
      * </p>
      */
-    @SuppressWarnings("javadoc")
     @Override
-    public void handleStarted(Options b) {
+    public <T extends Options> void handleStarted(Runner<T> runner, T options) {
         // If the stream is null then use the openStream() method to try and get
         if (this.output == null) {
             this.output = new PrintStream(this.openStream());
@@ -186,7 +186,7 @@ public class StreamProgressListener implements ProgressListener {
      * listener was instantiated
      */
     @Override
-    public void handleFinished(boolean ok) {
+    public <T extends Options> void handleFinished(Runner<T> runner, T options, boolean ok) {
         if (this.closeOnFinish && this.output != null) {
             this.output.close();
         }

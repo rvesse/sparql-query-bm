@@ -40,6 +40,7 @@ import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperationMix;
 import net.sf.sparql.query.benchmarking.options.BenchmarkOptions;
 import net.sf.sparql.query.benchmarking.options.Options;
+import net.sf.sparql.query.benchmarking.runners.Runner;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.query.benchmarking.stats.OperationRun;
 
@@ -48,11 +49,12 @@ import net.sf.sparql.query.benchmarking.stats.OperationRun;
  * 
  * @author rvesse
  */
-public class XmlProgressListener implements ProgressListener {
-    private Options b;
+public class XmlProgressListener<T extends Options> implements ProgressListener {
+    private T options;
     private File file;
     private PrintWriter writer;
     private int indent = 0;
+    private boolean allowOverwrite = false;
 
     //@formatter:off
 	/**
@@ -101,17 +103,8 @@ public class XmlProgressListener implements ProgressListener {
 	//@formatter:on
 
     /**
-     * Constructor to be called when the file to write to should be detected at
-     * benchmarking start time using the {@link BenchmarkOptions#getXmlResultsFile()}
-     * method
-     */
-    public XmlProgressListener() {
-
-    }
-
-    /**
-     * Constructor to be called when the file to write to is known in advance of
-     * benchmarking, assumes overwriting if forbidden
+     * Creates a new XML progress listener which writes to the given path unless
+     * it already exists
      * 
      * @param outputPath
      *            Output File Path
@@ -154,13 +147,13 @@ public class XmlProgressListener implements ProgressListener {
      *            Benchmarker
      */
     @Override
-    public void handleStarted(BenchmarkOptions b) {
+    public <T extends Options> void handleStarted(Runner<T> runner, T options) {
         if (file == null) {
-            this.setup(b.getXmlResultsFile(), b.getAllowOverwrite());
+            this.setup(options.getXmlResultsFile(), options.getAllowOverwrite());
         }
 
         try {
-            this.b = b;
+            this.options = b;
 
             // Open Print Writer
             writer = new PrintWriter(file);
@@ -249,7 +242,7 @@ public class XmlProgressListener implements ProgressListener {
      *            Whether benchmarking finished OK
      */
     @Override
-    public void handleFinished(boolean ok) {
+    public <T extends Options> void handleFinished(Runner<T> runner, T options, boolean ok) {
         if (writer == null)
             throw new RuntimeException(
                     "handleFinished() on XmlProgressListener was called but it appears handleStarted() was never called, another listener may have caused handleStarted() to be bypassed for this listener");
@@ -258,11 +251,11 @@ public class XmlProgressListener implements ProgressListener {
 
             openTag(TAG_STATS);
 
-            boolean wasMultithreaded = b.getParallelThreads() > 1;
+            boolean wasMultithreaded = options.getParallelThreads() > 1;
 
             // Query Summary
             openTag(TAG_OPERATIONS);
-            BenchmarkOperationMix mix = this.b.getOperationMix();
+            BenchmarkOperationMix mix = this.options.getOperationMix();
             Iterator<BenchmarkOperation> ops = mix.getOperations();
             int id = 0;
             while (ops.hasNext()) {
@@ -326,24 +319,25 @@ public class XmlProgressListener implements ProgressListener {
         } catch (Exception e) {
             System.err.println("Unexpected error writing XML stats " + e);
             e.printStackTrace();
-            if (b.getHaltAny() || b.getHaltOnError())
-                b.halt(e.getMessage());
+            if (options.getHaltAny() || options.getHaltOnError())
+                options.halt(e.getMessage());
         }
     }
 
     @Override
-    public void handleProgress(String message) {
+    public <T extends Options> void handleProgress(Runner<T> runner, T options, String message) {
         // Not relevant for XML output
     }
 
     @Override
-    public void handleProgress(BenchmarkOperation query, OperationRun run) {
-        // We don't handle individual query run stats, we only handle mix and
+    public <T extends Options> void handleProgress(Runner<T> runner, T options, BenchmarkOperation operation, OperationRun run) {
+        // We don't handle individual operation run stats, we only handle mix
+        // and
         // aggregate stats
     }
 
     @Override
-    public synchronized void handleProgress(OperationMixRun run) {
+    public synchronized <T extends Options> void handleProgress(Runner<T> runner, T options, OperationMixRun run) {
         // Print run information
         openTag(TAG_MIX_RUN, true);
 

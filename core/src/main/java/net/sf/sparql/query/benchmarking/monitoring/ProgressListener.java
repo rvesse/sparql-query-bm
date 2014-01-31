@@ -32,7 +32,6 @@
 package net.sf.sparql.query.benchmarking.monitoring;
 
 import net.sf.sparql.query.benchmarking.operations.BenchmarkOperation;
-import net.sf.sparql.query.benchmarking.options.BenchmarkOptions;
 import net.sf.sparql.query.benchmarking.options.Options;
 import net.sf.sparql.query.benchmarking.runners.Runner;
 import net.sf.sparql.query.benchmarking.stats.OperationMixRun;
@@ -59,35 +58,51 @@ public interface ProgressListener {
     /**
      * Handles finishing of running
      * 
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      * @param ok
      *            Indicates whether running finished normally, if false then
      *            some error condition caused running to be halted
      */
-    void handleFinished(boolean ok);
+    <T extends Options> void handleFinished(Runner<T> runner, T options, boolean ok);
 
     /**
      * Handles an informational progress message
      * 
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      * @param message
      *            Message
      */
-    void handleProgress(String message);
+    <T extends Options> void handleProgress(Runner<T> runner, T options, String message);
 
     /**
      * Handles statistics for a single run of an operation
      * 
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      * @param operation
      *            Operation
      * @param run
      *            Run information
      */
-    void handleProgress(BenchmarkOperation operation, OperationRun run);
+    <T extends Options> void handleProgress(Runner<T> runner, T options, BenchmarkOperation operation, OperationRun run);
 
     /**
      * Handles statistics for a single run of the operation mix
      * 
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      * @param run
      *            Mix run information
      */
-    void handleProgress(OperationMixRun run);
+    <T extends Options> void handleProgress(Runner<T> runner, T options, OperationMixRun run);
 }
