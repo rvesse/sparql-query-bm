@@ -79,8 +79,8 @@ public class UpdateOperationImpl extends AbstractOperation implements UpdateOper
 
     @Override
     public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getQueryEndpoint() == null) {
-            runner.reportProgress(options, "Benchmark Updates cannot run with no query endpoint specified");
+        if (options.getUpdateEndpoint() == null) {
+            runner.reportProgress(options, "Benchmark Updates cannot run with no update endpoint specified");
             return false;
         }
         return true;
