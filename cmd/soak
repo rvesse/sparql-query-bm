@@ -1,2 +1,35 @@
 #!/bin/bash
-java -cp target/sparql-query-bm-cli.jar net.sf.sparql.query.benchmarking.cmd.SoakCmd $*
+
+# Locate where the script is running
+SCRIPT_PATH="${BASH_SOURCE[0]}";
+if([ -h "${SCRIPT_PATH}" ]) then
+  while([ -h "${SCRIPT_PATH}" ]) do SCRIPT_PATH=`readlink "${SCRIPT_PATH}"`; done
+fi
+pushd . > /dev/null
+cd `dirname ${SCRIPT_PATH}` > /dev/null
+SCRIPT_PATH=`pwd`;
+popd  > /dev/null
+SCRIPT_NAME=`basename $BASH_SOURCE`
+
+# Search the obvious locations for the CLI
+TARGET_JAR=sparql-query-bm-cli.jar
+ACTUAL_JAR=
+
+if [ -e "target/${TARGET_JAR}" ]; then
+	# Maven build directory
+	ACTUAL_JAR="target/${TARGET_JAR}"
+elif [ -e "${TARGET_JAR}" ]; then
+	# Local directory
+	ACTUAL_JAR=${TARGET_JAR}
+elif [ -e "${SCRIPT_PATH}/target/${TARGET_JAR}" ]; then
+	# Maven build directory relative to script path
+	ACTUAL_JAR="${SCRIPT_PATH}/target/${TARGET_JAR}"
+elif [ -e "${SCRIPT_PATH}/${TARGET_JAR}" ]; then
+	# Same directory as script path
+	ACTUAL_JAR="${SCRIPT_PATH}/${TARGET_JAR}"
+else
+	echo "Unable to locate required JAR file ${TARGET_JAR}, did you forget to do a mvn package?" 1>&2
+	exit 1
+fi
+
+java -cp "${ACTUAL_JAR}" net.sf.sparql.query.benchmarking.cmd.SoakCmd $*

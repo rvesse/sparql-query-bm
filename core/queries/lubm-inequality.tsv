@@ -1,0 +1,4 @@
+query	inequality/lubm-type-filter.rq	Single Filter !=
+query	inequality/lubm-type-minus.rq	Single Minus
+query	inequality/lubm-multiple-filter.rq	Multiple Filter !=
+query	inequality/lubm-multiple-minus.rq	Multiple Minus

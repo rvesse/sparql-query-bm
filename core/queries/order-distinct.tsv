@@ -1,0 +1,8 @@
+query	order-distinct/order-distinct-same-level.rq	ORDER BY with DISTINCT
+query	order-distinct/order-distinct-sub-query.rq	ORDER BY with DISTINCT in sub-query
+query	order-distinct/order-reduced-same-level.rq	ORDER BY with REDUCED
+query	order-distinct/order-reduced-sub-query.rq	ORDER BY with REDUCED in sub-query
+query	order-distinct/order-distinct-same-level-limit.rq	ORDER BY with DISTINCT and LIMIT
+query	order-distinct/order-distinct-sub-query-limit.rq	ORDER BY with DISTINCT and LIMIT in sub-query
+query	order-distinct/order-reduced-same-level-limit.rq	ORDER BY with REDUCED and LIMIT
+query	order-distinct/order-reduced-sub-query-limit.rq	ORDER BY with REDUCED and LIMIT in sub-query

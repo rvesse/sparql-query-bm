@@ -206,6 +206,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
             options.getExecutor().submit(task);
             try {
                 task.get();
+                endTime = System.nanoTime();
             } catch (InterruptedException e) {
                 logger.error("Multi Threaded soak testing was interrupted - " + e.getMessage());
                 if (options.getHaltAny())

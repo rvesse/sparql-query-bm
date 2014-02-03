@@ -1,0 +1,7 @@
+query	inequality/sp2b-type-filter.rq	Single Filter !=
+query	inequality/sp2b-type-minus.rq	Single Minus
+query	inequality/sp2b-multiple-filter.rq	Multiple Filter !=
+query	inequality/sp2b-multiple-minus.rq	Multiple Minus
+query	inequality/sp2b-ignore-supernode-filter.rq	Filter != to avoid supernode
+query	inequality/sp2b-ignore-supernode-minus.rq	Minus to avoid supernode
+query	inequality/sp2b-ignore-supernode-twin-minus.rq	Two Minus to avoid supernode

@@ -119,7 +119,7 @@ public class BenchmarkerCmd {
         if (!quiet) {
             // When run from command line we automatically enable Console
             // Progress Listening unless the -q or --quiet option was specified
-            System.out.println("Running in verbose mode, run with -q or --quiet to disable");
+            System.out.println("Running in verbose mode, run with --quiet to disable");
             options.addListener(new ConsoleProgressListener());
         }
 
@@ -153,9 +153,6 @@ public class BenchmarkerCmd {
                     // Show Usage Summary and exit
                     showUsage();
                     System.exit(1);
-                } else if (arg.equals("-q")) {
-                    // Enable Quiet Mode
-                    quiet = true;
                 } else if (arg.startsWith("-") && arg.length() == 2) {
                     // Short Form Arguments which all expect a parameter after
                     // them

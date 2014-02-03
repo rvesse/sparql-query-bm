@@ -111,7 +111,7 @@ public class SoakCmd {
         if (!quiet) {
             // When run from command line we automatically enable Console
             // Progress Listening unless the -q or --quiet option was specified
-            System.out.println("Running in verbose mode, run with -q or --quiet to disable");
+            System.out.println("Running in verbose mode, run with --quiet to disable");
             options.addListener(new ConsoleProgressListener());
         }
 
@@ -145,9 +145,6 @@ public class SoakCmd {
                     // Show Usage Summary and exit
                     showUsage();
                     System.exit(1);
-                } else if (arg.equals("-q")) {
-                    // Enable Quiet Mode
-                    quiet = true;
                 } else if (arg.startsWith("-") && arg.length() == 2) {
                     // Short Form Arguments which all expect a parameter after
                     // them
@@ -224,7 +221,7 @@ public class SoakCmd {
                     } else if (arg.equals("--runtime")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        options.setSoakRuntime(Long.parseLong(argv[i]));
+                        options.setMaxRuntime(Long.parseLong(argv[i]));
                     } else if (arg.equals("--timeout")) {
                         expectNextArg(i, argv, arg);
                         i++;
@@ -387,7 +384,7 @@ public class SoakCmd {
         // @formatter:off
         System.out.println("Runs a soak test of SPARQL operations");
         System.out.println("Usage is as follows:");
-        System.out.println("query-benchmarker [required options] [options]");
+        System.out.println("soak [required options] [options]");
         System.out.println();
         System.out.println("The following options are required:");
         System.out.println();
@@ -396,6 +393,9 @@ public class SoakCmd {
         System.out.println();
         System.out.println("One/more of the following options are also required, exact requirements will depend on your operation mix:");
         System.out.println();
+        System.out.println(" -r N");
+        System.out.println(" --runs N                    Sets maximum number of runs where N is an integer, zero/negative values mean use the --runtime option to control soak test duration instead (default 0)");
+        System.out.println(" --runtime N                 Sets maximum runtime in minutes where N is an integer, zero/negative values mean use the -r/--runs option to control soak test duration instead (default 15)");
         System.out.println(" -q uri");
         System.out.println(" --query-endpoint uri        Sets the SPARQL query endpoint to use");
         System.out.println(" -u uri");
@@ -425,10 +425,7 @@ public class SoakCmd {
         System.out.println(" --parallel N                Sets the number of parallel threads to use for benchmarking (default N=1 i.e. single threaded evaluation)");
         System.out.println(" --password PWD              Sets the password used for basic authentication");
         System.out.println(" --preemptive-auth           Enables use of preemptive authentication, may marginally improve performance when basic authentication is used");
-        System.out.println(" -q");
         System.out.println(" --quiet                     Enables quiet mode so only errors will go to the console and no progress messages will be shown");
-        System.out.println(" -r N");
-        System.out.println(" --runs N                    Sets number of runs where N is an integer (default " + Options.DEFAULT_RUNS + ")");
         System.out.println(" --results-ask FMT           Sets the format to request for ASK query results (default " + Options.DEFAULT_FORMAT_SELECT + ")");
         System.out.println(" --results-graph FMT         Sets the format to request for CONSTRUCT/DESCRIBE results (default " + Options.DEFAULT_FORMAT_GRAPH + ")");
         System.out.println(" --results-select FMT        Sets the format to request for SELECT query results (default " + Options.DEFAULT_FORMAT_ASK + ")");
@@ -437,8 +434,6 @@ public class SoakCmd {
         System.out.println(" -t N");
         System.out.println(" --timeout N                 Sets timeout for queries where N is number of seconds (default " + Options.DEFAULT_TIMEOUT + ")");
         System.out.println(" --username USER             Sets the username used for basic authentication");
-        System.out.println(" -w N");
-        System.out.println(" --warmups N                 Sets number of warm up runs to run prior to actual benchmarking runs (default " + Options.DEFAULT_WARMUPS + ")");
         System.out.println();
         // @formatter:on
     }
