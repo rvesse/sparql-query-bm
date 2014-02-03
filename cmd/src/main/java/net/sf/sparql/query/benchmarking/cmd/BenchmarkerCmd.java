@@ -43,6 +43,7 @@ import net.sf.sparql.benchmarking.loader.OperationMixLoaderRegistry;
 import net.sf.sparql.benchmarking.monitoring.ConsoleProgressListener;
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
 import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.options.OptionsImpl;
 import net.sf.sparql.benchmarking.runners.BenchmarkRunner;
 
 import org.apache.jena.atlas.web.auth.ApacheModAuthFormLogin;
@@ -481,7 +482,7 @@ public class BenchmarkerCmd {
         System.out.println(" --results-graph FMT         Sets the format to request for CONSTRUCT/DESCRIBE results (default " + Options.DEFAULT_FORMAT_GRAPH + ")");
         System.out.println(" --results-select FMT        Sets the format to request for SELECT query results (default " + Options.DEFAULT_FORMAT_ASK + ")");
         System.out.println(" -s N");
-        System.out.println(" --sanity-checks N           Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=" + BenchmarkOptions.DEFAULT_SANITY_CHECKS + ")");
+        System.out.println(" --sanity-checks N           Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=" + OptionsImpl.DEFAULT_SANITY_CHECKS + ")");
         System.out.println(" -t N");
         System.out.println(" --timeout N                 Sets timeout for queries where N is number of seconds (default " + Options.DEFAULT_TIMEOUT + ")");
         System.out.println(" --username USER             Sets the username used for basic authentication");

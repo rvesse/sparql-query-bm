@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking;
 
@@ -59,6 +59,10 @@ public class BenchmarkerUtils {
      * Milliseconds per second
      */
     public static final double MILLISECONDS_PER_SECONDS = 1000;
+    /**
+     * Seconds per minute
+     */
+    public static final double SECONDS_PER_MINUTE = 60;
     /**
      * Seconds per hour
      */
@@ -101,8 +105,29 @@ public class BenchmarkerUtils {
      * @return Seconds
      */
     public static double toSeconds(double nanoseconds) {
-        double ms = nanoseconds / NANOSECONDS_PER_MILLISECONDS;
+        double ms = toMilliseconds(nanoseconds);
         return ms / MILLISECONDS_PER_SECONDS;
+    }
+
+    /**
+     * Converts nanoseconds to minutes
+     * 
+     * @param nanoseconds
+     * @return Minutes
+     */
+    public static double toMinutes(long nanoseconds) {
+        return toMinutes((double) nanoseconds);
+    }
+
+    /**
+     * Converts nanoseconds to minutes
+     * 
+     * @param nanoseconds
+     * @return Minutes
+     */
+    public static double toMinutes(double nanoseconds) {
+        double seconds = toSeconds(nanoseconds);
+        return seconds / SECONDS_PER_MINUTE;
     }
 
     /**
@@ -112,7 +137,7 @@ public class BenchmarkerUtils {
      *            Time in nanoseconds
      * @return Time in seconds
      */
-    public static String formatTime(long time) {
+    public static String formatSeconds(long time) {
         return BenchmarkerUtils.toSeconds(time) + "s";
     }
 
@@ -123,7 +148,7 @@ public class BenchmarkerUtils {
      *            Time in nanoseconds
      * @return Time in seconds
      */
-    public static String formatTime(double time) {
+    public static String formatSeconds(double time) {
         return BenchmarkerUtils.toSeconds(time) + "s";
     }
 

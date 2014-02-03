@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.options;
 
@@ -55,6 +55,10 @@ import net.sf.sparql.benchmarking.operations.OperationMix;
  */
 public class OptionsImpl implements Options {
 
+    /**
+     * Default Sanity Checks
+     */
+    public static final int DEFAULT_SANITY_CHECKS = 2;
     private boolean haltOnTimeout = false;
     private boolean haltOnError = false;
     private boolean haltAny = false;
@@ -79,6 +83,7 @@ public class OptionsImpl implements Options {
     private HttpAuthenticator authenticator;
     private AtomicLong globalOrder = new AtomicLong(0);
     private boolean randomize = true;
+    int sanity = DEFAULT_SANITY_CHECKS;
 
     @Override
     public ExecutorService getExecutor() {
@@ -201,7 +206,6 @@ public class OptionsImpl implements Options {
         return Collections.unmodifiableMap(this.customEndpoints);
     }
 
-
     @Override
     public void setRuns(int runs) {
         if (runs < 0)
@@ -209,12 +213,10 @@ public class OptionsImpl implements Options {
         this.runs = runs;
     }
 
-
     @Override
     public int getRuns() {
         return runs;
     }
-
 
     @Override
     public void setWarmups(int runs) {
@@ -223,18 +225,15 @@ public class OptionsImpl implements Options {
         warmups = runs;
     }
 
-
     @Override
     public int getWarmups() {
         return warmups;
     }
 
-
     @Override
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
-
 
     @Override
     public int getTimeout() {
@@ -343,6 +342,16 @@ public class OptionsImpl implements Options {
     @Override
     public boolean getRandomizeOrder() {
         return randomize;
+    }
+
+    @Override
+    public void setSanityCheckLevel(int level) {
+        sanity = level;
+    }
+
+    @Override
+    public int getSanityCheckLevel() {
+        return sanity;
     }
 
 }

@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,12 +28,25 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.runners;
 
+import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
+
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.Operation;
+import net.sf.sparql.benchmarking.operations.query.QueryRunner;
+import net.sf.sparql.benchmarking.operations.query.QueryTask;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
@@ -47,6 +60,8 @@ import net.sf.sparql.benchmarking.stats.OperationRun;
  * @param <T>
  */
 public abstract class AbstractRunner<T extends Options> implements Runner<T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractRunner.class);
 
     private boolean halted = false;
 
@@ -145,6 +160,60 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
                 if (options.getHaltAny() || options.getHaltOnError()) {
                     halt(options, l.getClass().getName() + " encountering an error in progress reporting");
                 }
+            }
+        }
+    }
+
+    /**
+     * Checks that the query endpoint being used passes some basic queries to
+     * see if it is up and running
+     * <p>
+     * May be overridden by runner implementations to change the sanity checking
+     * constraints
+     * </p>
+     * 
+     * @param options
+     *            Options
+     * 
+     * @return Whether the endpoint passed some basic sanity checks
+     */
+    protected boolean checkSanity(T options) {
+        reportProgress(options, "Sanity checking the user specified endpoint...");
+        String[] checks = new String[] { "ASK WHERE { }", "SELECT * WHERE { }", "SELECT * WHERE { ?s a ?type } LIMIT 1" };
+
+        int passed = 0;
+        for (int i = 0; i < checks.length; i++) {
+            Query q = QueryFactory.create(checks[i]);
+            QueryTask<T> task = new QueryTask<T>(new QueryRunner<T>(q, this, options));
+            reportPartialProgress(options, "Sanity Check " + (i + 1) + " of " + checks.length + "...");
+            try {
+                options.getExecutor().submit(task);
+                task.get(options.getTimeout(), TimeUnit.SECONDS);
+                reportProgress(options, "OK");
+                passed++;
+            } catch (TimeoutException tEx) {
+                logger.error("Query Runner execeeded Timeout - " + tEx.getMessage());
+                reportProgress(options, "Failed");
+            } catch (InterruptedException e) {
+                logger.error("Query Runner was interrupted - " + e.getMessage());
+                reportProgress(options, "Failed");
+            } catch (ExecutionException e) {
+                logger.error("Query Runner encountered an error - " + e.getMessage());
+                reportProgress(options, "Failed");
+            }
+        }
+
+        return (passed >= options.getSanityCheckLevel());
+    }
+
+    protected void checkOperations(T options) {
+        Iterator<Operation> ops = options.getOperationMix().getOperations();
+        while (ops.hasNext()) {
+            Operation op = ops.next();
+            if (!op.canRun(this, options)) {
+                System.err.println("A specified operation cannot run with the available options");
+                halt(options, "Operation " + op.getName() + " of type " + op.getType()
+                        + " cannot run with the available options");
             }
         }
     }

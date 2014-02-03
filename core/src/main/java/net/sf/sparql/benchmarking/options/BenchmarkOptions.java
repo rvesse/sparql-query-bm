@@ -57,10 +57,6 @@ public class BenchmarkOptions extends OptionsImpl {
      */
     public static final String DEFAULT_XML_RESULTS_FILE = "results.xml";
     /**
-     * Default Sanity Checks
-     */
-    public static final int DEFAULT_SANITY_CHECKS = 2;
-    /**
      * Default Limit, values <= 0 are considered to mean leave existing LIMIT
      * as-is and don't impose a limit on unlimited queries
      */
@@ -69,7 +65,6 @@ public class BenchmarkOptions extends OptionsImpl {
     private String csvResultsFile = DEFAULT_CSV_RESULTS_FILE;
     private String xmlResultsFile = DEFAULT_XML_RESULTS_FILE;
     private int outliers = DEFAULT_OUTLIERS;
-    private int sanity = DEFAULT_SANITY_CHECKS;
     private long limit = DEFAULT_LIMIT;
     private boolean noCount = false;
     private boolean allowOverwite = false;
@@ -155,25 +150,6 @@ public class BenchmarkOptions extends OptionsImpl {
      */
     public String getCsvResultsFile() {
         return csvResultsFile;
-    }
-
-    /**
-     * Sets the Sanity Checking level
-     * 
-     * @param level
-     *            Sanity Check Level
-     */
-    public void setSanityCheckLevel(int level) {
-        sanity = level;
-    }
-
-    /**
-     * Gets the Sanity Checking Level
-     * 
-     * @return Sanity Check Level
-     */
-    public int getSanityCheckLevel() {
-        return sanity;
     }
 
     /**

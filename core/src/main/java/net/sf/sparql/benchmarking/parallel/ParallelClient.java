@@ -111,13 +111,13 @@ public class ParallelClient<T extends Options> implements Callable<Object> {
                         + id);
                 runner.reportProgress(options, r);
                 runner.reportProgress(options);
-                runner.reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatTime(r.getTotalResponseTime()));
-                runner.reportProgress(options, "Total Runtime: " + BenchmarkerUtils.formatTime(r.getTotalRuntime()));
+                runner.reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatSeconds(r.getTotalResponseTime()));
+                runner.reportProgress(options, "Total Runtime: " + BenchmarkerUtils.formatSeconds(r.getTotalRuntime()));
                 int minOperationId = r.getMinimumRuntimeOperationID();
                 int maxOperationId = r.getMaximumRuntimeOperationID();
-                runner.reportProgress(options, "Minimum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMinimumRuntime())
+                runner.reportProgress(options, "Minimum Operation Runtime: " + BenchmarkerUtils.formatSeconds(r.getMinimumRuntime())
                         + " (Operation " + operationMix.getOperation(minOperationId).getName() + ")");
-                runner.reportProgress(options, "Maximum Operation Runtime: " + BenchmarkerUtils.formatTime(r.getMaximumRuntime())
+                runner.reportProgress(options, "Maximum Operation Runtime: " + BenchmarkerUtils.formatSeconds(r.getMaximumRuntime())
                         + " (Operation " + operationMix.getOperation(maxOperationId).getName() + ")");
                 runner.reportProgress(options);
             } catch (Exception e) {
