@@ -31,12 +31,18 @@
 
 package net.sf.sparql.query.benchmarking.cmd;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import net.sf.sparql.query.benchmarking.Benchmarker;
-import net.sf.sparql.query.benchmarking.HaltBehaviour;
-import net.sf.sparql.query.benchmarking.monitoring.ConsoleProgressListener;
-import net.sf.sparql.query.benchmarking.queries.BenchmarkQueryMix;
+
+import net.sf.sparql.benchmarking.BenchmarkerUtils;
+import net.sf.sparql.benchmarking.HaltBehaviour;
+import net.sf.sparql.benchmarking.loader.OperationMixLoader;
+import net.sf.sparql.benchmarking.loader.OperationMixLoaderRegistry;
+import net.sf.sparql.benchmarking.monitoring.ConsoleProgressListener;
+import net.sf.sparql.benchmarking.options.BenchmarkOptions;
+import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.runners.BenchmarkRunner;
 
 import org.apache.jena.atlas.web.auth.ApacheModAuthFormLogin;
 import org.apache.jena.atlas.web.auth.FormLogin;
@@ -95,8 +101,8 @@ public class BenchmarkerCmd {
         }
 
         // Set up the Benchmark
-        Benchmarker b = new Benchmarker();
-        parseArgs(argv, b);
+        BenchmarkOptions options = new BenchmarkOptions();
+        parseArgs(argv, options);
 
         // Setup log4j to redirect stuff to stdout if enabled
         if (enableLog4jToConsole) {
@@ -104,32 +110,34 @@ public class BenchmarkerCmd {
             Logger.getRootLogger().setLevel(debug ? Level.DEBUG : Level.INFO);
         }
 
-        b.setHaltBehaviour(HaltBehaviour.EXIT); // When run from command line
-                                                // Halting Behaviour is always
-                                                // to exit
+        options.setHaltBehaviour(HaltBehaviour.EXIT); // When run from command
+                                                      // line
+        // Halting Behaviour is always
+        // to exit
         if (!quiet) {
             // When run from command line we automatically enable Console
             // Progress Listening unless the -q or --quiet option was specified
             System.out.println("Running in verbose mode, run with -q or --quiet to disable");
-            b.addListener(new ConsoleProgressListener());
+            options.addListener(new ConsoleProgressListener());
         }
 
         // Run the Benchmark
-        b.runBenchmark();
+        BenchmarkRunner runner = new BenchmarkRunner();
+        runner.run(options);
 
         // Finish
         System.exit(0);
     }
 
     /**
-     * Parses Arguments and sets up the Benchmarker object
+     * Parses Arguments and sets up the options object
      * 
      * @param argv
      *            Arguments
-     * @param b
-     *            Benchmarker
+     * @param options
+     *            Options
      */
-    private static void parseArgs(String[] argv, Benchmarker b) {
+    private static void parseArgs(String[] argv, BenchmarkOptions options) {
         if (argv.length <= 2)
             return;
 
@@ -153,46 +161,46 @@ public class BenchmarkerCmd {
                     i++;
                     switch (arg.charAt(1)) {
                     case 'r':
-                        b.setRuns(Integer.parseInt(argv[i]));
+                        options.setRuns(Integer.parseInt(argv[i]));
                         break;
                     case 'o':
-                        b.setOutliers(Integer.parseInt(argv[i]));
+                        options.setOutliers(Integer.parseInt(argv[i]));
                         break;
                     case 't':
-                        b.setTimeout(Integer.parseInt(argv[i]));
+                        options.setTimeout(Integer.parseInt(argv[i]));
                         break;
                     case 'c':
-                        b.setCsvResultsFile(argv[i]);
+                        options.setCsvResultsFile(argv[i]);
                         break;
                     case 'w':
-                        b.setWarmups(Integer.parseInt(argv[i]));
+                        options.setWarmups(Integer.parseInt(argv[i]));
                         break;
                     case 's':
-                        b.setSanityCheckLevel(Integer.parseInt(argv[i]));
+                        options.setSanityCheckLevel(Integer.parseInt(argv[i]));
                         break;
                     case 'd':
-                        b.setMaxDelay(Integer.parseInt(argv[i]));
+                        options.setMaxDelay(Integer.parseInt(argv[i]));
                         break;
                     case 'p':
-                        b.setParallelThreads(Integer.parseInt(argv[i]));
+                        options.setParallelThreads(Integer.parseInt(argv[i]));
                         break;
                     case 'x':
-                        b.setXmlResultsFile(argv[i]);
+                        options.setXmlResultsFile(argv[i]);
                         break;
                     case 'l':
-                        b.setLimit(Long.parseLong(argv[i]));
+                        options.setLimit(Long.parseLong(argv[i]));
                         break;
                     case 'm':
-                        parseOperationMix(b, argv[i]);
+                        parseOperationMix(options, argv[i]);
                         break;
                     case 'q':
-                        b.setQueryEndpoint(argv[i]);
+                        options.setQueryEndpoint(argv[i]);
                         break;
                     case 'u':
-                        b.setUpdateEndpoint(argv[i]);
+                        options.setUpdateEndpoint(argv[i]);
                         break;
                     case 'g':
-                        b.setGraphStoreEndpoint(argv[i]);
+                        options.setGraphStoreEndpoint(argv[i]);
                         break;
                     default:
                         System.err.println("Illegal Option " + arg);
@@ -207,85 +215,85 @@ public class BenchmarkerCmd {
                     } else if (arg.equals("--mix")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        parseOperationMix(b, argv[i]);
+                        parseOperationMix(options, argv[i]);
                     } else if (arg.equals("--query-endpoint")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setQueryEndpoint(argv[i]);
+                        options.setQueryEndpoint(argv[i]);
                     } else if (arg.equals("--update-endpoint")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setUpdateEndpoint(argv[i]);
+                        options.setUpdateEndpoint(argv[i]);
                     } else if (arg.equals("--gsp-endpoint")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setGraphStoreEndpoint(argv[i]);
+                        options.setGraphStoreEndpoint(argv[i]);
                     } else if (arg.equals("--custom-endpoint")) {
                         expectNextArg(i, argv, arg);
                         i++;
                         String name = argv[i];
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setCustomEndpoint(name, argv[i]);
+                        options.setCustomEndpoint(name, argv[i]);
                     } else if (arg.equals("--runs")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setRuns(Integer.parseInt(argv[i]));
+                        options.setRuns(Integer.parseInt(argv[i]));
                     } else if (arg.equals("--outliers")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setOutliers(Integer.parseInt(argv[i]));
+                        options.setOutliers(Integer.parseInt(argv[i]));
                     } else if (arg.equals("--csv")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setCsvResultsFile(argv[i]);
+                        options.setCsvResultsFile(argv[i]);
                     } else if (arg.equals("--timeout")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setTimeout(Integer.parseInt(argv[i]));
+                        options.setTimeout(Integer.parseInt(argv[i]));
                     } else if (arg.equals("--warmups")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setWarmups(Integer.parseInt(argv[i]));
+                        options.setWarmups(Integer.parseInt(argv[i]));
                     } else if (arg.equals("--sanity-checks")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setSanityCheckLevel(Integer.parseInt(argv[i]));
+                        options.setSanityCheckLevel(Integer.parseInt(argv[i]));
                     } else if (arg.equals("--delay")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setMaxDelay(Integer.parseInt(argv[i]));
+                        options.setMaxDelay(Integer.parseInt(argv[i]));
                     } else if (arg.equals("--halt-on-timeout")) {
-                        b.setHaltOnTimeout(true);
+                        options.setHaltOnTimeout(true);
                     } else if (arg.equals("--halt-on-error")) {
-                        b.setHaltOnError(true);
+                        options.setHaltOnError(true);
                     } else if (arg.equals("--halt-any")) {
-                        b.setHaltAny(true);
+                        options.setHaltAny(true);
                     } else if (arg.equals("--norand")) {
-                        b.setRandomizeOrder(false);
+                        options.setRandomizeOrder(false);
                     } else if (arg.equals("--results-ask")) {
                         expectNextArg(i, argv, arg);
                         i++;
                         arg = argv[i];
-                        b.setResultsAskFormat(arg);
+                        options.setResultsAskFormat(arg);
                     } else if (arg.equals("--results-graph")) {
                         expectNextArg(i, argv, arg);
                         i++;
                         arg = argv[i];
-                        b.setResultsGraphFormat(arg);
+                        options.setResultsGraphFormat(arg);
                     } else if (arg.equals("--results-select")) {
                         expectNextArg(i, argv, arg);
                         i++;
                         arg = argv[i];
-                        b.setResultsSelectFormat(arg);
+                        options.setResultsSelectFormat(arg);
                     } else if (arg.equals("--parallel")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setParallelThreads(Integer.parseInt(argv[i]));
+                        options.setParallelThreads(Integer.parseInt(argv[i]));
                     } else if (arg.equals("--limit")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setLimit(Long.parseLong(argv[i]));
+                        options.setLimit(Long.parseLong(argv[i]));
                     } else if (arg.equals("--logging")) {
                         enableLog4jToConsole = true;
                     } else if (arg.equals("--debug")) {
@@ -295,19 +303,19 @@ public class BenchmarkerCmd {
                     } else if (arg.equals("--xml")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        b.setXmlResultsFile(argv[i]);
+                        options.setXmlResultsFile(argv[i]);
                     } else if (arg.equals("--noxml")) {
-                        b.setXmlResultsFile(null);
+                        options.setXmlResultsFile(null);
                     } else if (arg.equals("--nocsv")) {
-                        b.setCsvResultsFile(null);
+                        options.setCsvResultsFile(null);
                     } else if (arg.equals("--nocount")) {
-                        b.setNoCount(true);
+                        options.setNoCount(true);
                     } else if (arg.equals("--overwrite")) {
-                        b.setAllowOverwrite(true);
+                        options.setAllowOverwrite(true);
                     } else if (arg.equals("--gzip")) {
-                        b.setAllowGZipEncoding(true);
+                        options.setAllowGZipEncoding(true);
                     } else if (arg.equals("--deflate")) {
-                        b.setAllowDeflateEncoding(true);
+                        options.setAllowDeflateEncoding(true);
                     } else if (arg.equals("--username")) {
                         expectNextArg(i, argv, arg);
                         i++;
@@ -358,16 +366,16 @@ public class BenchmarkerCmd {
 
                 FormLogin login = new FormLogin(formUrl, userField, pwdField, user, pwd.toCharArray());
                 try {
-                    b.setAuthenticator(new FormsAuthenticator(new URI(b.getQueryEndpoint()), login));
+                    options.setAuthenticator(new FormsAuthenticator(new URI(options.getQueryEndpoint()), login));
                 } catch (URISyntaxException e) {
                     System.err.println("Invalid Endpoint URL, unable to configure form based authentication: " + e.getMessage());
                     System.exit(1);
                 }
             } else {
                 // Use standard HTTP authentication
-                b.setAuthenticator(new SimpleAuthenticator(user, pwd.toCharArray()));
+                options.setAuthenticator(new SimpleAuthenticator(user, pwd.toCharArray()));
                 if (preemptive)
-                    b.setAuthenticator(new PreemptiveBasicAuthenticator(b.getAuthenticator()));
+                    options.setAuthenticator(new PreemptiveBasicAuthenticator(options.getAuthenticator()));
             }
         }
     }
@@ -390,16 +398,22 @@ public class BenchmarkerCmd {
         }
     }
 
-    private static void parseOperationMix(Benchmarker b, String mixFile) {
-        // Set operation mix
+    private static void parseOperationMix(Options b, String mixFile) {
         try {
-            // TODO Make this flexible
-            b.setQueryMix(new BenchmarkQueryMix(mixFile));
+            // Try to get a loader for the given mix file
+            OperationMixLoader mixLoader = OperationMixLoaderRegistry.getLoader(BenchmarkerUtils.getExtension(mixFile, true,
+                    false));
+            if (mixLoader == null)
+                throw new RuntimeException("No mix loader is associated with files with the extension "
+                        + BenchmarkerUtils.getExtension(mixFile, true, true));
+
+            // Set operation mix
+            b.setOperationMix(mixLoader.load(new File(mixFile)));
         } catch (QueryParseException e) {
             System.err.println(e.getMessage());
             System.exit(1);
         } catch (Exception e) {
-            System.err.println("Unexpected Error loading operation mix - " + e.getMessage());
+            System.err.println("Unexpected error loading operation mix - " + e.getMessage());
             System.exit(1);
         }
     }
@@ -430,10 +444,10 @@ public class BenchmarkerCmd {
         System.out.println();
         System.out.println("The following optional options are also supported:");
         System.out.println(" -c filename.csv");
-        System.out.println(" --csv filename.csv          Sets filename to which the CSV results summary will be output (default " + Benchmarker.DEFAULT_CSV_RESULTS_FILE + ")");
+        System.out.println(" --csv filename.csv          Sets filename to which the CSV results summary will be output (default " + BenchmarkOptions.DEFAULT_CSV_RESULTS_FILE + ")");
         System.out.println(" --debug                     Sets log level to DEBUG, use in conjunction with --logging option to see detailed HTTP traces for debugging purposes");
         System.out.println(" -d N");
-        System.out.println(" --delay N                   Sets maximum delay between queries in milliseconds, will be random delay up to this maximum, use 0 for no delay (default N=" + Benchmarker.DEFAULT_MAX_DELAY + ")");
+        System.out.println(" --delay N                   Sets maximum delay between queries in milliseconds, will be random delay up to this maximum, use 0 for no delay (default N=" + Options.DEFAULT_MAX_DELAY + ")");
         System.out.println(" --deflate                   Sets whether HTTP requests will accept Deflate encoding");
         System.out.println(" --form-url URL              Sets the login URL used for form based login");
         System.out.println(" --form-user-field FIELD     Sets the user name field used for form based login (default httpd_username)");
@@ -452,7 +466,7 @@ public class BenchmarkerCmd {
         System.out.println(" --norand                    If present the order in which queries are executed will not be randomized");
         System.out.println(" --noxml                     Disables XML output, supercedes any preceding -x/--xml option but may be superceded by a subsequent -x/--xml option");
         System.out.println(" -o N");
-        System.out.println(" --outliers N                Sets number of outliers to ignore i.e. discards the N best and N worst results when calculating overall averages (default N=" + Benchmarker.DEFAULT_OUTLIERS + ")");
+        System.out.println(" --outliers N                Sets number of outliers to ignore i.e. discards the N best and N worst results when calculating overall averages (default N=" + BenchmarkOptions.DEFAULT_OUTLIERS + ")");
         System.out.println(" --overwrite                 Allows overwriting of existing results files of the same names, if not set and files existing benchmarking will abort immediately");
         System.out.println(" -p N");
         System.out.println(" --parallel N                Sets the number of parallel threads to use for benchmarking (default N=1 i.e. single threaded evaluation)");
@@ -461,17 +475,17 @@ public class BenchmarkerCmd {
         System.out.println(" -q");
         System.out.println(" --quiet                     Enables quiet mode so only errors will go to the console and no progress messages will be shown");
         System.out.println(" -r N");
-        System.out.println(" --runs N                    Sets number of runs where N is an integer (default " + Benchmarker.DEFAULT_RUNS + ")");
-        System.out.println(" --results-ask FMT           Sets the format to request for ASK query results (default " + Benchmarker.DEFAULT_FORMAT_SELECT + ")");
-        System.out.println(" --results-graph FMT         Sets the format to request for CONSTRUCT/DESCRIBE results (default " + Benchmarker.DEFAULT_FORMAT_GRAPH + ")");
-        System.out.println(" --results-select FMT        Sets the format to request for SELECT query results (default " + Benchmarker.DEFAULT_FORMAT_ASK + ")");
+        System.out.println(" --runs N                    Sets number of runs where N is an integer (default " + Options.DEFAULT_RUNS + ")");
+        System.out.println(" --results-ask FMT           Sets the format to request for ASK query results (default " + Options.DEFAULT_FORMAT_SELECT + ")");
+        System.out.println(" --results-graph FMT         Sets the format to request for CONSTRUCT/DESCRIBE results (default " + Options.DEFAULT_FORMAT_GRAPH + ")");
+        System.out.println(" --results-select FMT        Sets the format to request for SELECT query results (default " + Options.DEFAULT_FORMAT_ASK + ")");
         System.out.println(" -s N");
-        System.out.println(" --sanity-checks N           Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=" + Benchmarker.DEFAULT_SANITY_CHECKS + ")");
+        System.out.println(" --sanity-checks N           Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=" + BenchmarkOptions.DEFAULT_SANITY_CHECKS + ")");
         System.out.println(" -t N");
-        System.out.println(" --timeout N                 Sets timeout for queries where N is number of seconds (default " + Benchmarker.DEFAULT_TIMEOUT + ")");
+        System.out.println(" --timeout N                 Sets timeout for queries where N is number of seconds (default " + Options.DEFAULT_TIMEOUT + ")");
         System.out.println(" --username USER             Sets the username used for basic authentication");
         System.out.println(" -w N");
-        System.out.println(" --warmups N                 Sets number of warm up runs to run prior to actual benchmarking runs (default " + Benchmarker.DEFAULT_WARMUPS + ")");
+        System.out.println(" --warmups N                 Sets number of warm up runs to run prior to actual benchmarking runs (default " + Options.DEFAULT_WARMUPS + ")");
         System.out.println(" -x filename.xml");
         System.out.println(" --xml filename.xml          Request XML output and sets filename to which the XML results will be output");
         System.out.println();
