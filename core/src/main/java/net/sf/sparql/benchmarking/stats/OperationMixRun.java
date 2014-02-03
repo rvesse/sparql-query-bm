@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.stats;
 
@@ -55,8 +55,8 @@ public interface OperationMixRun extends Comparable<OperationMixRun> {
     /**
      * Gets an iterator over the runs that make up this operation mix
      * <p>
-     * The runs are in the same order as the operations are in the originating mix
-     * i.e. the order does not reflect the execution order
+     * The runs are in the same order as the operations are in the originating
+     * mix i.e. the order does not reflect the execution order
      * </p>
      * 
      * @return Iterator over the runs
@@ -70,6 +70,13 @@ public interface OperationMixRun extends Comparable<OperationMixRun> {
      * @return Global Order
      */
     public abstract long getRunOrder();
+
+    /**
+     * Gets the total number of errors for the operation mix
+     * 
+     * @return Total number of errors
+     */
+    public abstract long getTotalErrors();
 
     /**
      * Gets the total runtime for the Operation Mix
@@ -86,8 +93,8 @@ public interface OperationMixRun extends Comparable<OperationMixRun> {
     public abstract long getTotalResponseTime();
 
     /**
-     * Gets the runtime of the operation from the set that took the shortest time to
-     * run
+     * Gets the runtime of the operation from the set that took the shortest
+     * time to run
      * 
      * @return Minimum Runtime in nanoseconds
      */
@@ -101,8 +108,8 @@ public interface OperationMixRun extends Comparable<OperationMixRun> {
     public abstract int getMinimumRuntimeOperationID();
 
     /**
-     * Gets the runtime of the operation from the set that took the longest time to
-     * run
+     * Gets the runtime of the operation from the set that took the longest time
+     * to run
      * 
      * @return Maximum Runtime in nanoseconds
      */

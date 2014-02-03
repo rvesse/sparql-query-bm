@@ -54,32 +54,26 @@ public class SoakOptions extends OptionsImpl {
     private long runtime = DEFAULT_RUNTIME;
 
     /**
-     * Creates new soak test options
-     */
-    public SoakOptions() {
-        this.setRuns(DEFAULT_RUNS);
-    }
-
-    /**
      * Sets the maximum number of runs for soak testing
      * <p>
      * May be set to 0 or a negative value to indicate there is no maximum runs
-     * and that instead the {@link #getSoakRuntime()} determines how long soak
+     * and that instead the {@link #getMaxRuntime()} determines how long soak
      * testing will run for.
      * </p>
+     * 
+     * @param runs
+     *            Maximum runs
      */
-    @Override
-    public void setRuns(int runs) {
+    public void setMaxRuns(int runs) {
         this.maxRuns = runs;
     }
 
     /**
      * Gets the maximum number of runs for soak testing
      * 
-     * @returns Maximum number of runs
+     * @return Maximum number of runs
      */
-    @Override
-    public int getRuns() {
+    public int getMaxRuns() {
         return this.maxRuns;
     }
 
@@ -89,7 +83,7 @@ public class SoakOptions extends OptionsImpl {
      * 
      * @return Soak runtime in minutes
      */
-    public long getSoakRuntime() {
+    public long getMaxRuntime() {
         return runtime;
     }
 
@@ -104,7 +98,7 @@ public class SoakOptions extends OptionsImpl {
      * @param runtime
      *            Soak runtime in minutes
      */
-    public void setSoakRuntime(long runtime) {
+    public void setMaxRuntime(long runtime) {
         this.runtime = runtime;
     }
 }

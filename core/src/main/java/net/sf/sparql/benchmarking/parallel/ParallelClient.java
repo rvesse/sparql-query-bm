@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.parallel;
 
@@ -51,6 +51,9 @@ import org.apache.log4j.Logger;
  *            Options type
  */
 public class ParallelClient<T extends Options> implements Callable<Object> {
+
+    // TODO Extract an interface and abstract class to make exact client run
+    // behaviour configurable
 
     private static final Logger logger = Logger.getLogger(ParallelClient.class);
 
@@ -107,18 +110,19 @@ public class ParallelClient<T extends Options> implements Callable<Object> {
 
                 // Report completed run
                 int completedRun = manager.completeRun();
-                runner.reportProgress(options, "Operation Mix Run " + completedRun + " of " + options.getRuns() + " by Client "
-                        + id);
+                runner.reportProgress(options, "Operation Mix Run " + completedRun + " by Client " + id);
                 runner.reportProgress(options, r);
                 runner.reportProgress(options);
                 runner.reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatSeconds(r.getTotalResponseTime()));
                 runner.reportProgress(options, "Total Runtime: " + BenchmarkerUtils.formatSeconds(r.getTotalRuntime()));
                 int minOperationId = r.getMinimumRuntimeOperationID();
                 int maxOperationId = r.getMaximumRuntimeOperationID();
-                runner.reportProgress(options, "Minimum Operation Runtime: " + BenchmarkerUtils.formatSeconds(r.getMinimumRuntime())
-                        + " (Operation " + operationMix.getOperation(minOperationId).getName() + ")");
-                runner.reportProgress(options, "Maximum Operation Runtime: " + BenchmarkerUtils.formatSeconds(r.getMaximumRuntime())
-                        + " (Operation " + operationMix.getOperation(maxOperationId).getName() + ")");
+                runner.reportProgress(options,
+                        "Minimum Operation Runtime: " + BenchmarkerUtils.formatSeconds(r.getMinimumRuntime()) + " (Operation "
+                                + operationMix.getOperation(minOperationId).getName() + ")");
+                runner.reportProgress(options,
+                        "Maximum Operation Runtime: " + BenchmarkerUtils.formatSeconds(r.getMaximumRuntime()) + " (Operation "
+                                + operationMix.getOperation(maxOperationId).getName() + ")");
                 runner.reportProgress(options);
             } catch (Exception e) {
                 // Inform manager it needs to halt other clients

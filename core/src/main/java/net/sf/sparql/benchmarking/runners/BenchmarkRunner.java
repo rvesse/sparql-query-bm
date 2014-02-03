@@ -80,8 +80,8 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         }
 
         // Validate Options
-        if (options.getQueryEndpoint() == null || options.getUpdateEndpoint() == null || options.getGraphStoreEndpoint() == null
-                || options.getCustomEndpoints().size() == 0) {
+        if (options.getQueryEndpoint() == null && options.getUpdateEndpoint() == null && options.getGraphStoreEndpoint() == null
+                && options.getCustomEndpoints().size() == 0) {
             System.err.println("At least one endpoint must be set");
             halt(options, "No endpoint was set");
         }

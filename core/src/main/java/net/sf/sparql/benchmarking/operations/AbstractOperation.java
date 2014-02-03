@@ -102,6 +102,15 @@ public abstract class AbstractOperation implements Operation {
         }
         return total;
     }
+    
+    @Override
+    public long getTotalErrors() {
+        long total = 0;
+        for (OperationRun r : this.runs) {
+            if (!r.wasSuccessful()) total++;
+        }
+        return total;
+    }
 
     @Override
     public long getActualRuntime() {

@@ -32,7 +32,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.runners;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -42,6 +45,8 @@ import net.sf.sparql.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.options.SoakOptions;
+import net.sf.sparql.benchmarking.parallel.ParallelClientManagerTask;
+import net.sf.sparql.benchmarking.parallel.SoakTestParallelClientManager;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 
 /**
@@ -69,13 +74,14 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         }
 
         // Validate Options
-        if (options.getQueryEndpoint() == null || options.getUpdateEndpoint() == null || options.getGraphStoreEndpoint() == null
-                || options.getCustomEndpoints().size() == 0) {
+        if (options.getQueryEndpoint() == null && options.getUpdateEndpoint() == null && options.getGraphStoreEndpoint() == null
+                && options.getCustomEndpoints().size() == 0) {
             System.err.println("At least one endpoint must be set");
             halt(options, "No endpoint was set");
         }
-        if (options.getRuns() <= 0 || options.getSoakRuntime() <= 0) {
-            System.err.println("One/both of the maximum runs (use setRuns() method) or the maximum runtime (use setSoakRuntime() method) must be set");
+        if (options.getRuns() <= 0 || options.getMaxRuntime() <= 0) {
+            System.err
+                    .println("One/both of the maximum runs (use setRuns() method) or the maximum runtime (use setSoakRuntime() method) must be set");
             halt(options, "No maximum runs/runtime set");
         }
         if (options.getOperationMix() == null) {
@@ -103,14 +109,15 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
             }
         }
         reportProgress(options, "Sanity Checking Level = " + options.getSanityCheckLevel());
-        if (options.getRuns() > 0)
-            reportProgress(options, "Maximum Runs = " + options.getRuns());
-        if (options.getSoakRuntime() > 0)
-            reportProgress(options, "Maximum Runtime = " + options.getSoakRuntime() + " minutes");
+        if (options.getMaxRuns() > 0)
+            reportProgress(options, "Maximum Runs = " + options.getMaxRuns());
+        if (options.getMaxRuntime() > 0)
+            reportProgress(options, "Maximum Runtime = " + options.getMaxRuntime() + " minutes");
         reportProgress(options, "Random Operation Order = " + (options.getRandomizeOrder() ? "On" : "Off"));
         reportProgress(options, "Timeout = " + options.getTimeout() + " seconds");
         reportProgress(options, "Max Delay between Operations = " + options.getMaxDelay() + " milliseconds");
-        //reportProgress(options, "Result Limit = " + (options.getLimit() <= 0 ? "Query Specified" : options.getLimit()));
+        // reportProgress(options, "Result Limit = " + (options.getLimit() <= 0
+        // ? "Query Specified" : options.getLimit()));
         reportProgress(options, "Halt on Timeout = " + options.getHaltOnTimeout());
         reportProgress(options, "Halt on Error = " + options.getHaltOnError());
         reportProgress(options, "Halt Any = " + options.getHaltAny());
@@ -120,7 +127,8 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         reportProgress(options, "GZip Encoding = " + (options.getAllowGZipEncoding() ? "enabled" : "disabled"));
         reportProgress(options, "Deflate Encoding = " + (options.getAllowDeflateEncoding() ? "enabled" : "disabled"));
         reportProgress(options, "Parallel Threads = " + options.getParallelThreads());
-        //reportProgress(options, "Result Counting = " + (options.getNoCount() ? "disabled" : "enabled"));
+        // reportProgress(options, "Result Counting = " + (options.getNoCount()
+        // ? "disabled" : "enabled"));
         reportProgress(options, "Authentication = " + (options.getAuthenticator() != null ? "enabled" : "disabled"));
         reportProgress(options);
 
@@ -163,51 +171,55 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
             // Single Threaded Benchmark
             i = 0;
             while (true) {
-                reportProgress(options, "Operation Mix Run " + (i + 1) + " of " + options.getRuns());
+                if (options.getMaxRuns() > 0) {
+                    reportProgress(options, "Operation Mix Run " + (i + 1) + " of " + options.getMaxRuns());
+                } else {
+                    reportProgress(options, "Operation Mix Run " + (i + 1));
+                }
+                if (options.getMaxRuntime() > 0) {
+                    reportProgress(options, "Running for " + BenchmarkerUtils.toMinutes(System.nanoTime() - startTime)
+                            + " minutes of " + options.getMaxRuntime() + " minutes");
+                }
                 i++;
                 OperationMixRun r = options.getOperationMix().run(this, options);
                 reportProgress(options, r);
-                
-                if (options.getRuns() > 0 && i >= options.getRuns())
-                {
+                reportProgress(options);
+
+                if (options.getMaxRuns() > 0 && i >= options.getMaxRuns()) {
                     // Reached max runs
                     reportProgress(options, "Reached the maximum number of runs");
                     break;
                 }
-                if (options.getSoakRuntime() > 0) {
+                if (options.getMaxRuntime() > 0) {
                     endTime = System.nanoTime();
-                    if (TimeUnit.NANOSECONDS.toMinutes(endTime - startTime) >= options.getSoakRuntime())
-                    {
+                    if (TimeUnit.NANOSECONDS.toMinutes(endTime - startTime) >= options.getMaxRuntime()) {
                         // Reached maximum runtime
                         reportProgress(options, "Reached the maximum runtime");
+                        break;
                     }
                 }
             }
         } else {
-            // TODO Rewrite to support arbitrary halting conditions
-            
-            halt(options, "Multi-threading soak testing is not yet supported");
-            
-//            // Multi Threaded Benchmark
-//            options.getOperationMix().setRunAsThread(true);
-//            ParallelClientManagerTask<SoakOptions> task = new ParallelClientManagerTask<SoakOptions>(this, options);
-//            options.getExecutor().submit(task);
-//            try {
-//                task.get();
-//            } catch (InterruptedException e) {
-//                logger.error("Multi Threaded soak testing was interrupted - " + e.getMessage());
-//                if (options.getHaltAny())
-//                    halt(options, e);
-//            } catch (ExecutionException e) {
-//                logger.error("Multi Threaded soak testing encountered an error - " + e.getMessage());
-//
-//                StringWriter sw = new StringWriter();
-//                e.printStackTrace(new PrintWriter(sw));
-//                logger.error(sw.toString());
-//
-//                if (options.getHaltOnError() || options.getHaltAny())
-//                    halt(options, e);
-//            }
+            // Multi Threaded Benchmark
+            options.getOperationMix().setRunAsThread(true);
+            ParallelClientManagerTask<SoakOptions> task = new ParallelClientManagerTask<SoakOptions>(new SoakTestParallelClientManager(this, options));
+            options.getExecutor().submit(task);
+            try {
+                task.get();
+            } catch (InterruptedException e) {
+                logger.error("Multi Threaded soak testing was interrupted - " + e.getMessage());
+                if (options.getHaltAny())
+                    halt(options, e);
+            } catch (ExecutionException e) {
+                logger.error("Multi Threaded soak testing encountered an error - " + e.getMessage());
+
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                logger.error(sw.toString());
+
+                if (options.getHaltOnError() || options.getHaltAny())
+                    halt(options, e);
+            }
         }
         reportProgress(options, "Finished soak testing");
         reportProgress(options);
@@ -216,6 +228,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         reportProgress(options);
         reportProgress(options, "Number of Runs = " + i);
         reportProgress(options, "Total Operations Run = " + (i * options.getOperationMix().size()));
+        reportProgress(options, "Total Errors = " + options.getOperationMix().getTotalErrors());
         reportProgress(options, "Total Runtime = " + BenchmarkerUtils.toMinutes(endTime - startTime) + " minutes");
 
         // Finally inform listeners that benchmarking finished OK

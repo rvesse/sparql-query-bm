@@ -36,6 +36,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import net.sf.sparql.benchmarking.loader.impl.ClassicQueryMixLoader;
+import net.sf.sparql.benchmarking.loader.impl.TsvMixLoader;
 
 /**
  * Provides a registry of operation mix loader
@@ -58,7 +59,8 @@ public class OperationMixLoaderRegistry {
     }
 
     private synchronized static void init() {
-        loaders.put(".txt", new ClassicQueryMixLoader());
+        loaders.put("txt", new ClassicQueryMixLoader());
+        loaders.put("tsv", new TsvMixLoader());
     }
 
     /**

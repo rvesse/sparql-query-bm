@@ -210,6 +210,15 @@ public class OperationMixImpl implements OperationMix {
             this.runs.remove(r);
         }
     }
+    
+    @Override
+    public long getTotalErrors() {
+        long total = 0;
+        for (OperationMixRun r : this.runs) {
+            total += r.getTotalErrors();
+        }
+        return total;
+    }
 
     @Override
     public long getTotalRuntime() {

@@ -108,6 +108,13 @@ public interface OperationMix {
     public abstract void trim(int outliers);
 
     /**
+     * Gets the total number of errors over all runs
+     * 
+     * @return Total number of errors
+     */
+    public abstract long getTotalErrors();
+
+    /**
      * Gets the total runtime over all runs
      * 
      * @return Total Runtime in nanoseconds

@@ -32,42 +32,66 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.parallel;
 
-import java.util.concurrent.FutureTask;
-
-import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.BenchmarkerUtils;
+import net.sf.sparql.benchmarking.options.SoakOptions;
 import net.sf.sparql.benchmarking.runners.Runner;
 
 /**
- * Task for running a parallel client manager
+ * A Callable uses to manage the running of parallel clients for multi-threaded
+ * soak testing
  * 
  * @author rvesse
- * @param <T>
- *            Options type
  * 
  */
-public class ParallelClientManagerTask<T extends Options> extends FutureTask<Object> {
+public class SoakTestParallelClientManager extends AbstractParallelClientManager<SoakOptions> {
+
+    private int startedRuns = 0, completedRuns = 0;
+    private long startTime = System.nanoTime();
 
     /**
-     * Creates a new parallel client manager Task using the default parallel
-     * client manager
+     * Creates a new Parallel Client Manager
      * 
      * @param runner
-     *            Test runner
+     *            Benchmark runner
      * @param options
      *            Options
      */
-    public ParallelClientManagerTask(Runner<T> runner, T options) {
-        super(new FixedRunsParallelClientManager<T>(runner, options));
+    public SoakTestParallelClientManager(Runner<SoakOptions> runner, SoakOptions options) {
+        super(runner, options);
+    }
+
+    @Override
+    public synchronized boolean shouldRun() {
+        if (this.shouldHalt())
+            return false;
+        // Check max runtime first
+        if (this.getOptions().getMaxRuntime() > 0) {
+            double runtime = BenchmarkerUtils.toMinutes(System.nanoTime() - this.startTime);
+            if (runtime >= this.getOptions().getMaxRuntime())
+                return false;
+        }
+
+        // Then check max runs
+        if (this.getOptions().getMaxRuns() > 0) {
+            if (startedRuns >= this.getOptions().getMaxRuns())
+                return false;
+        }
+
+        // Otherwise good to go
+        startedRuns++;
+        return true;
     }
 
     /**
-     * Creates a new parallel client manager task using the given parallel
-     * client manager
+     * Method that will be called by parallel clients to indicate they have
+     * completed a run and to obtain what run completion it is
      * 
-     * @param manager
-     *            Parallel client manager
+     * @return Run completion number
      */
-    public ParallelClientManagerTask(ParallelClientManager<T> manager) {
-        super(manager);
+    public synchronized int completeRun() {
+        completedRuns++;
+        int x = completedRuns;
+        return x;
     }
+
 }
