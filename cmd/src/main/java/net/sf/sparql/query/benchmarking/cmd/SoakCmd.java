@@ -373,6 +373,7 @@ public class SoakCmd {
             System.exit(1);
         } catch (Exception e) {
             System.err.println("Unexpected error loading operation mix - " + e.getMessage());
+            e.printStackTrace(System.err);
             System.exit(1);
         }
     }

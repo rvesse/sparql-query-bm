@@ -162,6 +162,20 @@ public interface Operation {
     public abstract long getTotalErrors();
 
     /**
+     * Gets the total number of results for this operation
+     * 
+     * @return Total number of results
+     */
+    public abstract long getTotalResults();
+
+    /**
+     * Gets the average number of results
+     * 
+     * @return Average number of results
+     */
+    public abstract long getAverageResults();
+
+    /**
      * Calculates how many times this operation could be executed
      * single-threaded per second based upon the average runtime of the
      * operation

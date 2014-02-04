@@ -119,7 +119,8 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
             logger.error("Operation Callable execeeded Timeout - " + tEx.getMessage());
             if (options.getHaltOnTimeout() || options.getHaltAny())
                 runner.halt(options, tEx);
-            r = this.createErrorInformation("Operation Callable execeeded Timeout - " + tEx.getMessage(), System.nanoTime() - startTime);
+            r = this.createErrorInformation("Operation Callable execeeded Timeout - " + tEx.getMessage(), System.nanoTime()
+                    - startTime);
 
             // If the query times out but we aren't halting cancel further
             // evaluation of the query
@@ -128,7 +129,8 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
             logger.error("Operation Callable was interrupted - " + e.getMessage());
             if (options.getHaltAny())
                 runner.halt(options, e);
-            r = this.createErrorInformation("Operation Callable was interrupted - " + e.getMessage(), System.nanoTime() - startTime);
+            r = this.createErrorInformation("Operation Callable was interrupted - " + e.getMessage(), System.nanoTime()
+                    - startTime);
         } catch (ExecutionException e) {
             logger.error("Update Runner encountered an error - " + e.getMessage());
 
@@ -138,7 +140,8 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
 
             if (options.getHaltOnError() || options.getHaltAny())
                 runner.halt(options, e);
-            r = this.createErrorInformation("Update Runner encountered an error - " + e.getMessage(), System.nanoTime() - startTime);
+            r = this.createErrorInformation("Update Runner encountered an error - " + e.getMessage(), System.nanoTime()
+                    - startTime);
         }
         timer.stop();
         this.addRun(r);
@@ -279,6 +282,24 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
             i++;
         }
         return sdev.evaluate(values);
+    }
+
+    @Override
+    public long getTotalResults() {
+        long total = 0;
+        for (OperationRun r : this.runs) {
+            if (r.getResultCount() >= 0)
+                total += r.getResultCount();
+        }
+        return total;
+    }
+
+    @Override
+    public long getAverageResults() {
+        long total = this.getTotalResults();
+        if (total == 0 || this.runs.size() == 0)
+            return 0;
+        return total / this.runs.size();
     }
 
     @Override

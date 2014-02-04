@@ -177,8 +177,11 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
                     reportProgress(options, "Operation Mix Run " + (i + 1));
                 }
                 if (options.getMaxRuntime() > 0) {
-                    reportProgress(options, "Running for " + BenchmarkerUtils.toMinutes(System.nanoTime() - startTime)
-                            + " minutes of " + options.getMaxRuntime() + " minutes");
+                    reportProgress(
+                            options,
+                            "Running for "
+                                    + String.format("%,.3f minutes", BenchmarkerUtils.toMinutes(System.nanoTime() - startTime))
+                                    + " minutes of " + options.getMaxRuntime() + " minutes");
                 }
                 i++;
                 OperationMixRun r = options.getOperationMix().run(this, options);
@@ -202,7 +205,8 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         } else {
             // Multi Threaded Benchmark
             options.getOperationMix().setRunAsThread(true);
-            ParallelClientManagerTask<SoakOptions> task = new ParallelClientManagerTask<SoakOptions>(new SoakTestParallelClientManager(this, options));
+            ParallelClientManagerTask<SoakOptions> task = new ParallelClientManagerTask<SoakOptions>(
+                    new SoakTestParallelClientManager(this, options));
             options.getExecutor().submit(task);
             try {
                 task.get();
@@ -224,13 +228,54 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         }
         reportProgress(options, "Finished soak testing");
         reportProgress(options);
+
+        // Summarize Operations
+        reportProgress(options, "Operation Summary");
+        reportProgress(options, "-----------------");
+        reportProgress(options);
+
+        ops = options.getOperationMix().getOperations();
+        i = 0;
+        while (ops.hasNext()) {
+            Operation op = ops.next();
+
+            // Print Summary
+            reportProgress(options, "Operation ID " + i + " of type " + op.getType() + " (" + op.getName() + ")");
+            reportProgress(options, "Total Errors: " + op.getTotalErrors());
+            reportProgress(options, "Average Results: " + op.getAverageResults());
+            reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatSeconds(op.getTotalResponseTime()));
+            reportProgress(options,
+                    "Average Response Time (Arithmetic): " + BenchmarkerUtils.formatSeconds(op.getAverageResponseTime()));
+            reportProgress(options, "Total Runtime: " + BenchmarkerUtils.formatSeconds(op.getTotalRuntime()));
+            if (options.getParallelThreads() > 1)
+                reportProgress(options, "Actual Runtime: " + BenchmarkerUtils.formatSeconds(op.getActualRuntime()));
+            reportProgress(options, "Average Runtime (Arithmetic): " + BenchmarkerUtils.formatSeconds(op.getAverageRuntime()));
+            if (options.getParallelThreads() > 1)
+                reportProgress(options,
+                        "Actual Average Runtime (Arithmetic): " + BenchmarkerUtils.formatSeconds(op.getActualAverageRuntime()));
+            reportProgress(options,
+                    "Average Runtime (Geometric): " + BenchmarkerUtils.formatSeconds(op.getGeometricAverageRuntime()));
+            reportProgress(options, "Minimum Runtime: " + BenchmarkerUtils.formatSeconds(op.getMinimumRuntime()));
+            reportProgress(options, "Maximum Runtime: " + BenchmarkerUtils.formatSeconds(op.getMaximumRuntime()));
+            reportProgress(options, "Runtime Variance: " + BenchmarkerUtils.formatSeconds(op.getVariance()));
+            reportProgress(options, "Runtime Standard Deviation: " + BenchmarkerUtils.formatSeconds(op.getStandardDeviation()));
+            reportProgress(options, "Operations per Second: " + op.getOperationsPerSecond());
+            if (options.getParallelThreads() > 1)
+                reportProgress(options, "Actual Operations per Second: " + op.getActualOperationsPerSecond());
+            reportProgress(options, "Operations per Hour: " + op.getOperationsPerHour());
+            if (options.getParallelThreads() > 1)
+                reportProgress(options, "Actual Operations per Hour: " + op.getActualOperationsPerHour());
+            reportProgress(options);
+            i++;
+        }
+
         reportProgress(options, "Soak Test Summary");
         reportProgress(options, "-----------------");
         reportProgress(options);
-        reportProgress(options, "Number of Runs = " + i);
-        reportProgress(options, "Total Operations Run = " + (i * options.getOperationMix().size()));
-        reportProgress(options, "Total Errors = " + options.getOperationMix().getTotalErrors());
-        reportProgress(options, "Total Runtime = " + BenchmarkerUtils.toMinutes(endTime - startTime) + " minutes");
+        reportProgress(options, "Number of Runs: " + i);
+        reportProgress(options, "Total Operations Run: " + (i * options.getOperationMix().size()));
+        reportProgress(options, "Total Errors: " + options.getOperationMix().getTotalErrors());
+        reportProgress(options, "Total Runtime: " + BenchmarkerUtils.toMinutes(endTime - startTime) + " minutes");
 
         // Finally inform listeners that benchmarking finished OK
         for (ProgressListener l : options.getListeners()) {

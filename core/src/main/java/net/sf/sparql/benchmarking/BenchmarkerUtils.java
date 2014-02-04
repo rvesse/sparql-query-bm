@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package net.sf.sparql.benchmarking;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -262,13 +263,9 @@ public class BenchmarkerUtils {
      *             Thrown if the filename
      */
     public static String getExtension(File file, boolean includeMultipleExtensions, boolean includeLeadingDot) throws IOException {
-        if (file.isFile()) {
-            String name = file.getName();
-            int index = includeMultipleExtensions ? name.indexOf('.') : name.lastIndexOf('.');
-            String ext = includeLeadingDot ? name.substring(index) : name.substring(index + 1);
-            return ext;
-        } else {
-            throw new IOException("Cannot get an extension for a path that is not a file");
-        }
+        String name = file.getName();
+        int index = includeMultipleExtensions ? name.indexOf('.') : name.lastIndexOf('.');
+        String ext = includeLeadingDot ? name.substring(index) : name.substring(index + 1);
+        return ext;
     }
 }

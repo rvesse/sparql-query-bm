@@ -241,6 +241,8 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
 
             // Print Summary
             reportProgress(options, "Operation ID " + i + " of type " + op.getType() + " (" + op.getName() + ")");
+            reportProgress(options, "Total Errors: " + op.getTotalErrors());
+            reportProgress(options, "Average Results: " + op.getAverageResults());
             reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatSeconds(op.getTotalResponseTime()));
             reportProgress(options,
                     "Average Response Time (Arithmetic): " + BenchmarkerUtils.formatSeconds(op.getAverageResponseTime()));

@@ -192,7 +192,7 @@ public interface OperationMix {
      * @return Runtime Standard Deviation in nanoseconds
      */
     public abstract double getStandardDeviation();
-
+    
     /**
      * Calculates the number of operation mixes per hour that could be executed
      * based on the average runtime of the operation mix
