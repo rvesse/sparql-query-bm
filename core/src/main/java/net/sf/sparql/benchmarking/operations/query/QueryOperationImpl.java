@@ -78,7 +78,7 @@ public class QueryOperationImpl extends AbstractOperation<QueryRun> implements Q
     @Override
     public <T extends Options> boolean canRun(Runner<T> runner, T options) {
         if (options.getQueryEndpoint() == null) {
-            runner.reportProgress(options, "Benchmark Queries cannot run with no query endpoint specified");
+            runner.reportProgress(options, "Queries cannot run with no query endpoint specified");
             return false;
         }
         return true;

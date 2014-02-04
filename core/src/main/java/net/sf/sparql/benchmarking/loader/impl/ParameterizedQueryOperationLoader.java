@@ -34,41 +34,54 @@ package net.sf.sparql.benchmarking.loader.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.sparql.engine.binding.Binding;
+
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.query.QueryOperationImpl;
+import net.sf.sparql.benchmarking.operations.parameterized.ParameterizedQueryOperation;
 
 /**
- * Query operation loader
+ * Parameterized query operation loader
  * 
  * @author rvesse
  * 
  */
-public class QueryOperationLoader extends AbstractOperationLoader {
+public class ParameterizedQueryOperationLoader extends AbstractOperationLoader {
 
-    static final Logger logger = LoggerFactory.getLogger(QueryOperationLoader.class);
+    static final Logger logger = LoggerFactory.getLogger(ParameterizedQueryOperationLoader.class);
 
     @Override
     public Operation load(File baseDir, String[] args) throws IOException {
-        if (args.length < 1)
-            throw new IOException("Insufficient arguments to load a query operation");
+        if (args.length < 2)
+            throw new IOException("Insufficient arguments to load a parameterized query operation");
 
         String queryFile = args[0];
         String name = queryFile;
-        if (args.length > 1) {
-            name = args[1];
+        String paramsFile = args[1];
+
+        if (args.length > 2) {
+            name = args[2];
         }
 
         String query = readFile(baseDir, queryFile);
-        return new QueryOperationImpl(name, query);
+        ResultSet rs = ResultSetFactory.fromTSV(getInputStream(baseDir, paramsFile));
+        List<Binding> params = new ArrayList<Binding>();
+        while (rs.hasNext()) {
+            params.add(rs.nextBinding());
+        }
+        return new ParameterizedQueryOperation(query, params, name);
     }
 
     @Override
     public String getPreferredName() {
-        return "query";
+        return "param-query";
     }
 }
