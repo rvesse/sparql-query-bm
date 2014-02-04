@@ -36,21 +36,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
 
 import net.sf.sparql.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
-import net.sf.sparql.benchmarking.operations.query.QueryRunner;
-import net.sf.sparql.benchmarking.operations.query.QueryTask;
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
 import net.sf.sparql.benchmarking.parallel.ParallelClientManagerTask;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
@@ -315,44 +307,5 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
                 }
             }
         }
-    }
-
-    /**
-     * Checks that the Endpoint being benchmarked passes some basic queries and
-     * is up and running
-     * 
-     * @param options
-     *            Options
-     * 
-     * @return Whether the endpoint passed some basic sanity checks
-     */
-    public boolean checkSanity(BenchmarkOptions options) {
-        reportProgress(options, "Sanity checking the user specified endpoint...");
-        String[] checks = new String[] { "ASK WHERE { }", "SELECT * WHERE { }", "SELECT * WHERE { ?s a ?type } LIMIT 1" };
-
-        int passed = 0;
-        for (int i = 0; i < checks.length; i++) {
-            Query q = QueryFactory.create(checks[i]);
-            QueryTask<BenchmarkOptions> task = new QueryTask<BenchmarkOptions>(
-                    new QueryRunner<BenchmarkOptions>(q, this, options));
-            reportPartialProgress(options, "Sanity Check " + (i + 1) + " of " + checks.length + "...");
-            try {
-                options.getExecutor().submit(task);
-                task.get(options.getTimeout(), TimeUnit.SECONDS);
-                reportProgress(options, "OK");
-                passed++;
-            } catch (TimeoutException tEx) {
-                logger.error("Query Runner execeeded Timeout - " + tEx.getMessage());
-                reportProgress(options, "Failed");
-            } catch (InterruptedException e) {
-                logger.error("Query Runner was interrupted - " + e.getMessage());
-                reportProgress(options, "Failed");
-            } catch (ExecutionException e) {
-                logger.error("Query Runner encountered an error - " + e.getMessage());
-                reportProgress(options, "Failed");
-            }
-        }
-
-        return (passed >= options.getSanityCheckLevel());
     }
 }

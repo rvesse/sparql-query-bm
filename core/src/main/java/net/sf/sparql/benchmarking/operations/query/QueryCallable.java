@@ -32,9 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations.query;
 
-import java.util.concurrent.Callable;
-
 import net.sf.sparql.benchmarking.BenchmarkerUtils;
+import net.sf.sparql.benchmarking.operations.AbstractOperationCallable;
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
@@ -56,13 +55,10 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
  *            Options type
  * 
  */
-public class QueryRunner<T extends Options> implements Callable<QueryRun> {
+public class QueryCallable<T extends Options> extends AbstractOperationCallable<T, QueryRun> {
 
-    private static final Logger logger = Logger.getLogger(QueryRunner.class);
+    private static final Logger logger = Logger.getLogger(QueryCallable.class);
     private Query query;
-    private Runner<T> runner;
-    private T options;
-    private boolean cancelled = false;
 
     /**
      * Creates a new Query Runner
@@ -74,10 +70,9 @@ public class QueryRunner<T extends Options> implements Callable<QueryRun> {
      * @param options
      *            Options
      */
-    public QueryRunner(Query q, Runner<T> runner, T options) {
+    public QueryCallable(Query q, Runner<T> runner, T options) {
+        super(runner, options);
         this.query = q;
-        this.runner = runner;
-        this.options = options;
     }
 
     /**
@@ -85,9 +80,10 @@ public class QueryRunner<T extends Options> implements Callable<QueryRun> {
      */
     @Override
     public QueryRun call() {
+        T options = this.getOptions();
         BenchmarkOptions bOps = null;
-        if (this.options instanceof BenchmarkOptions) {
-            bOps = (BenchmarkOptions) this.options;
+        if (options instanceof BenchmarkOptions) {
+            bOps = (BenchmarkOptions) options;
         }
 
         // Impose Limit if applicable
@@ -103,14 +99,14 @@ public class QueryRunner<T extends Options> implements Callable<QueryRun> {
 
         // Create a QueryEngineHTTP directly as we want to set a bunch of
         // parameters on it
-        QueryEngineHTTP exec = new QueryEngineHTTP(this.options.getQueryEndpoint(), this.query);
+        QueryEngineHTTP exec = new QueryEngineHTTP(options.getQueryEndpoint(), this.query);
         exec.setSelectContentType(options.getResultsSelectFormat());
         exec.setAskContentType(options.getResultsAskFormat());
         exec.setModelContentType(options.getResultsGraphFormat());
         exec.setAllowDeflate(options.getAllowDeflateEncoding());
         exec.setAllowGZip(options.getAllowGZipEncoding());
-        if (this.options.getAuthenticator() != null) {
-            exec.setAuthenticator(this.options.getAuthenticator());
+        if (options.getAuthenticator() != null) {
+            exec.setAuthenticator(options.getAuthenticator());
         }
 
         try {
@@ -129,10 +125,10 @@ public class QueryRunner<T extends Options> implements Callable<QueryRun> {
             } else if (this.query.isSelectType()) {
                 ResultSet rset = exec.execSelect();
                 responseTime = System.nanoTime() - startTime;
-                if (cancelled)
+                if (isCancelled())
                     return null; // Abort if we have been cancelled by the time
                                  // the engine responds
-                this.runner.reportPartialProgress(this.options,
+                this.getRunner().reportPartialProgress(options,
                         "started responding in " + BenchmarkerUtils.toSeconds(responseTime) + "s...");
 
                 // Result Counting may be skipped depending on user options
@@ -143,14 +139,14 @@ public class QueryRunner<T extends Options> implements Callable<QueryRun> {
                 }
 
                 // Count Results
-                while (rset.hasNext() && !cancelled) {
+                while (rset.hasNext() && !isCancelled()) {
                     numResults++;
                     rset.next();
                 }
             } else {
                 logger.warn("Query is not of a recognised type and so was not run");
-                if (this.options.getHaltAny())
-                    this.runner.halt(this.options, "Unrecognized Query Type");
+                if (options.getHaltAny())
+                    this.getRunner().halt(options, "Unrecognized Query Type");
             }
             long endTime = System.nanoTime();
             return new QueryRun(endTime - startTime, responseTime, numResults);
@@ -159,12 +155,5 @@ public class QueryRunner<T extends Options> implements Callable<QueryRun> {
             if (exec != null)
                 exec.close();
         }
-    }
-
-    /**
-     * Cancels a Query Runner
-     */
-    public void cancel() {
-        cancelled = true;
     }
 }

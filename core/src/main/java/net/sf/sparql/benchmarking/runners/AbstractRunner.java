@@ -34,6 +34,7 @@ package net.sf.sparql.benchmarking.runners;
 
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -45,11 +46,11 @@ import com.hp.hpl.jena.query.QueryFactory;
 
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.query.QueryRunner;
-import net.sf.sparql.benchmarking.operations.query.QueryTask;
+import net.sf.sparql.benchmarking.operations.query.QueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
+import net.sf.sparql.benchmarking.stats.QueryRun;
 
 /**
  * Abstract implementation of a runner providing common halting and progress
@@ -184,7 +185,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
         int passed = 0;
         for (int i = 0; i < checks.length; i++) {
             Query q = QueryFactory.create(checks[i]);
-            QueryTask<T> task = new QueryTask<T>(new QueryRunner<T>(q, this, options));
+            FutureTask<QueryRun> task = new FutureTask<QueryRun>(new QueryCallable<T>(q, this, options));
             reportPartialProgress(options, "Sanity Check " + (i + 1) + " of " + checks.length + "...");
             try {
                 options.getExecutor().submit(task);

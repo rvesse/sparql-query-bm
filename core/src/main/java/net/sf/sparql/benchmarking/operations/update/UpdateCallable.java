@@ -32,77 +32,56 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations.update;
 
-import com.hp.hpl.jena.update.UpdateFactory;
+import com.hp.hpl.jena.sparql.modify.UpdateProcessRemoteBase;
+import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
 
-import net.sf.sparql.benchmarking.operations.AbstractOperation;
-import net.sf.sparql.benchmarking.operations.OperationCallable;
+import net.sf.sparql.benchmarking.operations.AbstractOperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.UpdateRun;
 
 /**
- * An operation that makes a SPARQL Update
- * 
  * @author rvesse
  * 
+ * @param <T>
  */
-public class UpdateOperationImpl extends AbstractOperation<UpdateRun> implements UpdateOperation {
+public class UpdateCallable<T extends Options> extends AbstractOperationCallable<T, UpdateRun> {
 
-    private UpdateRequest update;
-    private String origUpdateStr;
+    UpdateRequest update;
 
     /**
-     * Creates a new update operation
+     * Creates a new update runner
      * 
-     * @param name
-     *            Name
-     * @param updateString
-     *            SPARQL Update
+     * @param update
+     *            Update to run
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      */
-    public UpdateOperationImpl(String name, String updateString) {
-        super(name);
-        this.origUpdateStr = updateString;
-        this.update = UpdateFactory.create(updateString);
+    public UpdateCallable(UpdateRequest update, Runner<T> runner, T options) {
+        super(runner, options);
+        this.update = update;
     }
 
     @Override
-    public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getUpdateEndpoint() == null) {
-            runner.reportProgress(options, "Benchmark Updates cannot run with no update endpoint specified");
-            return false;
+    public UpdateRun call() throws Exception {
+        // Create a remote update processor and configure it appropriately
+        UpdateProcessRemoteBase processor = (UpdateProcessRemoteBase) UpdateExecutionFactory.createRemote(this.update, this
+                .getOptions().getUpdateEndpoint());
+        if (this.getOptions().getAuthenticator() != null) {
+            processor.setAuthenticator(this.getOptions().getAuthenticator());
         }
-        return true;
-    }
+        long startTime = System.nanoTime();
 
-    @Override
-    protected <T extends Options> OperationCallable<T, UpdateRun> createCallable(Runner<T> runner, T options) {
-        return new UpdateCallable<T>(this.update, runner, options);
-    }
+        // Execute the update
+        processor.execute();
 
-    @Override
-    protected UpdateRun createErrorInformation(String message, long runtime) {
-        return new UpdateRun(message, runtime);
-    }
+        if (this.isCancelled())
+            return null;
 
-    @Override
-    public String getType() {
-        return "SPARQL Update";
+        long endTime = System.nanoTime();
+        return new UpdateRun(endTime - startTime);
     }
-
-    @Override
-    public String getContentString() {
-        return this.getUpdateString();
-    }
-
-    @Override
-    public UpdateRequest getUpdate() {
-        return this.update;
-    }
-
-    @Override
-    public String getUpdateString() {
-        return this.origUpdateStr;
-    }
-
 }

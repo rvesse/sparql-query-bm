@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,32 +28,43 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.operations;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import net.sf.sparql.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.parallel.ParallelTimer;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationRun;
-
 import org.apache.commons.math.stat.descriptive.moment.GeometricMean;
 import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract implementation of a test operation
  * 
  * @author rvesse
+ * @param <TRun>
+ *            Run information type
  * 
  */
-public abstract class AbstractOperation implements Operation {
+public abstract class AbstractOperation<TRun extends OperationRun> implements Operation {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractOperation.class);
 
     private String name;
     private List<OperationRun> runs = new ArrayList<OperationRun>();
@@ -70,6 +81,69 @@ public abstract class AbstractOperation implements Operation {
      */
     public AbstractOperation(String name) {
         this.name = name;
+    }
+
+    /**
+     * Creates the callable for running the operation in a background thread
+     * 
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
+     * @return Callable
+     */
+    protected abstract <T extends Options> OperationCallable<T, TRun> createCallable(Runner<T> runner, T options);
+
+    /**
+     * Creates run information for error information
+     * 
+     * @param message
+     *            Message
+     * @param runtime
+     *            Runtime
+     * @return Error information
+     */
+    protected abstract TRun createErrorInformation(String message, long runtime);
+
+    @Override
+    public final <T extends Options> OperationRun run(Runner<T> runner, T options) {
+        timer.start();
+        long order = options.getGlobalOrder();
+        FutureTask<TRun> task = new FutureTask<TRun>(this.createCallable(runner, options));
+        options.getExecutor().submit(task);
+        OperationRun r;
+        long startTime = System.nanoTime();
+        try {
+            r = task.get(options.getTimeout(), TimeUnit.SECONDS);
+        } catch (TimeoutException tEx) {
+            logger.error("Operation Callable execeeded Timeout - " + tEx.getMessage());
+            if (options.getHaltOnTimeout() || options.getHaltAny())
+                runner.halt(options, tEx);
+            r = this.createErrorInformation("Operation Callable execeeded Timeout - " + tEx.getMessage(), System.nanoTime() - startTime);
+
+            // If the query times out but we aren't halting cancel further
+            // evaluation of the query
+            task.cancel(true);
+        } catch (InterruptedException e) {
+            logger.error("Operation Callable was interrupted - " + e.getMessage());
+            if (options.getHaltAny())
+                runner.halt(options, e);
+            r = this.createErrorInformation("Operation Callable was interrupted - " + e.getMessage(), System.nanoTime() - startTime);
+        } catch (ExecutionException e) {
+            logger.error("Update Runner encountered an error - " + e.getMessage());
+
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            logger.error(sw.toString());
+
+            if (options.getHaltOnError() || options.getHaltAny())
+                runner.halt(options, e);
+            r = this.createErrorInformation("Update Runner encountered an error - " + e.getMessage(), System.nanoTime() - startTime);
+        }
+        timer.stop();
+        this.addRun(r);
+        r.setRunOrder(order);
+        return r;
     }
 
     /**
@@ -102,12 +176,13 @@ public abstract class AbstractOperation implements Operation {
         }
         return total;
     }
-    
+
     @Override
     public long getTotalErrors() {
         long total = 0;
         for (OperationRun r : this.runs) {
-            if (!r.wasSuccessful()) total++;
+            if (!r.wasSuccessful())
+                total++;
         }
         return total;
     }

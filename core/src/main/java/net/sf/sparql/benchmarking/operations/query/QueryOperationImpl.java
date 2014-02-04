@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,23 +28,15 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.operations.query;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import net.sf.sparql.benchmarking.operations.AbstractOperation;
+import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.stats.QueryRun;
-
-import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -54,9 +46,8 @@ import com.hp.hpl.jena.query.QueryFactory;
  * 
  * @author rvesse
  */
-public class QueryOperationImpl extends AbstractOperation implements QueryOperation {
+public class QueryOperationImpl extends AbstractOperation<QueryRun> implements QueryOperation {
 
-    private static final Logger logger = Logger.getLogger(QueryOperationImpl.class);
     private Query query;
     private String origQueryStr;
 
@@ -94,46 +85,13 @@ public class QueryOperationImpl extends AbstractOperation implements QueryOperat
     }
 
     @Override
-    public <T extends Options> OperationRun run(Runner<T> runner, T options) {
-        timer.start();
-        long order = options.getGlobalOrder();
-        QueryRunner<T> queryRunner = new QueryRunner<T>(this.query, runner, options);
-        QueryTask<T> task = new QueryTask<T>(queryRunner);
-        options.getExecutor().submit(task);
-        QueryRun r;
-        long startTime = System.nanoTime();
-        try {
-            r = task.get(options.getTimeout(), TimeUnit.SECONDS);
-        } catch (TimeoutException tEx) {
-            logger.error("Query Runner execeeded Timeout - " + tEx.getMessage());
-            if (options.getHaltOnTimeout() || options.getHaltAny())
-                runner.halt(options, tEx);
-            r = new QueryRun("Query Runner execeeded Timeout - " + tEx.getMessage(), System.nanoTime() - startTime);
+    protected <T extends Options> OperationCallable<T, QueryRun> createCallable(Runner<T> runner, T options) {
+        return new QueryCallable<T>(this.query, runner, options);
+    }
 
-            // If the query times out but we aren't halting cancel further
-            // evaluation of the query
-            task.cancel(true);
-            queryRunner.cancel();
-        } catch (InterruptedException e) {
-            logger.error("Query Runner was interrupted - " + e.getMessage());
-            if (options.getHaltAny())
-                runner.halt(options, e);
-            r = new QueryRun("Query Runner was interrupted - " + e.getMessage(), System.nanoTime() - startTime);
-        } catch (ExecutionException e) {
-            logger.error("Query Runner encountered an error - " + e.getMessage());
-
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            logger.error(sw.toString());
-
-            if (options.getHaltOnError() || options.getHaltAny())
-                runner.halt(options, e);
-            r = new QueryRun("Query Runner encountered an error - " + e.getMessage(), System.nanoTime() - startTime);
-        }
-        timer.stop();
-        this.addRun(r);
-        r.setRunOrder(order);
-        return r;
+    @Override
+    protected QueryRun createErrorInformation(String message, long runtime) {
+        return new QueryRun(message, runtime);
     }
 
     /**
