@@ -37,6 +37,7 @@ public class NoOpCallable<T extends Options, TRun extends OperationRun> extends 
      */
     public NoOpCallable(Runner<T> runner, T options, TRun runInfo) {
         super(runner, options);
+        this.runInfo = runInfo;
     }
 
     @Override
