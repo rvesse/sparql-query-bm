@@ -96,6 +96,8 @@ public class QueryCallable<T extends Options> extends AbstractOperationCallable<
                 }
             }
         }
+        
+        logger.debug("Running query:\n" + query.toString());
 
         // Create a QueryEngineHTTP directly as we want to set a bunch of
         // parameters on it

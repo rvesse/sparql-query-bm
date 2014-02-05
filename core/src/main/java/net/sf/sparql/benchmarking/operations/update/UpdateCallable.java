@@ -32,6 +32,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations.update;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hp.hpl.jena.sparql.modify.UpdateProcessRemoteBase;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
@@ -47,6 +50,8 @@ import net.sf.sparql.benchmarking.stats.UpdateRun;
  * @param <T>
  */
 public class UpdateCallable<T extends Options> extends AbstractOperationCallable<T, UpdateRun> {
+
+    private static final Logger logger = LoggerFactory.getLogger(UpdateCallable.class);
 
     UpdateRequest update;
 
@@ -67,6 +72,8 @@ public class UpdateCallable<T extends Options> extends AbstractOperationCallable
 
     @Override
     public UpdateRun call() throws Exception {
+        logger.debug("Running query:\n" + update.toString());
+
         // Create a remote update processor and configure it appropriately
         UpdateProcessRemoteBase processor = (UpdateProcessRemoteBase) UpdateExecutionFactory.createRemote(this.update, this
                 .getOptions().getUpdateEndpoint());
