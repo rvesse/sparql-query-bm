@@ -132,7 +132,7 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
             r = this.createErrorInformation("Operation Callable was interrupted - " + e.getMessage(), System.nanoTime()
                     - startTime);
         } catch (ExecutionException e) {
-            logger.error("Update Runner encountered an error - " + e.getMessage());
+            logger.error("Operation Callable encountered an error - " + e.getMessage());
 
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -140,7 +140,7 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
 
             if (options.getHaltOnError() || options.getHaltAny())
                 runner.halt(options, e);
-            r = this.createErrorInformation("Update Runner encountered an error - " + e.getMessage(), System.nanoTime()
+            r = this.createErrorInformation("Operation Callable encountered an error - " + e.getMessage(), System.nanoTime()
                     - startTime);
         }
         timer.stop();
