@@ -35,40 +35,30 @@ package net.sf.sparql.benchmarking.loader.impl;
 import java.io.File;
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.query.FixedQueryOperation;
+import net.sf.sparql.benchmarking.operations.query.DatasetSizeOperation;
 
 /**
- * Query operation loader
+ * Loader for dataset size operation
  * 
  * @author rvesse
  * 
  */
-public class QueryOperationLoader extends AbstractOperationLoader {
-
-    static final Logger logger = LoggerFactory.getLogger(QueryOperationLoader.class);
+public class DatasetSizeOperationLoader extends AbstractOperationLoader {
 
     @Override
     public Operation load(File baseDir, String[] args) throws IOException {
-        if (args.length < 1)
-            throw new IOException("Insufficient arguments to load a query operation");
-
-        String queryFile = args[0];
-        String name = queryFile;
-        if (args.length > 1) {
-            name = args[1];
+        if (args.length == 0) {
+            return new DatasetSizeOperation();
+        } else {
+            return new DatasetSizeOperation(args[0]);
         }
-
-        String query = readFile(baseDir, queryFile);
-        return new FixedQueryOperation(name, query);
     }
 
     @Override
     public String getPreferredName() {
-        return "query";
+        return "dataset-size";
     }
+
 }

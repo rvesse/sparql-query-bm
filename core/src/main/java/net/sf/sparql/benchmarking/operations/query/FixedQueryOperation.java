@@ -32,23 +32,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations.query;
 
-import net.sf.sparql.benchmarking.operations.AbstractOperation;
-import net.sf.sparql.benchmarking.operations.OperationCallable;
-import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.QueryRun;
-
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 
 /**
- * Represents a query operation
+ * Represents a query operation that always uses the same fixed query
  * 
  * @author rvesse
  */
-public class QueryOperationImpl extends AbstractOperation<QueryRun> implements QueryOperation {
+public class FixedQueryOperation extends AbstractQueryOperation {
 
-    private Query query;
+    Query query;
     private String origQueryStr;
 
     /**
@@ -59,7 +53,7 @@ public class QueryOperationImpl extends AbstractOperation<QueryRun> implements Q
      * @param queryString
      *            Query string
      */
-    public QueryOperationImpl(String name, String queryString) {
+    public FixedQueryOperation(String name, String queryString) {
         super(name);
         this.origQueryStr = queryString;
         this.query = QueryFactory.create(this.origQueryStr);
@@ -76,39 +70,7 @@ public class QueryOperationImpl extends AbstractOperation<QueryRun> implements Q
     }
 
     @Override
-    public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getQueryEndpoint() == null) {
-            runner.reportProgress(options, "Queries cannot run with no query endpoint specified");
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    protected <T extends Options> OperationCallable<T, QueryRun> createCallable(Runner<T> runner, T options) {
-        return new QueryCallable<T>(this.query, runner, options);
-    }
-
-    @Override
-    protected QueryRun createErrorInformation(String message, long runtime) {
-        return new QueryRun(message, runtime);
-    }
-
-    /**
-     * Gets the string representation (i.e. the name) of the operation
-     */
-    @Override
-    public String toString() {
-        return this.getName();
-    }
-
-    @Override
     public String getType() {
         return "SPARQL Query";
-    }
-
-    @Override
-    public String getContentString() {
-        return this.getQueryString();
     }
 }

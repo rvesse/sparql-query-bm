@@ -32,28 +32,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations.update;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.sparql.modify.UpdateProcessRemoteBase;
-import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
 
-import net.sf.sparql.benchmarking.operations.AbstractOperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.UpdateRun;
 
 /**
  * @author rvesse
  * 
  * @param <T>
  */
-public class UpdateCallable<T extends Options> extends AbstractOperationCallable<T, UpdateRun> {
+public class UpdateCallable<T extends Options> extends AbstractUpdateCallable<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(UpdateCallable.class);
-
-    UpdateRequest update;
+    private UpdateRequest update;
 
     /**
      * Creates a new update runner
@@ -71,24 +63,7 @@ public class UpdateCallable<T extends Options> extends AbstractOperationCallable
     }
 
     @Override
-    public UpdateRun call() throws Exception {
-        logger.debug("Running query:\n" + update.toString());
-
-        // Create a remote update processor and configure it appropriately
-        UpdateProcessRemoteBase processor = (UpdateProcessRemoteBase) UpdateExecutionFactory.createRemote(this.update, this
-                .getOptions().getUpdateEndpoint());
-        if (this.getOptions().getAuthenticator() != null) {
-            processor.setAuthenticator(this.getOptions().getAuthenticator());
-        }
-        long startTime = System.nanoTime();
-
-        // Execute the update
-        processor.execute();
-
-        if (this.isCancelled())
-            return null;
-
-        long endTime = System.nanoTime();
-        return new UpdateRun(endTime - startTime);
+    protected UpdateRequest getUpdate() {
+        return this.update;
     }
 }

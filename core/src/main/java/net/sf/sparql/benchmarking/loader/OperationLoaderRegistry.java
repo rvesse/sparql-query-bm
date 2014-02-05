@@ -35,6 +35,7 @@ package net.sf.sparql.benchmarking.loader;
 import java.util.Hashtable;
 import java.util.Map;
 
+import net.sf.sparql.benchmarking.loader.impl.DatasetSizeOperationLoader;
 import net.sf.sparql.benchmarking.loader.impl.ParameterizedQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.impl.ParameterizedUpdateOperationLoader;
 import net.sf.sparql.benchmarking.loader.impl.QueryOperationLoader;
@@ -64,6 +65,7 @@ public class OperationLoaderRegistry {
     private synchronized static void init() {
         loaders.put("query", new QueryOperationLoader());
         loaders.put("param-query", new ParameterizedQueryOperationLoader());
+        loaders.put("dataset-size", new DatasetSizeOperationLoader());
         loaders.put("update", new UpdateOperationLoader());
         loaders.put("param-update", new ParameterizedUpdateOperationLoader());
         loaders.put("sleep", new SleepOperationLoader());
