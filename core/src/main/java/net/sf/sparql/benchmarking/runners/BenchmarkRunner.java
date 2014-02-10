@@ -36,6 +36,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
+
+import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,10 +192,15 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         // Reset Order because warm up runs/prior runs may have altered this
         options.resetGlobalOrder();
 
+        // Record start time
+        Instant startInstant = Instant.now();
+        reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
+
         if (options.getParallelThreads() == 1) {
             // Single Threaded Benchmark
             for (i = 0; i < options.getRuns(); i++) {
                 reportProgress(options, "Operation Mix Run " + (i + 1) + " of " + options.getRuns());
+                reportProgress(options, "Current Time: " + FormatUtils.formatInstant(Instant.now()));
                 OperationMixRun r = options.getOperationMix().run(this, options);
                 reportProgress(options, r);
                 reportProgress(options);
@@ -208,7 +215,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
                 reportProgress(options);
             }
         } else {
-            // Multi Threaded Benchmark
+            // Multi-Threaded Benchmark
             options.getOperationMix().setRunAsThread(true);
             ParallelClientManagerTask<BenchmarkOptions> task = new ParallelClientManagerTask<BenchmarkOptions>(
                     new BenchmarkParallelClientManager<BenchmarkOptions>(this, options));
@@ -230,6 +237,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
                     halt(options, e);
             }
         }
+        Instant endInstant = Instant.now();
         reportProgress(options, "Finished Benchmarking, calculating statistics...");
         reportProgress(options);
 
@@ -281,6 +289,9 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options);
         reportProgress(options,
                 "Ran Operation Mix containing " + operationMix.size() + " operations a total of " + options.getRuns() + " times");
+        reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
+        reportProgress(options, "End Time: " + FormatUtils.formatInstant(endInstant));
+        reportProgress(options);
         reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(operationMix.getTotalResponseTime()));
         reportProgress(options,
                 "Average Response Time (Arithmetic): " + FormatUtils.formatSeconds(operationMix.getAverageResponseTime()));
