@@ -41,6 +41,8 @@ import java.util.Random;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.apache.jena.atlas.web.auth.HttpAuthenticator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An authenticator which selects from a pool of authenticators at random for
@@ -54,6 +56,8 @@ import org.apache.jena.atlas.web.auth.HttpAuthenticator;
  * 
  */
 public class RandomAuthenticatorPool implements HttpAuthenticator {
+
+    private static final Logger logger = LoggerFactory.getLogger(RandomAuthenticatorPool.class);
 
     private List<HttpAuthenticator> authenticators = new ArrayList<HttpAuthenticator>();
     private Random rand = new Random();
@@ -75,8 +79,11 @@ public class RandomAuthenticatorPool implements HttpAuthenticator {
         int id = this.rand.nextInt(this.authenticators.size());
 
         HttpAuthenticator authenticator = this.authenticators.get(id);
-        if (authenticator == null)
+        if (authenticator == null) {
+            logger.info("Picked authenticator " + id + " which does no authentication");
             return;
+        }
+        logger.info("Picked authenticator " + id + " which is " + authenticator.toString());
         authenticator.apply(client, httpContext, target);
     }
 
