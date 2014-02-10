@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.stats;
 
+import net.sf.sparql.benchmarking.util.ErrorCategories;
+
 /**
  * Abstract implementation of an operation run
  * 
@@ -44,6 +46,7 @@ public abstract class AbstractOperationRun implements OperationRun {
     private long responseTime = NOT_YET_RUN;
     private long resultCount = NOT_YET_RUN;
     private String errorMessage;
+    private int errorCategory = ErrorCategories.NONE;
     private long order = NOT_YET_RUN;
 
     /**
@@ -56,9 +59,10 @@ public abstract class AbstractOperationRun implements OperationRun {
      *            Runtime, this is the amount of time elapsed until the
      *            error/timeout was reached
      */
-    protected AbstractOperationRun(String error, long runtime) {
-        this(runtime, 0);
+    protected AbstractOperationRun(String error, int errorCategory, long runtime) {
+        this(runtime, UNKNOWN);
         this.errorMessage = error;
+        this.errorCategory = errorCategory;
     }
 
     /**
@@ -118,6 +122,11 @@ public abstract class AbstractOperationRun implements OperationRun {
     @Override
     public String getErrorMessage() {
         return this.errorMessage;
+    }
+    
+    @Override
+    public int getErrorCategory() {
+        return this.errorCategory;
     }
 
     @Override

@@ -81,8 +81,8 @@ public class UpdateOperationImpl extends AbstractOperation<UpdateRun> implements
     }
 
     @Override
-    protected UpdateRun createErrorInformation(String message, long runtime) {
-        return new UpdateRun(message, runtime);
+    protected UpdateRun createErrorInformation(String message, int category, long runtime) {
+        return new UpdateRun(message, category, runtime);
     }
 
     @Override

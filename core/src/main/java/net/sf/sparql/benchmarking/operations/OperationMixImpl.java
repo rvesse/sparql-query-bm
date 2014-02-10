@@ -32,8 +32,10 @@ package net.sf.sparql.benchmarking.operations;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 import org.apache.commons.math.stat.descriptive.moment.GeometricMean;
@@ -152,11 +154,10 @@ public class OperationMixImpl implements OperationMix {
             timer.stop();
             if (r.wasSuccessful()) {
                 runner.reportProgress(options,
-                        prefix + "got " + r.getResultCount() + " result(s) in " + ConvertUtils.toSeconds(r.getRuntime())
-                                + "s");
+                        prefix + "got " + r.getResultCount() + " result(s) in " + ConvertUtils.toSeconds(r.getRuntime()) + "s");
             } else {
-                runner.reportProgress(options, prefix + "got error after " + ConvertUtils.toSeconds(r.getRuntime()) + "s: "
-                        + r.getErrorMessage());
+                runner.reportProgress(options,
+                        prefix + "got error after " + ConvertUtils.toSeconds(r.getRuntime()) + "s: " + r.getErrorMessage());
             }
             runner.reportProgress(options, this.operations.get(id), r);
             run.setRunStats(id, r);
@@ -210,7 +211,7 @@ public class OperationMixImpl implements OperationMix {
             this.runs.remove(r);
         }
     }
-    
+
     @Override
     public long getTotalErrors() {
         long total = 0;
@@ -218,6 +219,28 @@ public class OperationMixImpl implements OperationMix {
             total += r.getTotalErrors();
         }
         return total;
+    }
+
+    @Override
+    public Map<Integer, List<OperationRun>> getCategorizedErrors() {
+        Map<Integer, List<OperationRun>> errors = new HashMap<Integer, List<OperationRun>>();
+        for (OperationMixRun mr : this.runs) {
+            if (mr.getTotalErrors() > 0) {
+                Iterator<OperationRun> rs = mr.getRuns();
+                while (rs.hasNext()) {
+                    OperationRun r = rs.next();
+                    if (r.wasSuccessful())
+                        continue;
+
+                    // Categorize error
+                    if (!errors.containsKey(r.getErrorCategory())) {
+                        errors.put(r.getErrorCategory(), new ArrayList<OperationRun>());
+                    }
+                    errors.get(r.getErrorCategory()).add(r);
+                }
+            }
+        }
+        return errors;
     }
 
     @Override

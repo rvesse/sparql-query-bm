@@ -36,15 +36,14 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import net.sf.sparql.benchmarking.BenchmarkerUtils;
-import net.sf.sparql.benchmarking.HaltBehaviour;
 import net.sf.sparql.benchmarking.loader.OperationMixLoader;
 import net.sf.sparql.benchmarking.loader.OperationMixLoaderRegistry;
 import net.sf.sparql.benchmarking.monitoring.ConsoleProgressListener;
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
+import net.sf.sparql.benchmarking.options.HaltBehaviour;
 import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.options.OptionsImpl;
 import net.sf.sparql.benchmarking.runners.BenchmarkRunner;
+import net.sf.sparql.benchmarking.util.FileUtils;
 
 import org.apache.jena.atlas.web.auth.ApacheModAuthFormLogin;
 import org.apache.jena.atlas.web.auth.FormLogin;
@@ -312,9 +311,9 @@ public class BenchmarkerCmd {
                     } else if (arg.equals("--overwrite")) {
                         options.setAllowOverwrite(true);
                     } else if (arg.equals("--gzip")) {
-                        options.setAllowGZipEncoding(true);
+                        options.setAllowCompression(true);
                     } else if (arg.equals("--deflate")) {
-                        options.setAllowDeflateEncoding(true);
+                        options.setAllowCompression(true);
                     } else if (arg.equals("--username")) {
                         expectNextArg(i, argv, arg);
                         i++;
@@ -400,11 +399,11 @@ public class BenchmarkerCmd {
     private static void parseOperationMix(Options b, String mixFile) {
         try {
             // Try to get a loader for the given mix file
-            OperationMixLoader mixLoader = OperationMixLoaderRegistry.getLoader(BenchmarkerUtils.getExtension(mixFile, true,
+            OperationMixLoader mixLoader = OperationMixLoaderRegistry.getLoader(FileUtils.getExtension(mixFile, true,
                     false));
             if (mixLoader == null)
                 throw new RuntimeException("No mix loader is associated with files with the extension "
-                        + BenchmarkerUtils.getExtension(mixFile, true, true));
+                        + FileUtils.getExtension(mixFile, true, true));
 
             // Set operation mix
             b.setOperationMix(mixLoader.load(new File(mixFile)));
@@ -474,17 +473,17 @@ public class BenchmarkerCmd {
         System.out.println(" -q");
         System.out.println(" --quiet                     Enables quiet mode so only errors will go to the console and no progress messages will be shown");
         System.out.println(" -r N");
-        System.out.println(" --runs N                    Sets number of runs where N is an integer (default " + Options.DEFAULT_RUNS + ")");
+        System.out.println(" --runs N                    Sets number of runs where N is an integer (default " + BenchmarkOptions.DEFAULT_RUNS + ")");
         System.out.println(" --results-ask FMT           Sets the format to request for ASK query results (default " + Options.DEFAULT_FORMAT_SELECT + ")");
         System.out.println(" --results-graph FMT         Sets the format to request for CONSTRUCT/DESCRIBE results (default " + Options.DEFAULT_FORMAT_GRAPH + ")");
         System.out.println(" --results-select FMT        Sets the format to request for SELECT query results (default " + Options.DEFAULT_FORMAT_ASK + ")");
         System.out.println(" -s N");
-        System.out.println(" --sanity-checks N           Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=" + OptionsImpl.DEFAULT_SANITY_CHECKS + ")");
+        System.out.println(" --sanity-checks N           Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=" + Options.DEFAULT_SANITY_CHECKS + ")");
         System.out.println(" -t N");
         System.out.println(" --timeout N                 Sets timeout for queries where N is number of seconds (default " + Options.DEFAULT_TIMEOUT + ")");
         System.out.println(" --username USER             Sets the username used for basic authentication");
         System.out.println(" -w N");
-        System.out.println(" --warmups N                 Sets number of warm up runs to run prior to actual benchmarking runs (default " + Options.DEFAULT_WARMUPS + ")");
+        System.out.println(" --warmups N                 Sets number of warm up runs to run prior to actual benchmarking runs (default " + BenchmarkOptions.DEFAULT_WARMUPS + ")");
         System.out.println(" -x filename.xml");
         System.out.println(" --xml filename.xml          Request XML output and sets filename to which the XML results will be output");
         System.out.println();

@@ -71,8 +71,8 @@ public abstract class AbstractQueryOperation extends AbstractOperation<QueryRun>
     }
 
     @Override
-    protected QueryRun createErrorInformation(String message, long runtime) {
-        return new QueryRun(message, runtime);
+    protected QueryRun createErrorInformation(String message, int category, long runtime) {
+        return new QueryRun(message, category, runtime);
     }
 
     @Override

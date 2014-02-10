@@ -35,6 +35,8 @@ package net.sf.sparql.benchmarking.runners;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -48,7 +50,9 @@ import net.sf.sparql.benchmarking.options.SoakOptions;
 import net.sf.sparql.benchmarking.parallel.ParallelClientManagerTask;
 import net.sf.sparql.benchmarking.parallel.SoakTestParallelClientManager;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
+import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.util.ConvertUtils;
+import net.sf.sparql.benchmarking.util.ErrorCategories;
 import net.sf.sparql.benchmarking.util.FormatUtils;
 
 /**
@@ -230,11 +234,11 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
                     halt(options, e);
             }
         }
-        
+
         // Get end time
         endTime = System.nanoTime();
         endInstant = Instant.now();
-        
+
         reportProgress(options, "Finished soak testing");
         reportProgress(options);
 
@@ -282,7 +286,20 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         reportProgress(options);
         reportProgress(options, "Number of Runs: " + i);
         reportProgress(options, "Total Operations Run: " + (i * options.getOperationMix().size()));
+        reportProgress(options);
         reportProgress(options, "Total Errors: " + options.getOperationMix().getTotalErrors());
+        if (options.getOperationMix().getTotalErrors() > 0) {
+            // Show errors by category
+            reportProgress(options, "Errors by Category: ");
+            Map<Integer, List<OperationRun>> categorizedErrors = options.getOperationMix().getCategorizedErrors();
+            for (Integer category : categorizedErrors.keySet()) {
+                String description = ErrorCategories.getDescription(category);
+                if (description == null)
+                    description = String.format("Unknown Category %d", category);
+                reportProgress(options, description + ": " + categorizedErrors.get(category).size() + " error(s)");
+            }
+        }
+        reportProgress(options);
         reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
         reportProgress(options, "End Time: " + FormatUtils.formatInstant(endInstant));
         reportProgress(options, "Total Runtime: " + ConvertUtils.toMinutes(endTime - startTime) + " minutes");

@@ -57,12 +57,14 @@ public final class OperationRunImpl extends AbstractOperationRun {
      * 
      * @param error
      *            Error Message
+     * @param category
+     *            Error category
      * @param runtime
-     *            Runtime, this is the amount of time elapsed until the
-     *            error/timeout was reached
+     *            Runtime, this is the amount of time elapsed until the error
+     *            was reached
      */
-    public OperationRunImpl(String error, long runtime) {
-        super(error, runtime);
+    public OperationRunImpl(String error, int category, long runtime) {
+        super(error, category, runtime);
     }
 
     /**

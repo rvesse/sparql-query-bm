@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,10 +28,11 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.operations.query;
 
+import org.apache.jena.atlas.web.HttpException;
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.query.Query;
@@ -46,6 +47,7 @@ import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.stats.QueryRun;
 import net.sf.sparql.benchmarking.util.ConvertUtils;
+import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 /**
  * Abstract callable for operations that run queries
@@ -115,10 +117,12 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
             exec.setAuthenticator(options.getAuthenticator());
         }
 
+        long numResults = 0;
+        long responseTime = OperationRun.NOT_YET_RUN;
+        long startTime = System.nanoTime();
         try {
-            long numResults = 0;
-            long responseTime = OperationRun.NOT_YET_RUN;
-            long startTime = System.nanoTime();
+
+            // Make the query
             if (query.isAskType()) {
                 boolean result = exec.execAsk();
                 numResults = countResults(options, result);
@@ -131,9 +135,12 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
             } else if (query.isSelectType()) {
                 ResultSet rset = exec.execSelect();
                 responseTime = System.nanoTime() - startTime;
-                if (isCancelled())
-                    return null; // Abort if we have been cancelled by the time
-                                 // the engine responds
+
+                // Abort if we have been cancelled by the time the engine
+                // responds
+                if (isCancelled()) {
+                    return null;
+                }
                 this.getRunner().reportPartialProgress(options,
                         "started responding in " + ConvertUtils.toSeconds(responseTime) + "s...");
                 numResults = countResults(options, rset);
@@ -142,8 +149,20 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
                 if (options.getHaltAny())
                     this.getRunner().halt(options, "Unrecognized Query Type");
             }
+
+            // Abort if we have been cancelled by the time the engine
+            // responds
+            if (isCancelled()) {
+                return null;
+            }
+
+            // Return results
             long endTime = System.nanoTime();
             return new QueryRun(endTime - startTime, responseTime, numResults);
+
+        } catch (HttpException e) {
+            // Make sure to categorize HTTP errors appropriately
+            return new QueryRun(e.getMessage(), ErrorCategories.categorizeHttpError(e), System.nanoTime() - startTime);
         } finally {
             // Clean up query execution
             if (exec != null)

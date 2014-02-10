@@ -31,10 +31,13 @@
 package net.sf.sparql.benchmarking.operations;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
+import net.sf.sparql.benchmarking.stats.OperationRun;
 
 /**
  * Represents a mix of operations carried out as a single test run
@@ -115,6 +118,13 @@ public interface OperationMix {
     public abstract long getTotalErrors();
 
     /**
+     * Gets the information for all errors grouped by category
+     * 
+     * @return Errors grouped by category
+     */
+    public abstract Map<Integer, List<OperationRun>> getCategorizedErrors();
+
+    /**
      * Gets the total runtime over all runs
      * 
      * @return Total Runtime in nanoseconds
@@ -192,7 +202,7 @@ public interface OperationMix {
      * @return Runtime Standard Deviation in nanoseconds
      */
     public abstract double getStandardDeviation();
-    
+
     /**
      * Calculates the number of operation mixes per hour that could be executed
      * based on the average runtime of the operation mix

@@ -42,7 +42,6 @@ import net.sf.sparql.benchmarking.loader.impl.UpdateOperationLoader;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -53,48 +52,49 @@ import org.junit.Test;
  * @author rvesse
  * 
  */
+@SuppressWarnings("javadoc")
 public class TestLoaders {
-    
+
     @BeforeClass
     public static void setup() {
         OperationMixLoaderRegistry.resetLoaders();
         OperationLoaderRegistry.resetLoaders();
     }
-   
+
     @Test
     public void registered_mix_loaders_01() {
         OperationMixLoader mixLoader = OperationMixLoaderRegistry.getLoader("txt");
         Assert.assertNotNull(mixLoader);
         Assert.assertTrue(mixLoader instanceof ClassicQueryMixLoader);
     }
-    
+
     @Test
     public void registered_mix_loaders_02() {
         OperationMixLoader mixLoader = OperationMixLoaderRegistry.getLoader("tsv");
         Assert.assertNotNull(mixLoader);
         Assert.assertTrue(mixLoader instanceof TsvMixLoader);
     }
-    
+
     @Test
     public void registered_op_loaders_01() {
         OperationLoader opLoader = OperationLoaderRegistry.getLoader("query");
         Assert.assertNotNull(opLoader);
         Assert.assertTrue(opLoader instanceof QueryOperationLoader);
     }
-    
+
     @Test
     public void registered_op_loaders_02() {
         OperationLoader opLoader = OperationLoaderRegistry.getLoader("update");
         Assert.assertNotNull(opLoader);
         Assert.assertTrue(opLoader instanceof UpdateOperationLoader);
     }
-    
+
     @Test
     public void classic_mix_loader_01() throws IOException {
         OperationMix mix = OperationMixLoaderRegistry.getLoader("txt").load(new File("queries/lubm.txt"));
         Assert.assertEquals(14, mix.size());
     }
-    
+
     @Test
     public void tsv_mix_loader_01() throws IOException {
         OperationMix mix = OperationMixLoaderRegistry.getLoader("tsv").load(new File("queries/lubm.tsv"));

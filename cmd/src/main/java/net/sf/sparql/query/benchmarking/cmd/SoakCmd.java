@@ -36,15 +36,14 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import net.sf.sparql.benchmarking.BenchmarkerUtils;
-import net.sf.sparql.benchmarking.HaltBehaviour;
 import net.sf.sparql.benchmarking.loader.OperationMixLoader;
 import net.sf.sparql.benchmarking.loader.OperationMixLoaderRegistry;
 import net.sf.sparql.benchmarking.monitoring.ConsoleProgressListener;
+import net.sf.sparql.benchmarking.options.HaltBehaviour;
 import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.options.OptionsImpl;
 import net.sf.sparql.benchmarking.options.SoakOptions;
 import net.sf.sparql.benchmarking.runners.SoakRunner;
+import net.sf.sparql.benchmarking.util.FileUtils;
 
 import org.apache.jena.atlas.web.auth.ApacheModAuthFormLogin;
 import org.apache.jena.atlas.web.auth.FormLogin;
@@ -152,13 +151,10 @@ public class SoakCmd {
                     i++;
                     switch (arg.charAt(1)) {
                     case 'r':
-                        options.setRuns(Integer.parseInt(argv[i]));
+                        options.setMaxRuns(Integer.parseInt(argv[i]));
                         break;
                     case 't':
                         options.setTimeout(Integer.parseInt(argv[i]));
-                        break;
-                    case 'w':
-                        options.setWarmups(Integer.parseInt(argv[i]));
                         break;
                     case 's':
                         options.setSanityCheckLevel(Integer.parseInt(argv[i]));
@@ -217,7 +213,7 @@ public class SoakCmd {
                     } else if (arg.equals("--runs")) {
                         expectNextArg(i, argv, arg);
                         i++;
-                        options.setRuns(Integer.parseInt(argv[i]));
+                        options.setMaxRuns(Integer.parseInt(argv[i]));
                     } else if (arg.equals("--runtime")) {
                         expectNextArg(i, argv, arg);
                         i++;
@@ -226,10 +222,6 @@ public class SoakCmd {
                         expectNextArg(i, argv, arg);
                         i++;
                         options.setTimeout(Integer.parseInt(argv[i]));
-                    } else if (arg.equals("--warmups")) {
-                        expectNextArg(i, argv, arg);
-                        i++;
-                        options.setWarmups(Integer.parseInt(argv[i]));
                     } else if (arg.equals("--sanity-checks")) {
                         expectNextArg(i, argv, arg);
                         i++;
@@ -272,9 +264,9 @@ public class SoakCmd {
                     } else if (arg.equals("--quiet")) {
                         quiet = true;
                     } else if (arg.equals("--gzip")) {
-                        options.setAllowGZipEncoding(true);
+                        options.setAllowCompression(true);
                     } else if (arg.equals("--deflate")) {
-                        options.setAllowDeflateEncoding(true);
+                        options.setAllowCompression(true);
                     } else if (arg.equals("--username")) {
                         expectNextArg(i, argv, arg);
                         i++;
@@ -360,11 +352,11 @@ public class SoakCmd {
     private static void parseOperationMix(Options b, String mixFile) {
         try {
             // Try to get a loader for the given mix file
-            OperationMixLoader mixLoader = OperationMixLoaderRegistry.getLoader(BenchmarkerUtils.getExtension(mixFile, true,
+            OperationMixLoader mixLoader = OperationMixLoaderRegistry.getLoader(FileUtils.getExtension(mixFile, true,
                     false));
             if (mixLoader == null)
                 throw new RuntimeException("No mix loader is associated with files with the extension "
-                        + BenchmarkerUtils.getExtension(mixFile, true, true));
+                        + FileUtils.getExtension(mixFile, true, true));
 
             // Set operation mix
             b.setOperationMix(mixLoader.load(new File(mixFile)));
@@ -431,7 +423,7 @@ public class SoakCmd {
         System.out.println(" --results-graph FMT         Sets the format to request for CONSTRUCT/DESCRIBE results (default " + Options.DEFAULT_FORMAT_GRAPH + ")");
         System.out.println(" --results-select FMT        Sets the format to request for SELECT query results (default " + Options.DEFAULT_FORMAT_ASK + ")");
         System.out.println(" -s N");
-        System.out.println(" --sanity-checks N           Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=" + OptionsImpl.DEFAULT_SANITY_CHECKS + ")");
+        System.out.println(" --sanity-checks N           Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=" + Options.DEFAULT_SANITY_CHECKS + ")");
         System.out.println(" -t N");
         System.out.println(" --timeout N                 Sets timeout for queries where N is number of seconds (default " + Options.DEFAULT_TIMEOUT + ")");
         System.out.println(" --username USER             Sets the username used for basic authentication");

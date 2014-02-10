@@ -48,6 +48,7 @@ import net.sf.sparql.benchmarking.parallel.ParallelTimer;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.util.ConvertUtils;
+import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 import org.apache.commons.math.stat.descriptive.moment.GeometricMean;
 import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
@@ -100,11 +101,13 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
      * 
      * @param message
      *            Message
+     * @param category
+     *            Error category
      * @param runtime
      *            Runtime
      * @return Error information
      */
-    protected abstract TRun createErrorInformation(String message, long runtime);
+    protected abstract TRun createErrorInformation(String message, int category, long runtime);
 
     @Override
     public final <T extends Options> OperationRun run(Runner<T> runner, T options) {
@@ -132,8 +135,8 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
             logger.error("Operation Callable execeeded Timeout - " + tEx.getMessage());
             if (options.getHaltOnTimeout() || options.getHaltAny())
                 runner.halt(options, tEx);
-            r = this.createErrorInformation("Operation Callable execeeded Timeout - " + tEx.getMessage(), System.nanoTime()
-                    - startTime);
+            r = this.createErrorInformation("Operation Callable execeeded Timeout - " + tEx.getMessage(),
+                    ErrorCategories.TIMEOUT, System.nanoTime() - startTime);
 
             // If the query times out but we aren't halting cancel further
             // evaluation of the operation
@@ -144,8 +147,8 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
             logger.error("Operation Callable was interrupted - " + e.getMessage());
             if (options.getHaltAny())
                 runner.halt(options, e);
-            r = this.createErrorInformation("Operation Callable was interrupted - " + e.getMessage(), System.nanoTime()
-                    - startTime);
+            r = this.createErrorInformation("Operation Callable was interrupted - " + e.getMessage(), ErrorCategories.INTERRUPT,
+                    System.nanoTime() - startTime);
         } catch (ExecutionException e) {
             // Handle unexpected execution error
             logger.error("Operation Callable encountered an error - " + e.getMessage());
@@ -156,8 +159,8 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
 
             if (options.getHaltOnError() || options.getHaltAny())
                 runner.halt(options, e);
-            r = this.createErrorInformation("Operation Callable encountered an error - " + e.getMessage(), System.nanoTime()
-                    - startTime);
+            r = this.createErrorInformation("Operation Callable encountered an error - " + e.getMessage(),
+                    ErrorCategories.EXECUTION, System.nanoTime() - startTime);
         }
         timer.stop();
 

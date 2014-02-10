@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,10 +28,11 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.operations.update;
 
+import org.apache.jena.atlas.web.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +44,7 @@ import net.sf.sparql.benchmarking.operations.AbstractOperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.UpdateRun;
+import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 /**
  * Abstract callable for operations that run updates
@@ -81,10 +83,15 @@ public abstract class AbstractUpdateCallable<T extends Options> extends Abstract
         if (this.getOptions().getAuthenticator() != null) {
             processor.setAuthenticator(this.getOptions().getAuthenticator());
         }
-        long startTime = System.nanoTime();
 
-        // Execute the update
-        processor.execute();
+        long startTime = System.nanoTime();
+        try {
+            // Execute the update
+            processor.execute();
+        } catch (HttpException e) {
+            // Make sure to categorize HTTP errors appropriately
+            return new UpdateRun(e.getMessage(), ErrorCategories.categorizeHttpError(e), System.nanoTime() - startTime);
+        }
 
         if (this.isCancelled())
             return null;

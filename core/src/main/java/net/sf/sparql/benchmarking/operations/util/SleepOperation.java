@@ -99,7 +99,7 @@ public class SleepOperation extends AbstractOperation<OperationRun> {
     }
 
     @Override
-    protected OperationRun createErrorInformation(String message, long runtime) {
-        return new OperationRunImpl(message, runtime);
+    protected OperationRun createErrorInformation(String message, int category, long runtime) {
+        return new OperationRunImpl(message, category, runtime);
     }
 }
