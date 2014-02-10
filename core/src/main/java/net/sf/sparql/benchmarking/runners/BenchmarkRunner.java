@@ -87,6 +87,10 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
                     .println("Specified number of outliers would mean all run results would be discarded, please specify a lower number of outliers");
             halt(options, "Number of Outliers too high");
         }
+        if (options.getTimeout() <= 0) {
+            System.err.println("Benchmarking requires that an operation timeout be set, cannot run with timeout disabled");
+            halt(options, "No timeout was set");
+        }
 
         Iterator<Operation> ops = options.getOperationMix().getOperations();
         checkOperations(options);
@@ -254,8 +258,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
             if (options.getParallelThreads() > 1)
                 reportProgress(options,
                         "Actual Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(op.getActualAverageRuntime()));
-            reportProgress(options,
-                    "Average Runtime (Geometric): " + FormatUtils.formatSeconds(op.getGeometricAverageRuntime()));
+            reportProgress(options, "Average Runtime (Geometric): " + FormatUtils.formatSeconds(op.getGeometricAverageRuntime()));
             reportProgress(options, "Minimum Runtime: " + FormatUtils.formatSeconds(op.getMinimumRuntime()));
             reportProgress(options, "Maximum Runtime: " + FormatUtils.formatSeconds(op.getMaximumRuntime()));
             reportProgress(options, "Runtime Variance: " + FormatUtils.formatSeconds(op.getVariance()));
@@ -284,13 +287,10 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(operationMix.getTotalRuntime()));
         if (options.getParallelThreads() > 1)
             reportProgress(options, "Actual Runtime: " + FormatUtils.formatSeconds(operationMix.getActualRuntime()));
-        reportProgress(options,
-                "Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(operationMix.getAverageRuntime()));
+        reportProgress(options, "Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(operationMix.getAverageRuntime()));
         if (options.getParallelThreads() > 1)
-            reportProgress(
-                    options,
-                    "Actual Average Runtime (Arithmetic): "
-                            + FormatUtils.formatSeconds(operationMix.getActualAverageRuntime()));
+            reportProgress(options,
+                    "Actual Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(operationMix.getActualAverageRuntime()));
         reportProgress(options, "Average Runtime (Geometric): " + operationMix.getGeometricAverageRuntime() + "s");
         reportProgress(options, "Minimum Mix Runtime: " + FormatUtils.formatSeconds(operationMix.getMinimumRuntime()));
         reportProgress(options, "Maximum Mix Runtime: " + FormatUtils.formatSeconds(operationMix.getMaximumRuntime()));
