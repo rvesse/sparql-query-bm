@@ -304,8 +304,8 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
             for (Integer category : categorizedErrors.keySet()) {
                 String description = ErrorCategories.getDescription(category);
                 if (description == null)
-                    description = String.format("Unknown Category %d", category);
-                reportProgress(options, description + ": " + categorizedErrors.get(category).size() + " error(s)");
+                    description = String.format("  Unknown Category %d", category);
+                reportProgress(options, "  " + description + ": " + categorizedErrors.get(category).size() + " error(s)");
             }
         }
         reportProgress(options);
