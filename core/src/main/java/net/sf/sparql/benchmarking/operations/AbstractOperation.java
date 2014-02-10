@@ -43,11 +43,12 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import net.sf.sparql.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.parallel.ParallelTimer;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationRun;
+import net.sf.sparql.benchmarking.util.ConvertUtils;
+
 import org.apache.commons.math.stat.descriptive.moment.GeometricMean;
 import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
@@ -267,7 +268,7 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
         double[] values = new double[this.runs.size()];
         int i = 0;
         for (OperationRun r : this.runs) {
-            values[i] = BenchmarkerUtils.toSeconds(r.getRuntime());
+            values[i] = ConvertUtils.toSeconds(r.getRuntime());
             i++;
         }
         return var.evaluate(values);
@@ -304,7 +305,7 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
 
     @Override
     public double getOperationsPerSecond() {
-        double avgRuntime = BenchmarkerUtils.toSeconds(this.getAverageRuntime());
+        double avgRuntime = ConvertUtils.toSeconds(this.getAverageRuntime());
         if (avgRuntime == 0)
             return 0;
         return 1 / avgRuntime;
@@ -312,7 +313,7 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
 
     @Override
     public double getActualOperationsPerSecond() {
-        double avgRuntime = BenchmarkerUtils.toSeconds(this.getActualAverageRuntime());
+        double avgRuntime = ConvertUtils.toSeconds(this.getActualAverageRuntime());
         if (avgRuntime == 0)
             return 0;
         return 1 / avgRuntime;
@@ -320,18 +321,18 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
 
     @Override
     public double getOperationsPerHour() {
-        double avgRuntime = BenchmarkerUtils.toSeconds(this.getAverageRuntime());
+        double avgRuntime = ConvertUtils.toSeconds(this.getAverageRuntime());
         if (avgRuntime == 0)
             return 0;
-        return BenchmarkerUtils.SECONDS_PER_HOUR / avgRuntime;
+        return ConvertUtils.SECONDS_PER_HOUR / avgRuntime;
     }
 
     @Override
     public double getActualOperationsPerHour() {
-        double avgRuntime = BenchmarkerUtils.toSeconds(this.getActualAverageRuntime());
+        double avgRuntime = ConvertUtils.toSeconds(this.getActualAverageRuntime());
         if (avgRuntime == 0)
             return 0;
-        return BenchmarkerUtils.SECONDS_PER_HOUR / avgRuntime;
+        return ConvertUtils.SECONDS_PER_HOUR / avgRuntime;
     }
 
     @Override

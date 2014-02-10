@@ -39,7 +39,6 @@ import java.util.concurrent.ExecutorService;
 import org.apache.jena.atlas.web.auth.HttpAuthenticator;
 import org.apache.jena.riot.WebContent;
 
-import net.sf.sparql.benchmarking.HaltBehaviour;
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 
@@ -56,17 +55,9 @@ public interface Options {
      */
     public static final HaltBehaviour DEFAULT_HALT_BEHAVIOUR = HaltBehaviour.THROW_EXCEPTION;
     /**
-     * Default Runs
-     */
-    public static final int DEFAULT_RUNS = 25;
-    /**
      * Default Timeout in Seconds
      */
     public static final int DEFAULT_TIMEOUT = 300;
-    /**
-     * Default Warmup Runs
-     */
-    public static final int DEFAULT_WARMUPS = 5;
     /**
      * Default Result Format for {@code SELECT} queries
      */
@@ -87,6 +78,10 @@ public interface Options {
      * Default Parallel Threads for query run evaluation
      */
     public static final int DEFAULT_PARALLEL_THREADS = 1;
+    /**
+     * Default Sanity Checks
+     */
+    public static final int DEFAULT_SANITY_CHECKS = 2;
 
     /**
      * Gets the in-use executor for running queries and query mixes in threads
@@ -174,8 +169,8 @@ public interface Options {
     /**
      * Gets the Global Run Order
      * <p>
-     * Called elsewhere so that mix runs and query runs record what order they
-     * were run in
+     * Called elsewhere so that mix runs and operation runs record what order
+     * they were run in
      * </p>
      * 
      * @return Global Run Order
@@ -183,14 +178,14 @@ public interface Options {
     public abstract long getGlobalOrder();
 
     /**
-     * Gets the number of parallel threads used for query run evaluation
+     * Gets the number of parallel threads used for testing
      * 
      * @return Number of parallel threads
      */
     public abstract int getParallelThreads();
 
     /**
-     * Sets the number of parallel threads used for query run evaluation
+     * Sets the number of parallel threads used for testing
      * 
      * @param threads
      *            Number of Parallel Threads
@@ -198,14 +193,14 @@ public interface Options {
     public abstract void setParallelThreads(int threads);
 
     /**
-     * Gets the maximum delay between queries
+     * Gets the maximum delay between operations
      * 
      * @return Maximum Delay in milliseconds
      */
     public abstract int getMaxDelay();
 
     /**
-     * Sets the maximum delay between queries
+     * Sets the maximum delay between operations
      * 
      * @param milliseconds
      *            Maximum Delay in milliseconds
@@ -230,38 +225,21 @@ public interface Options {
     public abstract void setAuthenticator(HttpAuthenticator authenticator);
 
     /**
-     * Gets whether the client will allow the server to return Deflate encoded
-     * responses
+     * Gets whether the client will allow the server to return Deflate/GZip
+     * compressed responses
      * 
-     * @return Whether Deflate encoding is allowed
+     * @return Whether Deflate/GZip compression is allowed
      */
-    public abstract boolean getAllowDeflateEncoding();
+    public abstract boolean getAllowCompression();
 
     /**
-     * Sets whether the client will allow the server to return Deflate encoded
-     * responses
+     * Sets whether the client will allow the server to return Deflate/GZip
+     * compressed responses
      * 
      * @param allowed
-     *            Whether Deflate encoding is allowed
+     *            Whether Deflate/GZip compression is allowed
      */
-    public abstract void setAllowDeflateEncoding(boolean allowed);
-
-    /**
-     * Gets whether the client will allow the server to return GZip encoded
-     * responses
-     * 
-     * @return Whether GZip encoding is allowed
-     */
-    public abstract boolean getAllowGZipEncoding();
-
-    /**
-     * Sets whether the client should allow the server to return GZip encoded
-     * responses
-     * 
-     * @param allowed
-     *            Whether GZip encoding is allowed
-     */
-    public abstract void setAllowGZipEncoding(boolean allowed);
+    public abstract void setAllowCompression(boolean allowed);
 
     /**
      * Gets the Results format used for CONSTRUCT/DESCRIBE queries
@@ -322,38 +300,6 @@ public interface Options {
      *            Timeout in seconds
      */
     public abstract void setTimeout(int timeout);
-
-    /**
-     * Gets the number of times the Query Mix will be run as a warm up prior to
-     * actual runs
-     * 
-     * @return Number of Warmup Runs
-     */
-    public abstract int getWarmups();
-
-    /**
-     * Sets the number of times the Query Mix will be run as a warm up prior to
-     * actual runs
-     * 
-     * @param runs
-     *            Number of Warmup Runs
-     */
-    public abstract void setWarmups(int runs);
-
-    /**
-     * Gets the number of times the Query Mix will be run
-     * 
-     * @return Number of Runs
-     */
-    public abstract int getRuns();
-
-    /**
-     * Sets the number of times the Query Mix will be run
-     * 
-     * @param runs
-     *            Number of Runs
-     */
-    public abstract void setRuns(int runs);
 
     /**
      * Sets a custom defined endpoint

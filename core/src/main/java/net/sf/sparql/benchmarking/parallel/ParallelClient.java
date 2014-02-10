@@ -34,12 +34,12 @@ package net.sf.sparql.benchmarking.parallel;
 
 import java.util.concurrent.Callable;
 
-import net.sf.sparql.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.OperationMixTask;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
+import net.sf.sparql.benchmarking.util.FormatUtils;
 
 import org.apache.log4j.Logger;
 
@@ -113,15 +113,15 @@ public class ParallelClient<T extends Options> implements Callable<Object> {
                 runner.reportProgress(options, "Operation Mix Run " + completedRun + " by Client " + id);
                 runner.reportProgress(options, r);
                 runner.reportProgress(options);
-                runner.reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatSeconds(r.getTotalResponseTime()));
-                runner.reportProgress(options, "Total Runtime: " + BenchmarkerUtils.formatSeconds(r.getTotalRuntime()));
+                runner.reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(r.getTotalResponseTime()));
+                runner.reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(r.getTotalRuntime()));
                 int minOperationId = r.getMinimumRuntimeOperationID();
                 int maxOperationId = r.getMaximumRuntimeOperationID();
                 runner.reportProgress(options,
-                        "Minimum Operation Runtime: " + BenchmarkerUtils.formatSeconds(r.getMinimumRuntime()) + " (Operation "
+                        "Minimum Operation Runtime: " + FormatUtils.formatSeconds(r.getMinimumRuntime()) + " (Operation "
                                 + operationMix.getOperation(minOperationId).getName() + ")");
                 runner.reportProgress(options,
-                        "Maximum Operation Runtime: " + BenchmarkerUtils.formatSeconds(r.getMaximumRuntime()) + " (Operation "
+                        "Maximum Operation Runtime: " + FormatUtils.formatSeconds(r.getMaximumRuntime()) + " (Operation "
                                 + operationMix.getOperation(maxOperationId).getName() + ")");
                 runner.reportProgress(options);
             } catch (Exception e) {

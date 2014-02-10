@@ -32,9 +32,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.parallel;
 
-import net.sf.sparql.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.benchmarking.options.SoakOptions;
 import net.sf.sparql.benchmarking.runners.Runner;
+import net.sf.sparql.benchmarking.util.ConvertUtils;
 
 /**
  * A Callable uses to manage the running of parallel clients for multi-threaded
@@ -66,7 +66,7 @@ public class SoakTestParallelClientManager extends AbstractParallelClientManager
             return false;
         // Check max runtime first
         if (this.getOptions().getMaxRuntime() > 0) {
-            double runtime = BenchmarkerUtils.toMinutes(System.nanoTime() - this.startTime);
+            double runtime = ConvertUtils.toMinutes(System.nanoTime() - this.startTime);
             if (runtime >= this.getOptions().getMaxRuntime())
                 return false;
         }

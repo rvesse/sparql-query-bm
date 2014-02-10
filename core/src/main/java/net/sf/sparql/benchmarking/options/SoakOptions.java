@@ -91,8 +91,8 @@ public class SoakOptions extends OptionsImpl {
      * Sets the maximum soak runtime in minutes
      * <p>
      * May be set to 0 or a negative value to indicate that there is no maximum
-     * runtime and instead the {@link #getRuns()} determines how many runs soak
-     * testing will consist of.
+     * runtime and instead the {@link #getMaxRuns()} determines how many runs
+     * soak testing will consist of.
      * </p>
      * 
      * @param runtime

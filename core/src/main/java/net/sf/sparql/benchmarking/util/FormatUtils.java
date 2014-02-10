@@ -30,62 +30,71 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 
-package net.sf.sparql.benchmarking.operations.query;
+package net.sf.sparql.benchmarking.util;
 
-import net.sf.sparql.benchmarking.operations.AbstractOperation;
-import net.sf.sparql.benchmarking.operations.OperationCallable;
-import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.QueryRun;
 
 /**
- * Abstract implementation of a query operation
+ * Helper class with utility methods related to formatting
  * 
  * @author rvesse
  * 
  */
-public abstract class AbstractQueryOperation extends AbstractOperation<QueryRun> implements QueryOperation {
+public class FormatUtils {
 
     /**
-     * Creates a new operation
+     * Private constructor prevents direct instantiation
+     */
+    private FormatUtils() {
+    }
+
+    /**
+     * Formats Time to show as seconds
      * 
-     * @param name
-     *            Query name
+     * @param time
+     *            Time in nanoseconds
+     * @return Time in seconds
      */
-    public AbstractQueryOperation(String name) {
-        super(name);
-    }
-
-    @Override
-    public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getQueryEndpoint() == null) {
-            runner.reportProgress(options, "Queries cannot run with no query endpoint specified");
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    protected <T extends Options> OperationCallable<T, QueryRun> createCallable(Runner<T> runner, T options) {
-        return new QueryCallable<T>(this.getQuery(), runner, options);
-    }
-
-    @Override
-    protected QueryRun createErrorInformation(String message, long runtime) {
-        return new QueryRun(message, runtime);
-    }
-
-    @Override
-    public String getContentString() {
-        return this.getQueryString();
+    public static String formatSeconds(long time) {
+        return ConvertUtils.toSeconds(time) + "s";
     }
 
     /**
-     * Gets the string representation (i.e. the name) of the operation
+     * Formats Time to show as seconds
+     * 
+     * @param time
+     *            Time in nanoseconds
+     * @return Time in seconds
      */
-    @Override
-    public String toString() {
-        return this.getName();
+    public static String formatSeconds(double time) {
+        return ConvertUtils.toSeconds(time) + "s";
     }
 
+    /**
+     * Formats a string for CSV escaping it as a double quoted CSV string if
+     * necessary
+     * 
+     * @param value
+     * @return Sanitized string
+     */
+    public static String toCsv(String value) {
+        if (value.contains(",") || value.startsWith("\"") || value.endsWith("\"")) {
+            return "\"" + FormatUtils.escapeQuotesForCsv(value) + "\"";
+        } else {
+            return value;
+        }
+    }
+
+    /**
+     * Escapes quotes in a string for use in a double quoted CSV string
+     * 
+     * @param value
+     * @return Sanitized string
+     */
+    public static String escapeQuotesForCsv(String value) {
+        if (value.contains("\"")) {
+            return value.replace("\"", "\"\"");
+        } else {
+            return value;
+        }
+    }
 }

@@ -32,28 +32,52 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.parallel;
 
-import java.util.concurrent.FutureTask;
-
-import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.options.BenchmarkOptions;
+import net.sf.sparql.benchmarking.runners.Runner;
 
 /**
- * Task for running a parallel client manager
+ * A Callable uses to manage the running of parallel clients for multi-threaded
+ * testing
  * 
  * @author rvesse
  * @param <T>
  *            Options type
  * 
  */
-public class ParallelClientManagerTask<T extends Options> extends FutureTask<Object> {
+public class BenchmarkParallelClientManager<T extends BenchmarkOptions> extends AbstractParallelClientManager<T> {
+
+    int startedRuns = 0;
+    int completedRuns = 0;
 
     /**
-     * Creates a new parallel client manager task using the given parallel
-     * client manager
+     * Creates a new Parallel Client Manager
      * 
-     * @param manager
-     *            Parallel client manager
+     * @param runner
+     *            Benchmark runner
+     * @param options
+     *            Options
      */
-    public ParallelClientManagerTask(ParallelClientManager<T> manager) {
-        super(manager);
+    public BenchmarkParallelClientManager(Runner<T> runner, T options) {
+        super(runner, options);
     }
+
+    @Override
+    public synchronized boolean shouldRun() {
+        if (this.shouldHalt())
+            return false;
+        if (startedRuns < this.getOptions().getRuns()) {
+            startedRuns++;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public synchronized int completeRun() {
+        completedRuns++;
+        int x = completedRuns;
+        return x;
+    }
+
 }

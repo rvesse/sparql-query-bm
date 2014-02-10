@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.monitoring;
 
@@ -36,7 +36,6 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.Iterator;
 
-import net.sf.sparql.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
@@ -44,6 +43,7 @@ import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
+import net.sf.sparql.benchmarking.util.FileUtils;
 
 /**
  * A Progress Listener that generates a XML output file
@@ -51,6 +51,7 @@ import net.sf.sparql.benchmarking.stats.OperationRun;
  * @author rvesse
  */
 public class XmlProgressListener implements ProgressListener {
+
     private File file;
     private PrintWriter writer;
     private int indent = 0;
@@ -74,6 +75,21 @@ public class XmlProgressListener implements ProgressListener {
 							   TAG_MIX_RUN = "operationMixRun",
 							   TAG_STATS = "statistics",
 							   TAG_SUMMARY = "summary",
+							   ATTR_COMPRESSION = "compression",
+							   ATTR_LIMIT = "limit",
+							   ATTR_COUNTING = "counting",
+							   ATTR_THREADS = "threads",
+							   ATTR_SELECT_FORMAT = "selectFormat",
+							   ATTR_GRAPH_FORMAT = "graphFormat",
+							   ATTR_ASK_FORMAT = "askFormat",
+							   ATTR_MAX_DELAY = "maxDelay",
+							   ATTR_TIMEOUT = "timeout",
+							   ATTR_OUTLIERS = "outliers",
+							   ATTR_RANDOM_ORDER = "randomOrder",
+							   ATTR_RUNS = "runs",
+							   ATTR_WARMUPS = "warmups",
+							   ATTR_SANITY_CHECKING = "sanityChecking",
+							   ATTR_QUERY_ENDPOINT = "queryEndpoint",
 							   ATTR_RESPONSE_TIME = "responseTime",
 							   ATTR_TOTAL_RESPONSE_TIME = "totalResponseTime",
 							   ATTR_RUNTIME = "runtime",
@@ -143,7 +159,7 @@ public class XmlProgressListener implements ProgressListener {
      */
     @Override
     public <T extends Options> void handleStarted(Runner<T> runner, T options) {
-        if (!BenchmarkerUtils.checkFile(this.file, allowOverwrite)) {
+        if (!FileUtils.checkFile(this.file, allowOverwrite)) {
             throw new RuntimeException("XML Output File is not a file, already exists or is not writable");
         }
 
@@ -162,28 +178,29 @@ public class XmlProgressListener implements ProgressListener {
 
             // Generate an <configuration> element detailing configuration
             openTag(TAG_CONFIGURATION);
-            printProperty("endpoint", options.getQueryEndpoint());
+            printProperty(ATTR_QUERY_ENDPOINT, options.getQueryEndpoint());
             if (bOps != null) {
-                printProperty("sanityChecking", bOps.getSanityCheckLevel());
+                printProperty(ATTR_SANITY_CHECKING, bOps.getSanityCheckLevel());
             }
-            printProperty("warmups", options.getWarmups());
-            printProperty("runs", options.getRuns());
-            printProperty("randomOrder", options.getRandomizeOrder());
             if (bOps != null) {
-                printProperty("outliers", bOps.getOutliers());
+                printProperty(ATTR_WARMUPS, bOps.getWarmups());
+                printProperty(ATTR_RUNS, bOps.getRuns());
             }
-            printProperty("timeout", options.getTimeout());
-            printProperty("maxDelay", options.getMaxDelay());
-            printProperty("askFormat", options.getResultsAskFormat());
-            printProperty("graphFormat", options.getResultsGraphFormat());
-            printProperty("selectFormat", options.getResultsSelectFormat());
-            printProperty("threads", options.getParallelThreads());
+            printProperty(ATTR_RANDOM_ORDER, options.getRandomizeOrder());
             if (bOps != null) {
-                printProperty("counting", !bOps.getNoCount());
-                printProperty("limit", bOps.getLimit());
+                printProperty(ATTR_OUTLIERS, bOps.getOutliers());
             }
-            printProperty("gzip", options.getAllowGZipEncoding());
-            printProperty("deflate", options.getAllowDeflateEncoding());
+            printProperty(ATTR_TIMEOUT, options.getTimeout());
+            printProperty(ATTR_MAX_DELAY, options.getMaxDelay());
+            printProperty(ATTR_ASK_FORMAT, options.getResultsAskFormat());
+            printProperty(ATTR_GRAPH_FORMAT, options.getResultsGraphFormat());
+            printProperty(ATTR_SELECT_FORMAT, options.getResultsSelectFormat());
+            printProperty(ATTR_THREADS, options.getParallelThreads());
+            if (bOps != null) {
+                printProperty(ATTR_COUNTING, !bOps.getNoCount());
+                printProperty(ATTR_LIMIT, bOps.getLimit());
+            }
+            printProperty(ATTR_COMPRESSION, options.getAllowCompression());
 
             // Print Queries
             openTag(TAG_OPERATIONS);
@@ -251,7 +268,7 @@ public class XmlProgressListener implements ProgressListener {
             throw new RuntimeException(
                     "handleFinished() on XmlProgressListener was called but it appears handleStarted() was never called, another listener may have caused handleStarted() to be bypassed for this listener");
 
-        if (!BenchmarkerUtils.checkFile(this.file, allowOverwrite)) {
+        if (!FileUtils.checkFile(this.file, allowOverwrite)) {
             throw new RuntimeException("XML Output File is not a file, already exists or is not writable");
         }
 

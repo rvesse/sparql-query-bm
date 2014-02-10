@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.runners;
 
@@ -39,13 +39,14 @@ import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sf.sparql.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
+import net.sf.sparql.benchmarking.parallel.BenchmarkParallelClientManager;
 import net.sf.sparql.benchmarking.parallel.ParallelClientManagerTask;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
+import net.sf.sparql.benchmarking.util.FormatUtils;
 
 /**
  * A benchmark runner
@@ -124,8 +125,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options, "ASK Results Format = " + options.getResultsAskFormat());
         reportProgress(options, "Graph Results Format = " + options.getResultsGraphFormat());
         reportProgress(options, "SELECT Results Format = " + options.getResultsSelectFormat());
-        reportProgress(options, "GZip Encoding = " + (options.getAllowGZipEncoding() ? "enabled" : "disabled"));
-        reportProgress(options, "Deflate Encoding = " + (options.getAllowDeflateEncoding() ? "enabled" : "disabled"));
+        reportProgress(options, "Compression = " + (options.getAllowCompression() ? "enabled" : "disabled"));
         reportProgress(options, "Parallel Threads = " + options.getParallelThreads());
         reportProgress(options, "Result Counting = " + (options.getNoCount() ? "disabled" : "enabled"));
         reportProgress(options, "Authentication = " + (options.getAuthenticator() != null ? "enabled" : "disabled"));
@@ -167,13 +167,13 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
             reportProgress(options, "Warmup Run " + (i + 1) + " of " + options.getWarmups());
             OperationMixRun r = options.getOperationMix().run(this, options);
             reportProgress(options);
-            reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatSeconds(r.getTotalResponseTime()));
-            reportProgress(options, "Total Runtime: " + BenchmarkerUtils.formatSeconds(r.getTotalRuntime()));
+            reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(r.getTotalResponseTime()));
+            reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(r.getTotalRuntime()));
             int minOperationId = r.getMinimumRuntimeOperationID();
             int maxOperationId = r.getMaximumRuntimeOperationID();
-            reportProgress(options, "Minimum Operation Runtime: " + BenchmarkerUtils.formatSeconds(r.getMinimumRuntime())
+            reportProgress(options, "Minimum Operation Runtime: " + FormatUtils.formatSeconds(r.getMinimumRuntime())
                     + " (Operation " + options.getOperationMix().getOperation(minOperationId).getName() + ")");
-            reportProgress(options, "Maximum Operation Runtime: " + BenchmarkerUtils.formatSeconds(r.getMaximumRuntime())
+            reportProgress(options, "Maximum Operation Runtime: " + FormatUtils.formatSeconds(r.getMaximumRuntime())
                     + " (Operation " + options.getOperationMix().getOperation(maxOperationId).getName() + ")");
             reportProgress(options);
         }
@@ -193,20 +193,21 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
                 OperationMixRun r = options.getOperationMix().run(this, options);
                 reportProgress(options, r);
                 reportProgress(options);
-                reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatSeconds(r.getTotalResponseTime()));
-                reportProgress(options, "Total Runtime: " + BenchmarkerUtils.formatSeconds(r.getTotalRuntime()));
+                reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(r.getTotalResponseTime()));
+                reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(r.getTotalRuntime()));
                 int minOperationId = r.getMinimumRuntimeOperationID();
                 int maxOperationId = r.getMaximumRuntimeOperationID();
-                reportProgress(options, "Minimum Operation Runtime: " + BenchmarkerUtils.formatSeconds(r.getMinimumRuntime())
+                reportProgress(options, "Minimum Operation Runtime: " + FormatUtils.formatSeconds(r.getMinimumRuntime())
                         + " (Query " + options.getOperationMix().getOperation(minOperationId).getName() + ")");
-                reportProgress(options, "Maximum Operation Runtime: " + BenchmarkerUtils.formatSeconds(r.getMaximumRuntime())
+                reportProgress(options, "Maximum Operation Runtime: " + FormatUtils.formatSeconds(r.getMaximumRuntime())
                         + " (Query " + options.getOperationMix().getOperation(maxOperationId).getName() + ")");
                 reportProgress(options);
             }
         } else {
             // Multi Threaded Benchmark
             options.getOperationMix().setRunAsThread(true);
-            ParallelClientManagerTask<BenchmarkOptions> task = new ParallelClientManagerTask<BenchmarkOptions>(this, options);
+            ParallelClientManagerTask<BenchmarkOptions> task = new ParallelClientManagerTask<BenchmarkOptions>(
+                    new BenchmarkParallelClientManager<BenchmarkOptions>(this, options));
             options.getExecutor().submit(task);
             try {
                 task.get();
@@ -243,22 +244,22 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
             reportProgress(options, "Operation ID " + i + " of type " + op.getType() + " (" + op.getName() + ")");
             reportProgress(options, "Total Errors: " + op.getTotalErrors());
             reportProgress(options, "Average Results: " + op.getAverageResults());
-            reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatSeconds(op.getTotalResponseTime()));
+            reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(op.getTotalResponseTime()));
             reportProgress(options,
-                    "Average Response Time (Arithmetic): " + BenchmarkerUtils.formatSeconds(op.getAverageResponseTime()));
-            reportProgress(options, "Total Runtime: " + BenchmarkerUtils.formatSeconds(op.getTotalRuntime()));
+                    "Average Response Time (Arithmetic): " + FormatUtils.formatSeconds(op.getAverageResponseTime()));
+            reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(op.getTotalRuntime()));
             if (options.getParallelThreads() > 1)
-                reportProgress(options, "Actual Runtime: " + BenchmarkerUtils.formatSeconds(op.getActualRuntime()));
-            reportProgress(options, "Average Runtime (Arithmetic): " + BenchmarkerUtils.formatSeconds(op.getAverageRuntime()));
+                reportProgress(options, "Actual Runtime: " + FormatUtils.formatSeconds(op.getActualRuntime()));
+            reportProgress(options, "Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(op.getAverageRuntime()));
             if (options.getParallelThreads() > 1)
                 reportProgress(options,
-                        "Actual Average Runtime (Arithmetic): " + BenchmarkerUtils.formatSeconds(op.getActualAverageRuntime()));
+                        "Actual Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(op.getActualAverageRuntime()));
             reportProgress(options,
-                    "Average Runtime (Geometric): " + BenchmarkerUtils.formatSeconds(op.getGeometricAverageRuntime()));
-            reportProgress(options, "Minimum Runtime: " + BenchmarkerUtils.formatSeconds(op.getMinimumRuntime()));
-            reportProgress(options, "Maximum Runtime: " + BenchmarkerUtils.formatSeconds(op.getMaximumRuntime()));
-            reportProgress(options, "Runtime Variance: " + BenchmarkerUtils.formatSeconds(op.getVariance()));
-            reportProgress(options, "Runtime Standard Deviation: " + BenchmarkerUtils.formatSeconds(op.getStandardDeviation()));
+                    "Average Runtime (Geometric): " + FormatUtils.formatSeconds(op.getGeometricAverageRuntime()));
+            reportProgress(options, "Minimum Runtime: " + FormatUtils.formatSeconds(op.getMinimumRuntime()));
+            reportProgress(options, "Maximum Runtime: " + FormatUtils.formatSeconds(op.getMaximumRuntime()));
+            reportProgress(options, "Runtime Variance: " + FormatUtils.formatSeconds(op.getVariance()));
+            reportProgress(options, "Runtime Standard Deviation: " + FormatUtils.formatSeconds(op.getStandardDeviation()));
             reportProgress(options, "Operations per Second: " + op.getOperationsPerSecond());
             if (options.getParallelThreads() > 1)
                 reportProgress(options, "Actual Operations per Second: " + op.getActualOperationsPerSecond());
@@ -277,22 +278,25 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options);
         reportProgress(options,
                 "Ran Operation Mix containing " + operationMix.size() + " operations a total of " + options.getRuns() + " times");
-        reportProgress(options, "Total Response Time: " + BenchmarkerUtils.formatSeconds(operationMix.getTotalResponseTime()));
+        reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(operationMix.getTotalResponseTime()));
         reportProgress(options,
-                "Average Response Time (Arithmetic): " + BenchmarkerUtils.formatSeconds(operationMix.getAverageResponseTime()));
-        reportProgress(options, "Total Runtime: " + BenchmarkerUtils.formatSeconds(operationMix.getTotalRuntime()));
+                "Average Response Time (Arithmetic): " + FormatUtils.formatSeconds(operationMix.getAverageResponseTime()));
+        reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(operationMix.getTotalRuntime()));
         if (options.getParallelThreads() > 1)
-            reportProgress(options, "Actual Runtime: " + BenchmarkerUtils.formatSeconds(operationMix.getActualRuntime()));
-        reportProgress(options, "Average Runtime (Arithmetic): " + BenchmarkerUtils.formatSeconds(operationMix.getAverageRuntime()));
+            reportProgress(options, "Actual Runtime: " + FormatUtils.formatSeconds(operationMix.getActualRuntime()));
+        reportProgress(options,
+                "Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(operationMix.getAverageRuntime()));
         if (options.getParallelThreads() > 1)
-            reportProgress(options,
-                    "Actual Average Runtime (Arithmetic): " + BenchmarkerUtils.formatSeconds(operationMix.getActualAverageRuntime()));
+            reportProgress(
+                    options,
+                    "Actual Average Runtime (Arithmetic): "
+                            + FormatUtils.formatSeconds(operationMix.getActualAverageRuntime()));
         reportProgress(options, "Average Runtime (Geometric): " + operationMix.getGeometricAverageRuntime() + "s");
-        reportProgress(options, "Minimum Mix Runtime: " + BenchmarkerUtils.formatSeconds(operationMix.getMinimumRuntime()));
-        reportProgress(options, "Maximum Mix Runtime: " + BenchmarkerUtils.formatSeconds(operationMix.getMaximumRuntime()));
-        reportProgress(options, "Mix Runtime Variance: " + BenchmarkerUtils.formatSeconds(operationMix.getVariance()));
+        reportProgress(options, "Minimum Mix Runtime: " + FormatUtils.formatSeconds(operationMix.getMinimumRuntime()));
+        reportProgress(options, "Maximum Mix Runtime: " + FormatUtils.formatSeconds(operationMix.getMaximumRuntime()));
+        reportProgress(options, "Mix Runtime Variance: " + FormatUtils.formatSeconds(operationMix.getVariance()));
         reportProgress(options,
-                "Mix Runtime Standard Deviation: " + BenchmarkerUtils.formatSeconds(operationMix.getStandardDeviation()));
+                "Mix Runtime Standard Deviation: " + FormatUtils.formatSeconds(operationMix.getStandardDeviation()));
         reportProgress(options, "Operation Mixes per Hour: " + operationMix.getOperationMixesPerHour());
         if (options.getParallelThreads() > 1)
             reportProgress(options, "Actual Operation Mixes per Hour: " + operationMix.getActualOperationMixesPerHour());

@@ -41,13 +41,13 @@ import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.apache.log4j.Logger;
 
-import net.sf.sparql.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.parallel.ParallelTimer;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationMixRunImpl;
 import net.sf.sparql.benchmarking.stats.OperationRun;
+import net.sf.sparql.benchmarking.util.ConvertUtils;
 
 /**
  * A basic implementation of an operation mix
@@ -152,10 +152,10 @@ public class OperationMixImpl implements OperationMix {
             timer.stop();
             if (r.wasSuccessful()) {
                 runner.reportProgress(options,
-                        prefix + "got " + r.getResultCount() + " result(s) in " + BenchmarkerUtils.toSeconds(r.getRuntime())
+                        prefix + "got " + r.getResultCount() + " result(s) in " + ConvertUtils.toSeconds(r.getRuntime())
                                 + "s");
             } else {
-                runner.reportProgress(options, prefix + "got error after " + BenchmarkerUtils.toSeconds(r.getRuntime()) + "s: "
+                runner.reportProgress(options, prefix + "got error after " + ConvertUtils.toSeconds(r.getRuntime()) + "s: "
                         + r.getErrorMessage());
             }
             runner.reportProgress(options, this.operations.get(id), r);
@@ -168,7 +168,7 @@ public class OperationMixImpl implements OperationMix {
                     runner.reportProgress(
                             options,
                             prefix + "Sleeping for "
-                                    + BenchmarkerUtils.toSeconds((long) (delay * BenchmarkerUtils.NANOSECONDS_PER_MILLISECONDS))
+                                    + ConvertUtils.toSeconds((long) (delay * ConvertUtils.NANOSECONDS_PER_MILLISECONDS))
                                     + "s before next operation");
                     Thread.sleep(delay);
                 } catch (InterruptedException e) {
@@ -330,18 +330,18 @@ public class OperationMixImpl implements OperationMix {
 
     @Override
     public double getOperationMixesPerHour() {
-        double avgRuntime = BenchmarkerUtils.toSeconds(this.getAverageRuntime());
+        double avgRuntime = ConvertUtils.toSeconds(this.getAverageRuntime());
         if (avgRuntime == 0)
             return 0;
-        return BenchmarkerUtils.SECONDS_PER_HOUR / avgRuntime;
+        return ConvertUtils.SECONDS_PER_HOUR / avgRuntime;
     }
 
     @Override
     public double getActualOperationMixesPerHour() {
-        double avgRuntime = BenchmarkerUtils.toSeconds(this.getActualAverageRuntime());
+        double avgRuntime = ConvertUtils.toSeconds(this.getActualAverageRuntime());
         if (avgRuntime == 0)
             return 0;
-        return BenchmarkerUtils.SECONDS_PER_HOUR / avgRuntime;
+        return ConvertUtils.SECONDS_PER_HOUR / avgRuntime;
     }
 
 }

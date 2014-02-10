@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.monitoring;
 
@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.sf.sparql.benchmarking.BenchmarkerUtils;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
@@ -46,6 +45,9 @@ import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
+import net.sf.sparql.benchmarking.util.ConvertUtils;
+import net.sf.sparql.benchmarking.util.FileUtils;
+import net.sf.sparql.benchmarking.util.FormatUtils;
 
 import org.apache.log4j.Logger;
 
@@ -100,7 +102,7 @@ public class CsvProgressListener implements ProgressListener {
      */
     @Override
     public <T extends Options> void handleStarted(Runner<T> runner, T options) {
-        if (!BenchmarkerUtils.checkFile(this.f, this.allowOverwrite)) {
+        if (!FileUtils.checkFile(this.f, this.allowOverwrite)) {
             throw new RuntimeException("XML Output File is not a file, already exists or is not writable");
         }
 
@@ -124,8 +126,10 @@ public class CsvProgressListener implements ProgressListener {
             }
         }
         this.buffer.append("Sanity Checking Level," + bOps.getSanityCheckLevel() + "\n");
-        this.buffer.append("Warmups," + options.getWarmups() + "\n");
-        this.buffer.append("Runs," + options.getRuns() + "\n");
+        if (bOps != null) {
+            this.buffer.append("Warmups," + bOps.getWarmups() + "\n");
+            this.buffer.append("Runs," + bOps.getRuns() + "\n");
+        }
         this.buffer.append("Random Operation Order," + options.getRandomizeOrder() + "\n");
         this.buffer.append("Outliers," + bOps.getOutliers() + "\n");
         this.buffer.append("Timeout," + options.getTimeout() + "s\n");
@@ -160,7 +164,7 @@ public class CsvProgressListener implements ProgressListener {
             throw new RuntimeException(
                     "handleFinished() was called on CsvProgressListener but it appears handleStarted() was not called or encountered an error, another listener may be the cause of this issue");
 
-        if (!BenchmarkerUtils.checkFile(this.f, this.allowOverwrite)) {
+        if (!FileUtils.checkFile(this.f, this.allowOverwrite)) {
             throw new RuntimeException("XML Output File is not a file, already exists or is not writable");
         }
 
@@ -181,21 +185,21 @@ public class CsvProgressListener implements ProgressListener {
         while (ops.hasNext()) {
             Operation op = ops.next();
             // Operation Summary
-            this.buffer.append(BenchmarkerUtils.toCsv(op.getName()) + ",");
-            this.buffer.append(BenchmarkerUtils.toCsv(op.getType()) + ",");
-            this.buffer.append(BenchmarkerUtils.toSeconds(op.getTotalResponseTime()) + ",");
-            this.buffer.append(BenchmarkerUtils.toSeconds(op.getAverageResponseTime()) + ",");
-            this.buffer.append(BenchmarkerUtils.toSeconds(op.getTotalRuntime()) + ",");
+            this.buffer.append(FormatUtils.toCsv(op.getName()) + ",");
+            this.buffer.append(FormatUtils.toCsv(op.getType()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getTotalResponseTime()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getAverageResponseTime()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getTotalRuntime()) + ",");
             if (wasMultithreaded)
-                this.buffer.append(BenchmarkerUtils.toSeconds(op.getActualRuntime()) + ",");
-            this.buffer.append(BenchmarkerUtils.toSeconds(op.getAverageRuntime()) + ",");
+                this.buffer.append(ConvertUtils.toSeconds(op.getActualRuntime()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getAverageRuntime()) + ",");
             if (wasMultithreaded)
-                this.buffer.append(BenchmarkerUtils.toSeconds(op.getActualAverageRuntime()) + ",");
+                this.buffer.append(ConvertUtils.toSeconds(op.getActualAverageRuntime()) + ",");
             this.buffer.append(op.getGeometricAverageRuntime() + ",");
-            this.buffer.append(BenchmarkerUtils.toSeconds(op.getMinimumRuntime()) + ",");
-            this.buffer.append(BenchmarkerUtils.toSeconds(op.getMaximumRuntime()) + ",");
-            this.buffer.append(BenchmarkerUtils.toSeconds(op.getVariance()) + ",");
-            this.buffer.append(BenchmarkerUtils.toSeconds(op.getStandardDeviation()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getMinimumRuntime()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getMaximumRuntime()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getVariance()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getStandardDeviation()) + ",");
             this.buffer.append(op.getOperationsPerSecond() + ",");
             if (wasMultithreaded)
                 this.buffer.append(op.getActualOperationsPerSecond() + ",");
@@ -214,19 +218,19 @@ public class CsvProgressListener implements ProgressListener {
             } else {
                 results.append("Total Response Time,Average Response Time (Arithmetic),Total Runtime,Average Runtime (Arithmetic),Average Runtime (Geometric),Minimum Mix Runtime,Maximum Mix Runtime,Variance,Standard Deviation,Operation Mixes per Hour\n");
             }
-            results.append(BenchmarkerUtils.toSeconds(operationMix.getTotalResponseTime()) + ",");
-            results.append(BenchmarkerUtils.toSeconds(operationMix.getAverageResponseTime()) + ",");
-            results.append(BenchmarkerUtils.toSeconds(operationMix.getTotalRuntime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getTotalResponseTime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getAverageResponseTime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getTotalRuntime()) + ",");
             if (wasMultithreaded)
-                results.append(BenchmarkerUtils.toSeconds(operationMix.getActualRuntime()) + ",");
-            results.append(BenchmarkerUtils.toSeconds(operationMix.getAverageRuntime()) + ",");
+                results.append(ConvertUtils.toSeconds(operationMix.getActualRuntime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getAverageRuntime()) + ",");
             if (wasMultithreaded)
-                results.append(BenchmarkerUtils.toSeconds(operationMix.getActualAverageRuntime()) + ",");
-            results.append(BenchmarkerUtils.toSeconds(operationMix.getGeometricAverageRuntime()) + ",");
-            results.append(BenchmarkerUtils.toSeconds(operationMix.getMinimumRuntime()) + ",");
-            results.append(BenchmarkerUtils.toSeconds(operationMix.getMaximumRuntime()) + ",");
-            results.append(BenchmarkerUtils.toSeconds(operationMix.getVariance()) + ",");
-            results.append(BenchmarkerUtils.toSeconds(operationMix.getStandardDeviation()) + ",");
+                results.append(ConvertUtils.toSeconds(operationMix.getActualAverageRuntime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getGeometricAverageRuntime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getMinimumRuntime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getMaximumRuntime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getVariance()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getStandardDeviation()) + ",");
             results.append(Double.toString(operationMix.getOperationMixesPerHour()));
             if (wasMultithreaded)
                 results.append("," + operationMix.getActualOperationMixesPerHour());
@@ -274,10 +278,10 @@ public class CsvProgressListener implements ProgressListener {
     @Override
     public synchronized <T extends Options> void handleProgress(Runner<T> runner, T options, OperationMixRun run) {
         this.buffer.append(this.run + ",");
-        this.buffer.append(BenchmarkerUtils.toSeconds(run.getTotalResponseTime()) + ",");
-        this.buffer.append(BenchmarkerUtils.toSeconds(run.getTotalRuntime()) + ",");
-        this.buffer.append(BenchmarkerUtils.toSeconds(run.getMinimumRuntime()) + ",");
-        this.buffer.append(BenchmarkerUtils.toSeconds(run.getMaximumRuntime()) + "\n");
+        this.buffer.append(ConvertUtils.toSeconds(run.getTotalResponseTime()) + ",");
+        this.buffer.append(ConvertUtils.toSeconds(run.getTotalRuntime()) + ",");
+        this.buffer.append(ConvertUtils.toSeconds(run.getMinimumRuntime()) + ",");
+        this.buffer.append(ConvertUtils.toSeconds(run.getMaximumRuntime()) + "\n");
         this.run++;
     }
 

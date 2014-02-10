@@ -43,7 +43,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.jena.atlas.web.auth.HttpAuthenticator;
 
-import net.sf.sparql.benchmarking.HaltBehaviour;
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 
@@ -55,10 +54,6 @@ import net.sf.sparql.benchmarking.operations.OperationMix;
  */
 public class OptionsImpl implements Options {
 
-    /**
-     * Default Sanity Checks
-     */
-    public static final int DEFAULT_SANITY_CHECKS = 2;
     private boolean haltOnTimeout = false;
     private boolean haltOnError = false;
     private boolean haltAny = false;
@@ -70,16 +65,13 @@ public class OptionsImpl implements Options {
     private String updateEndpoint;
     private String graphStoreEndpoint;
     private Map<String, String> customEndpoints = new HashMap<String, String>();
-    private int runs = DEFAULT_RUNS;
-    private int warmups = DEFAULT_WARMUPS;
     private int timeout = DEFAULT_TIMEOUT;
     private String selectResultsFormat = DEFAULT_FORMAT_SELECT;
     private String askResultsFormat = DEFAULT_FORMAT_SELECT;
     private String graphResultsFormat = DEFAULT_FORMAT_GRAPH;
     private int delay = DEFAULT_MAX_DELAY;
     private int parallelThreads = DEFAULT_PARALLEL_THREADS;
-    private boolean allowGZip = false;
-    private boolean allowDeflate = false;
+    private boolean allowCompression = false;
     private HttpAuthenticator authenticator;
     private AtomicLong globalOrder = new AtomicLong(0);
     private boolean randomize = true;
@@ -207,30 +199,6 @@ public class OptionsImpl implements Options {
     }
 
     @Override
-    public void setRuns(int runs) {
-        if (runs < 0)
-            runs = 1;
-        this.runs = runs;
-    }
-
-    @Override
-    public int getRuns() {
-        return runs;
-    }
-
-    @Override
-    public void setWarmups(int runs) {
-        if (runs <= 0)
-            runs = 0;
-        warmups = runs;
-    }
-
-    @Override
-    public int getWarmups() {
-        return warmups;
-    }
-
-    @Override
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
@@ -271,23 +239,13 @@ public class OptionsImpl implements Options {
     }
 
     @Override
-    public void setAllowGZipEncoding(boolean allowed) {
-        allowGZip = allowed;
+    public void setAllowCompression(boolean allowed) {
+        allowCompression = allowed;
     }
 
     @Override
-    public boolean getAllowGZipEncoding() {
-        return allowGZip;
-    }
-
-    @Override
-    public void setAllowDeflateEncoding(boolean allowed) {
-        allowDeflate = allowed;
-    }
-
-    @Override
-    public boolean getAllowDeflateEncoding() {
-        return allowDeflate;
+    public boolean getAllowCompression() {
+        return allowCompression;
     }
 
     @Override

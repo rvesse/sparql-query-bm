@@ -30,54 +30,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 
-package net.sf.sparql.benchmarking.parallel;
-
-import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.runners.Runner;
+package net.sf.sparql.benchmarking.options;
 
 /**
- * A Callable uses to manage the running of parallel clients for multi-threaded
- * testing
- * 
+ * Possible behaviours when a halt condition is encountered
  * @author rvesse
- * @param <T>
- *            Options type
- * 
+ *
  */
-public class FixedRunsParallelClientManager<T extends Options> extends AbstractParallelClientManager<T> {
-
-    int startedRuns = 0;
-    int completedRuns = 0;
-    
-    /**
-     * Creates a new Parallel Client Manager
-     * 
-     * @param runner
-     *            Benchmark runner
-     * @param options
-     *            Options
-     */
-    public FixedRunsParallelClientManager(Runner<T> runner, T options) {
-        super(runner, options);
-    }
-
-    @Override
-    public synchronized boolean shouldRun() {
-        if (this.shouldHalt())
-            return false;
-        if (startedRuns < this.getOptions().getRuns()) {
-            startedRuns++;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public synchronized int completeRun() {
-        completedRuns++;
-        int x = completedRuns;
-        return x;
-    }
-
+public enum HaltBehaviour {
+	/**
+	 * Indicates that the program should exit when a halt condition is reached
+	 */
+	EXIT,
+	/**
+	 * Indicates that the program should throw an exception when a halt condition is reached
+	 */
+	THROW_EXCEPTION
 }
