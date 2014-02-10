@@ -42,6 +42,7 @@ import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.util.FormatUtils;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 
 /**
  * Parallel Client for running multi-threaded benchmarks
@@ -102,6 +103,7 @@ public class ParallelClient<T extends Options> implements Callable<Object> {
         while (manager.shouldRun()) {
             try {
                 runner.reportProgress(options, "Client " + id + " starting new operation mix run");
+                runner.reportProgress(options, "Current Time: " + FormatUtils.formatInstant(Instant.now()));
 
                 // Run a query mix
                 OperationMixTask<T> task = new OperationMixTask<T>(runner, options);
@@ -117,12 +119,10 @@ public class ParallelClient<T extends Options> implements Callable<Object> {
                 runner.reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(r.getTotalRuntime()));
                 int minOperationId = r.getMinimumRuntimeOperationID();
                 int maxOperationId = r.getMaximumRuntimeOperationID();
-                runner.reportProgress(options,
-                        "Minimum Operation Runtime: " + FormatUtils.formatSeconds(r.getMinimumRuntime()) + " (Operation "
-                                + operationMix.getOperation(minOperationId).getName() + ")");
-                runner.reportProgress(options,
-                        "Maximum Operation Runtime: " + FormatUtils.formatSeconds(r.getMaximumRuntime()) + " (Operation "
-                                + operationMix.getOperation(maxOperationId).getName() + ")");
+                runner.reportProgress(options, "Minimum Operation Runtime: " + FormatUtils.formatSeconds(r.getMinimumRuntime())
+                        + " (Operation " + operationMix.getOperation(minOperationId).getName() + ")");
+                runner.reportProgress(options, "Maximum Operation Runtime: " + FormatUtils.formatSeconds(r.getMaximumRuntime())
+                        + " (Operation " + operationMix.getOperation(maxOperationId).getName() + ")");
                 runner.reportProgress(options);
             } catch (Exception e) {
                 // Inform manager it needs to halt other clients

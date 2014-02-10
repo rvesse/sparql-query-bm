@@ -166,7 +166,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         reportProgress(options, "Running soak tests...");
         Instant startInstant = Instant.now();
         Instant endInstant = startInstant;
-        reportProgress(options, "Start Time = " + FormatUtils.formatInstant(startInstant));
+        reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
         reportProgress(options);
 
         long startTime = System.nanoTime();
@@ -180,6 +180,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
                 } else {
                     reportProgress(options, "Operation Mix Run " + (i + 1));
                 }
+                reportProgress(options, "Current Time: " + FormatUtils.formatInstant(Instant.now()));
                 if (options.getMaxRuntime() > 0) {
                     reportProgress(
                             options,
