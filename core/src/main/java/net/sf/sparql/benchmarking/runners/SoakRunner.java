@@ -85,7 +85,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
             System.err.println("At least one endpoint must be set");
             halt(options, "No endpoint was set");
         }
-        if (options.getMaxRuns() <= 0 || options.getMaxRuntime() <= 0) {
+        if (options.getMaxRuns() <= 0 && options.getMaxRuntime() <= 0) {
             System.err
                     .println("One/both of the maximum runs (use setRuns() method) or the maximum runtime (use setSoakRuntime() method) must be set");
             halt(options, "No maximum runs/runtime set");

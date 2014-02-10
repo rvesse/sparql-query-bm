@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import org.apache.http.client.HttpClient;
 import org.apache.jena.atlas.web.auth.HttpAuthenticator;
 import org.apache.jena.riot.WebContent;
 
@@ -212,7 +213,6 @@ public interface Options {
      * Gets the HTTP authenticator in use
      * 
      * @return HTTP authenticator
-     * @since 1.1.0
      */
     public abstract HttpAuthenticator getAuthenticator();
 
@@ -221,7 +221,6 @@ public interface Options {
      * 
      * @param authenticator
      *            HTTP authenticator
-     * @since 1.1.0
      */
     public abstract void setAuthenticator(HttpAuthenticator authenticator);
 
