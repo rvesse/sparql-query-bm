@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,6 +164,9 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
 
         // Actual Runs
         reportProgress(options, "Running soak tests...");
+        Instant startInstant = Instant.now();
+        Instant endInstant = startInstant;
+        reportProgress(options, "Start Time = " + FormatUtils.formatInstant(startInstant));
         reportProgress(options);
 
         long startTime = System.nanoTime();
@@ -210,7 +214,6 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
             options.getExecutor().submit(task);
             try {
                 task.get();
-                endTime = System.nanoTime();
             } catch (InterruptedException e) {
                 logger.error("Multi Threaded soak testing was interrupted - " + e.getMessage());
                 if (options.getHaltAny())
@@ -226,6 +229,11 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
                     halt(options, e);
             }
         }
+        
+        // Get end time
+        endTime = System.nanoTime();
+        endInstant = Instant.now();
+        
         reportProgress(options, "Finished soak testing");
         reportProgress(options);
 
@@ -274,9 +282,11 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         reportProgress(options, "Number of Runs: " + i);
         reportProgress(options, "Total Operations Run: " + (i * options.getOperationMix().size()));
         reportProgress(options, "Total Errors: " + options.getOperationMix().getTotalErrors());
+        reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
+        reportProgress(options, "End Time: " + FormatUtils.formatInstant(endInstant));
         reportProgress(options, "Total Runtime: " + ConvertUtils.toMinutes(endTime - startTime) + " minutes");
 
-        // Finally inform listeners that benchmarking finished OK
+        // Finally inform listeners that running finished OK
         for (ProgressListener l : options.getListeners()) {
             try {
                 l.handleFinished(this, options, true);
