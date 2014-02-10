@@ -132,7 +132,7 @@ public class CsvProgressListener implements ProgressListener {
         }
         this.buffer.append("Random Operation Order," + options.getRandomizeOrder() + "\n");
         this.buffer.append("Outliers," + bOps.getOutliers() + "\n");
-        this.buffer.append("Timeout," + options.getTimeout() + "s\n");
+        this.buffer.append("Timeout," + (options.getTimeout() > 0 ? Integer.toString(options.getTimeout()) : "disabled") + "s\n");
         this.buffer.append("Max Delay between Operations," + options.getMaxDelay() + "s\n");
         this.buffer.append("Result Limit," + (bOps.getLimit() <= 0 ? "Query Specified" : bOps.getLimit()) + "\n");
         this.buffer.append("ASK Results Format," + options.getResultsAskFormat() + "\n");

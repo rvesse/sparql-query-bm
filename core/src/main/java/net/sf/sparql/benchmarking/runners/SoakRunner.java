@@ -115,7 +115,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         if (options.getMaxRuntime() > 0)
             reportProgress(options, "Maximum Runtime = " + options.getMaxRuntime() + " minutes");
         reportProgress(options, "Random Operation Order = " + (options.getRandomizeOrder() ? "On" : "Off"));
-        reportProgress(options, "Timeout = " + options.getTimeout() + " seconds");
+        reportProgress(options, "Timeout = " + (options.getTimeout() > 0 ? options.getTimeout() + " seconds" : "disabled"));
         reportProgress(options, "Max Delay between Operations = " + options.getMaxDelay() + " milliseconds");
         // reportProgress(options, "Result Limit = " + (options.getLimit() <= 0
         // ? "Query Specified" : options.getLimit()));
@@ -253,8 +253,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
             if (options.getParallelThreads() > 1)
                 reportProgress(options,
                         "Actual Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(op.getActualAverageRuntime()));
-            reportProgress(options,
-                    "Average Runtime (Geometric): " + FormatUtils.formatSeconds(op.getGeometricAverageRuntime()));
+            reportProgress(options, "Average Runtime (Geometric): " + FormatUtils.formatSeconds(op.getGeometricAverageRuntime()));
             reportProgress(options, "Minimum Runtime: " + FormatUtils.formatSeconds(op.getMinimumRuntime()));
             reportProgress(options, "Maximum Runtime: " + FormatUtils.formatSeconds(op.getMaximumRuntime()));
             reportProgress(options, "Runtime Variance: " + FormatUtils.formatSeconds(op.getVariance()));

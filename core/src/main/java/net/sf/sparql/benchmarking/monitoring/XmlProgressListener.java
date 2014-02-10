@@ -190,7 +190,7 @@ public class XmlProgressListener implements ProgressListener {
             if (bOps != null) {
                 printProperty(ATTR_OUTLIERS, bOps.getOutliers());
             }
-            printProperty(ATTR_TIMEOUT, options.getTimeout());
+            printProperty(ATTR_TIMEOUT, options.getTimeout() > 0 ? Integer.toString(options.getTimeout()) : "disabled");
             printProperty(ATTR_MAX_DELAY, options.getMaxDelay());
             printProperty(ATTR_ASK_FORMAT, options.getResultsAskFormat());
             printProperty(ATTR_GRAPH_FORMAT, options.getResultsGraphFormat());

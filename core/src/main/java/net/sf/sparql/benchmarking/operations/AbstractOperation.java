@@ -110,13 +110,25 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
     public final <T extends Options> OperationRun run(Runner<T> runner, T options) {
         timer.start();
         long order = options.getGlobalOrder();
-        FutureTask<TRun> task = new FutureTask<TRun>(this.createCallable(runner, options));
+
+        // Prepare and submit the task
+        OperationCallable<T, TRun> callable = this.createCallable(runner, options);
+        FutureTask<TRun> task = new FutureTask<TRun>(callable);
         options.getExecutor().submit(task);
+
         OperationRun r;
         long startTime = System.nanoTime();
         try {
-            r = task.get(options.getTimeout(), TimeUnit.SECONDS);
+            // Wait for the operation to complete
+            if (options.getTimeout() > 0) {
+                // Enforce a timeout on the operation
+                r = task.get(options.getTimeout(), TimeUnit.SECONDS);
+            } else {
+                // No timeout on the operations
+                r = task.get();
+            }
         } catch (TimeoutException tEx) {
+            // Handle timeout error
             logger.error("Operation Callable execeeded Timeout - " + tEx.getMessage());
             if (options.getHaltOnTimeout() || options.getHaltAny())
                 runner.halt(options, tEx);
@@ -124,15 +136,18 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
                     - startTime);
 
             // If the query times out but we aren't halting cancel further
-            // evaluation of the query
+            // evaluation of the operation
+            callable.cancel();
             task.cancel(true);
         } catch (InterruptedException e) {
+            // Handle interrupted error
             logger.error("Operation Callable was interrupted - " + e.getMessage());
             if (options.getHaltAny())
                 runner.halt(options, e);
             r = this.createErrorInformation("Operation Callable was interrupted - " + e.getMessage(), System.nanoTime()
                     - startTime);
         } catch (ExecutionException e) {
+            // Handle unexpected execution error
             logger.error("Operation Callable encountered an error - " + e.getMessage());
 
             StringWriter sw = new StringWriter();
@@ -145,6 +160,8 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
                     - startTime);
         }
         timer.stop();
+
+        // Return the results
         this.addRun(r);
         r.setRunOrder(order);
         return r;

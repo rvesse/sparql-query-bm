@@ -112,7 +112,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options, "Runs = " + options.getRuns());
         reportProgress(options, "Random Operation Order = " + (options.getRandomizeOrder() ? "On" : "Off"));
         reportProgress(options, "Outliers = " + options.getOutliers());
-        reportProgress(options, "Timeout = " + options.getTimeout() + " seconds");
+        reportProgress(options, "Timeout = " + (options.getTimeout() > 0 ? options.getTimeout() + " seconds" : "disabled"));
         reportProgress(options, "Max Delay between Operations = " + options.getMaxDelay() + " milliseconds");
         reportProgress(options, "Result Limit = " + (options.getLimit() <= 0 ? "Query Specified" : options.getLimit()));
         reportProgress(options,

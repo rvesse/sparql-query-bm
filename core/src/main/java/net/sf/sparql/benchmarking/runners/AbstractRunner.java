@@ -188,18 +188,19 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             FutureTask<QueryRun> task = new FutureTask<QueryRun>(new QueryCallable<T>(q, this, options));
             reportPartialProgress(options, "Sanity Check " + (i + 1) + " of " + checks.length + "...");
             try {
+                // Run the operation using a 30 second timeout
                 options.getExecutor().submit(task);
-                task.get(options.getTimeout(), TimeUnit.SECONDS);
+                task.get(30, TimeUnit.SECONDS);
                 reportProgress(options, "OK");
                 passed++;
             } catch (TimeoutException tEx) {
-                logger.error("Query Runner execeeded Timeout - " + tEx.getMessage());
+                logger.error("Sanity Check execeeded 30 Second Timeout - " + tEx.getMessage());
                 reportProgress(options, "Failed");
             } catch (InterruptedException e) {
-                logger.error("Query Runner was interrupted - " + e.getMessage());
+                logger.error("Sanity Check was interrupted - " + e.getMessage());
                 reportProgress(options, "Failed");
             } catch (ExecutionException e) {
-                logger.error("Query Runner encountered an error - " + e.getMessage());
+                logger.error("Sanity Check encountered an error - " + e.getMessage());
                 reportProgress(options, "Failed");
             }
         }

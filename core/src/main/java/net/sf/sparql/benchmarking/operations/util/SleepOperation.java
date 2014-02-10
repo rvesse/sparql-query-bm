@@ -76,7 +76,7 @@ public class SleepOperation extends AbstractOperation<OperationRun> {
 
     @Override
     public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (this.sleep > options.getTimeout()) {
+        if (options.getTimeout() > 0 && this.sleep > options.getTimeout()) {
             runner.reportProgress(options, "Sleep operation cannot sleep for longer than operation timeout");
             return false;
         }

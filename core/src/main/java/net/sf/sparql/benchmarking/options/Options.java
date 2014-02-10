@@ -68,14 +68,15 @@ public interface Options {
     public static final String DEFAULT_FORMAT_ASK = WebContent.contentTypeResultsXML;
     /**
      * Default Result Format for {@code CONSTRUCT} and {@code DESCRIBE} queries
+     * and operations that retrieve RDF graphs
      */
     public static final String DEFAULT_FORMAT_GRAPH = WebContent.contentTypeRDFXML;
     /**
-     * Default Max Delay between Queries in milliseconds
+     * Default Max Delay between operations in milliseconds
      */
     public static final int DEFAULT_MAX_DELAY = 1000;
     /**
-     * Default Parallel Threads for query run evaluation
+     * Default Parallel Threads to use
      */
     public static final int DEFAULT_PARALLEL_THREADS = 1;
     /**
@@ -242,29 +243,32 @@ public interface Options {
     public abstract void setAllowCompression(boolean allowed);
 
     /**
-     * Gets the Results format used for CONSTRUCT/DESCRIBE queries
+     * Gets the Results format used for operations that make CONSTRUCT/DESCRIBE
+     * queries or that retrieve RDF graphs
      * 
-     * @return MIME Type for CONSTRUCT/DESCRUBE results
+     * @return MIME Type for CONSTRUCT/DESCRUBE results and RDF graphs
      */
     public abstract String getResultsGraphFormat();
 
     /**
-     * Sets the Results format used for CONSTRUCT/DESCRIBE queries
+     * Sets the Results format used for operations that CONSTRUCT/DESCRIBE
+     * queries or that retrieve RDF graphs
      * 
      * @param contentType
-     *            MIME Type for CONSTRUCT/DESCRIBE results
+     *            MIME Type for CONSTRUCT/DESCRIBE results and RDF graphs
      */
     public abstract void setResultsGraphFormat(String contentType);
 
     /**
-     * Gets the Results format used for SELECT queries
+     * Gets the Results format used for operations that make SELECT queries
      * 
      * @return MIME Type for SELECT results
      */
     public abstract String getResultsSelectFormat();
 
     /**
-     * Sets the Results format to be used for SELECT queries
+     * Sets the Results format to be used for operations that make SELECT
+     * queries
      * 
      * @param contentType
      *            MIME Type for SELECT results
@@ -272,14 +276,14 @@ public interface Options {
     public abstract void setResultsSelectFormat(String contentType);
 
     /**
-     * Gets the Results format used for ASK queries
+     * Gets the Results format used for operations that make ASK queries
      * 
      * @return MIME Type for ASK results
      */
     public abstract String getResultsAskFormat();
 
     /**
-     * Sets the Results format to be used for ASK queries
+     * Sets the Results format to be used for operations that make ASK queries
      * 
      * @param contentType
      *            MIME Type for ASK results
@@ -287,14 +291,16 @@ public interface Options {
     public abstract void setResultsAskFormat(String contentType);
 
     /**
-     * Gets the timeout for queries
+     * Gets the timeout for operations, a zero/negative value indicates no
+     * timeout
      * 
      * @return Timeout in seconds
      */
     public abstract int getTimeout();
 
     /**
-     * Sets the timeout for queries
+     * Sets the timeout for operations, a zero/negative value indicates no
+     * timeout
      * 
      * @param timeout
      *            Timeout in seconds
