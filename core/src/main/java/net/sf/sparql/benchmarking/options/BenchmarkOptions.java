@@ -103,17 +103,22 @@ public class BenchmarkOptions extends OptionsImpl {
      *            Filename for CSV Results, null disables CSV results
      */
     public void setCsvResultsFile(String file) {
-        if (csvResultsFile == null && file != null) {
-            // Add CsvProgressListener if not already present
+        if (file != null) {
+            // Remove existing progress listener if changing the results file
+            if (!file.equals(this.csvResultsFile) && this.csvListener != null) {
+                this.removeListener(this.csvListener);
+                this.csvListener = null;
+            }
+
+            // Add new progress listener for the results file
             this.csvListener = new CsvProgressListener(file, this.getAllowOverwrite());
             this.addListener(this.csvListener);
-        }
-        csvResultsFile = file;
-        if (file == null && this.csvListener != null) {
-            // Remove CsvProgressListener if present
+        } else if (this.csvListener != null) {
+            // Remove existing progress listener
             this.removeListener(this.csvListener);
             this.csvListener = null;
         }
+        this.csvResultsFile = file;
     }
 
     /**
@@ -132,17 +137,22 @@ public class BenchmarkOptions extends OptionsImpl {
      *            Filename for XML Results, null disables XML results
      */
     public void setXmlResultsFile(String xmlFile) {
-        if (xmlResultsFile == null && xmlFile != null) {
-            // Add XmlProgressListener if not already present
+        if (xmlFile != null) {
+            // Remove existing progress listener if changing the results xmlFile
+            if (!xmlFile.equals(this.xmlResultsFile) && this.xmlListener != null) {
+                this.removeListener(this.xmlListener);
+                this.xmlListener = null;
+            }
+
+            // Add new progress listener for the results xmlFile
             this.xmlListener = new XmlProgressListener(xmlFile, this.getAllowOverwrite());
             this.addListener(this.xmlListener);
-        }
-        xmlResultsFile = xmlFile;
-        if (xmlFile == null && this.xmlListener != null) {
-            // Remove XmlProgressListener if present
+        } else if (this.xmlListener != null) {
+            // Remove existing progress listener
             this.removeListener(this.xmlListener);
             this.xmlListener = null;
         }
+        this.xmlResultsFile = xmlFile;
     }
 
     /**
