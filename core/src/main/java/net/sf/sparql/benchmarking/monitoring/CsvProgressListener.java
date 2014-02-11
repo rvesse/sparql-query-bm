@@ -103,7 +103,7 @@ public class CsvProgressListener implements ProgressListener {
     @Override
     public <T extends Options> void handleStarted(Runner<T> runner, T options) {
         if (!FileUtils.checkFile(this.f, this.allowOverwrite)) {
-            throw new RuntimeException("XML Output File is not a file, already exists or is not writable");
+            throw new RuntimeException("CSV Output File is not a file, already exists or is not writable");
         }
 
         this.buffer = new StringBuffer();
@@ -165,7 +165,7 @@ public class CsvProgressListener implements ProgressListener {
                     "handleFinished() was called on CsvProgressListener but it appears handleStarted() was not called or encountered an error, another listener may be the cause of this issue");
 
         if (!FileUtils.checkFile(this.f, this.allowOverwrite)) {
-            throw new RuntimeException("XML Output File is not a file, already exists or is not writable");
+            throw new RuntimeException("CSV Output File is not a file, already exists or is not writable");
         }
 
         boolean wasMultithreaded = options.getParallelThreads() > 1;

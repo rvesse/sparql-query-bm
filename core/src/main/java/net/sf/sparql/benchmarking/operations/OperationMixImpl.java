@@ -50,6 +50,7 @@ import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationMixRunImpl;
 import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.util.ConvertUtils;
+import net.sf.sparql.benchmarking.util.FormatUtils;
 
 /**
  * A basic implementation of an operation mix
@@ -154,7 +155,7 @@ public class OperationMixImpl implements OperationMix {
             timer.stop();
             if (r.wasSuccessful()) {
                 runner.reportProgress(options,
-                        prefix + "got " + r.getResultCount() + " result(s) in " + ConvertUtils.toSeconds(r.getRuntime()) + "s");
+                        prefix + "got " + FormatUtils.formatResultCount(r.getResultCount()) + " result(s) in " + ConvertUtils.toSeconds(r.getRuntime()) + "s");
             } else {
                 runner.reportProgress(options,
                         prefix + "got error after " + ConvertUtils.toSeconds(r.getRuntime()) + "s: " + r.getErrorMessage());

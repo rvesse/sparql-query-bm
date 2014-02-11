@@ -219,7 +219,7 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
     protected long countResults(T options, ResultSet rset) {
         // Result Counting may be skipped depending on user options
         if (options instanceof BenchmarkOptions) {
-            if (!((BenchmarkOptions) options).getNoCount()) {
+            if (((BenchmarkOptions) options).getNoCount()) {
                 return OperationRun.UNKNOWN;
             }
         }

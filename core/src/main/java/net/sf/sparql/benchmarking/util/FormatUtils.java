@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.util;
 
+import net.sf.sparql.benchmarking.stats.OperationRun;
+
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -142,6 +144,24 @@ public class FormatUtils {
             return value.replace("\"", "\"\"");
         } else {
             return value;
+        }
+    }
+
+    /**
+     * Formats the result count taking account of the special values
+     * {@link OperationRun#NOT_YET_RUN} or {@link OperationRun#UNKNOWN}
+     * 
+     * @param resultCount
+     *            Result Count
+     * @return Formatted results count
+     */
+    public static String formatResultCount(long resultCount) {
+        if (resultCount == OperationRun.NOT_YET_RUN) {
+            return "Not Run";
+        } else if (resultCount == OperationRun.UNKNOWN) {
+            return "Unknown";
+        } else {
+            return String.format("%,d", resultCount);
         }
     }
 }

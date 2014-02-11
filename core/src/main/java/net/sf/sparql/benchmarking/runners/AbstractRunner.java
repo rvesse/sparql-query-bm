@@ -180,7 +180,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
      */
     protected boolean checkSanity(T options) {
         reportProgress(options, "Sanity checking the user specified endpoint...");
-        String[] checks = new String[] { "ASK WHERE { }", "SELECT * WHERE { }", "SELECT * WHERE { ?s a ?type } LIMIT 1" };
+        String[] checks = this.getSanityCheckQueries();
 
         int passed = 0;
         for (int i = 0; i < checks.length; i++) {
@@ -205,7 +205,20 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             }
         }
 
-        return (passed >= options.getSanityCheckLevel());
+        // Compare with minimum of checks length and sanity check level because
+        // it is possible that the user has configured a sanity check level
+        // greater than the number of possible checks. In this case then we
+        // require that all checks pass hence the use of min()
+        return (passed >= Math.min(options.getSanityCheckLevel(), checks.length));
+    }
+
+    /**
+     * Gets the queries used for sanity checking
+     * 
+     * @return Sanity checking queries
+     */
+    protected String[] getSanityCheckQueries() {
+        return new String[] { "ASK WHERE { }", "SELECT * WHERE { }", "SELECT * WHERE { ?s a ?type } LIMIT 1" };
     }
 
     protected void checkOperations(T options) {
@@ -214,8 +227,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             Operation op = ops.next();
             if (!op.canRun(this, options)) {
                 System.err.println("A specified operation cannot run with the available options");
-                halt(options, "Operation " + op.getName() + " of type " + op.getType()
-                        + " cannot run with the available options");
+                halt(options, "Operation " + op.getName() + " of type " + op.getType() + " cannot run with the available options");
             }
         }
     }

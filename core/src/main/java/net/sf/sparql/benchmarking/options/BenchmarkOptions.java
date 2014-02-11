@@ -57,21 +57,13 @@ public class BenchmarkOptions extends OptionsImpl {
      */
     public static final int DEFAULT_OUTLIERS = 1;
     /**
-     * Default CSV Results File
-     */
-    public static final String DEFAULT_CSV_RESULTS_FILE = "results.csv";
-    /**
-     * Default XML Results File
-     */
-    public static final String DEFAULT_XML_RESULTS_FILE = "results.xml";
-    /**
      * Default Limit, values <= 0 are considered to mean leave existing LIMIT
      * as-is and don't impose a limit on unlimited queries
      */
     public static final long DEFAULT_LIMIT = 0;
 
-    private String csvResultsFile = DEFAULT_CSV_RESULTS_FILE;
-    private String xmlResultsFile = DEFAULT_XML_RESULTS_FILE;
+    private String csvResultsFile = null;
+    private String xmlResultsFile = null;
     private int outliers = DEFAULT_OUTLIERS;
     private long limit = DEFAULT_LIMIT;
     private boolean noCount = false;

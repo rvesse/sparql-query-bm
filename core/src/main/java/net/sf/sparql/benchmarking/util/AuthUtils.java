@@ -78,7 +78,7 @@ public class AuthUtils {
      *            Endpoints to configure authentication for
      * @return Authenticator or null if insufficient information to authenticate
      */
-    public HttpAuthenticator prepareAuthenticator(String username, String password, boolean preemptive, String formUrl,
+    public static HttpAuthenticator prepareAuthenticator(String username, String password, boolean preemptive, String formUrl,
             String formUserField, String formPwdField, String... endpoints) {
         if (username != null && password != null) {
             if (formUrl != null) {
@@ -124,7 +124,7 @@ public class AuthUtils {
      *            Endpoints to configure authentication for
      * @return Authenticator or null if insufficient information to authenticate
      */
-    public HttpAuthenticator prepareAuthentication(String username, String password, boolean preemptive, String... endpoints) {
+    public static HttpAuthenticator prepareAuthentication(String username, String password, boolean preemptive, String... endpoints) {
         if (username != null && password != null) {
             try {
                 Map<URI, Pair<String, char[]>> logins = new HashMap<URI, Pair<String, char[]>>();
