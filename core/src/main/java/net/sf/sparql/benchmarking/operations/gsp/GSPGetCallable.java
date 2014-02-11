@@ -30,68 +30,54 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.stats;
+package net.sf.sparql.benchmarking.operations.gsp;
+
+import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.runners.Runner;
+
+import com.hp.hpl.jena.query.DatasetAccessor;
+import com.hp.hpl.jena.rdf.model.Model;
 
 /**
- * A general purpose operation run implementation
+ * A callable which runs the Graph Store Protocol GET operation
  * 
  * @author rvesse
  * 
+ * @param <T>
+ *            Options type
  */
-public final class OperationRunImpl extends AbstractOperationRun {
+public class GSPGetCallable<T extends Options> extends AbstractGSPCallable<T> {
 
     /**
-     * Creates an operation which represents the results of successfully running
-     * an operation
+     * Creates a new callable
      * 
-     * @param runtime
-     *            Runtime
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      */
-    public OperationRunImpl(long runtime) {
-        super(runtime, 0);
+    public GSPGetCallable(Runner<T> runner, T options) {
+        this(runner, options, null);
     }
 
     /**
-     * Creates a operation run which represents that the failed running of an
-     * operation
+     * Creates a new callable
      * 
-     * @param error
-     *            Error Message
-     * @param category
-     *            Error category
-     * @param runtime
-     *            Runtime, this is the amount of time elapsed until the error
-     *            was reached
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
+     * @param uri
+     *            Graph URI
      */
-    public OperationRunImpl(String error, int category, long runtime) {
-        super(error, category, runtime);
+    public GSPGetCallable(Runner<T> runner, T options, String uri) {
+        super(runner, options, uri);
     }
 
-    /**
-     * Creates an operation run which represents the results of successfully
-     * running an operation
-     * 
-     * @param runtime
-     *            Runtime
-     * @param resultCount
-     *            Result Count
-     */
-    public OperationRunImpl(long runtime, long resultCount) {
-        super(runtime, resultCount);
+    @Override
+    protected long doOperation(DatasetAccessor accessor) {
+        Model m = this.isDefaultGraphUri() ? accessor.getModel() : accessor.getModel(this.getGraphUri());
+        return m.size();
     }
 
-    /**
-     * Creates an operation run which represents the results of successfully
-     * running an operation
-     * 
-     * @param runtime
-     *            Runtime
-     * @param responseTime
-     *            Response Time
-     * @param resultCount
-     *            Result Count
-     */
-    public OperationRunImpl(long runtime, long responseTime, long resultCount) {
-        super(runtime, responseTime, resultCount);
-    }
 }

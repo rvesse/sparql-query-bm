@@ -30,68 +30,69 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.stats;
+package net.sf.sparql.benchmarking.operations.gsp;
+
+import net.sf.sparql.benchmarking.operations.AbstractOperation;
+import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.runners.Runner;
+import net.sf.sparql.benchmarking.stats.OperationRun;
+import net.sf.sparql.benchmarking.stats.OperationRunImpl;
 
 /**
- * A general purpose operation run implementation
+ * Abstract implementation of a SPARQL Graph Store Protocol operation
  * 
  * @author rvesse
  * 
  */
-public final class OperationRunImpl extends AbstractOperationRun {
+public abstract class AbstractGSPOperation extends AbstractOperation<OperationRun> {
+
+    private String uri;
 
     /**
-     * Creates an operation which represents the results of successfully running
-     * an operation
+     * Creates a new operation
      * 
-     * @param runtime
-     *            Runtime
+     * @param name
+     *            Name
      */
-    public OperationRunImpl(long runtime) {
-        super(runtime, 0);
+    public AbstractGSPOperation(String name) {
+        this(name, null);
     }
 
     /**
-     * Creates a operation run which represents that the failed running of an
-     * operation
+     * Creates a new operation
      * 
-     * @param error
-     *            Error Message
-     * @param category
-     *            Error category
-     * @param runtime
-     *            Runtime, this is the amount of time elapsed until the error
-     *            was reached
+     * @param name
+     *            Name
+     * @param uri
+     *            Graph URI
      */
-    public OperationRunImpl(String error, int category, long runtime) {
-        super(error, category, runtime);
+    public AbstractGSPOperation(String name, String uri) {
+        super(name);
+        this.uri = uri;
     }
 
     /**
-     * Creates an operation run which represents the results of successfully
-     * running an operation
+     * Gets the URI of the graph being operated upon, {@code null} is considered
+     * to mean that the default graph is operated upon
      * 
-     * @param runtime
-     *            Runtime
-     * @param resultCount
-     *            Result Count
+     * @return Graph URI
      */
-    public OperationRunImpl(long runtime, long resultCount) {
-        super(runtime, resultCount);
+    protected String getGraphUri() {
+        return this.uri;
     }
 
-    /**
-     * Creates an operation run which represents the results of successfully
-     * running an operation
-     * 
-     * @param runtime
-     *            Runtime
-     * @param responseTime
-     *            Response Time
-     * @param resultCount
-     *            Result Count
-     */
-    public OperationRunImpl(long runtime, long responseTime, long resultCount) {
-        super(runtime, responseTime, resultCount);
+    @Override
+    public <T extends Options> boolean canRun(Runner<T> runner, T options) {
+        if (options.getGraphStoreEndpoint() == null) {
+            runner.reportProgress(options, "Graph Store Protocol operations cannot run with no GSP endpoint specified");
+            return false;
+        }
+        return true;
     }
+
+    @Override
+    protected OperationRun createErrorInformation(String message, int category, long runtime) {
+        return new OperationRunImpl(message, category, runtime);
+    }
+
 }

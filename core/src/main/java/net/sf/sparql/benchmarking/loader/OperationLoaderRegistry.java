@@ -36,6 +36,9 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import net.sf.sparql.benchmarking.loader.impl.DatasetSizeOperationLoader;
+import net.sf.sparql.benchmarking.loader.impl.GSPDeleteOperationLoader;
+import net.sf.sparql.benchmarking.loader.impl.GSPGetOperationLoader;
+import net.sf.sparql.benchmarking.loader.impl.GSPHeadOperationLoader;
 import net.sf.sparql.benchmarking.loader.impl.ParameterizedQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.impl.ParameterizedUpdateOperationLoader;
 import net.sf.sparql.benchmarking.loader.impl.QueryOperationLoader;
@@ -63,11 +66,19 @@ public class OperationLoaderRegistry {
     }
 
     private synchronized static void init() {
+        // Query operations
         loaders.put("query", new QueryOperationLoader());
         loaders.put("param-query", new ParameterizedQueryOperationLoader());
         loaders.put("dataset-size", new DatasetSizeOperationLoader());
+        // Update operations
         loaders.put("update", new UpdateOperationLoader());
         loaders.put("param-update", new ParameterizedUpdateOperationLoader());
+        // GSP operations
+        loaders.put("get", new GSPGetOperationLoader());
+        loaders.put("head", new GSPHeadOperationLoader());
+        loaders.put("delete", new GSPDeleteOperationLoader());
+        
+        // Other operations
         loaders.put("sleep", new SleepOperationLoader());
     }
 
