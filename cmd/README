@@ -1,89 +1,60 @@
 Introduction
 ============
 
-SPARQL Query Benchmarker is a simple command line tool that can be used to benchmark end to end performance
-of a SPARQL engine via HTTP
+SPARQL Benchmarker is a set of simple command line tools that can be used to test
+SPARQL systems accessible via HTTP
+
+Benchmarking
+------------
+
+The benchmark command is used to benchmark the performance of a SPARQL system.
 
 On *nix systems you can invoke the benchmarker like so:
 
-  ./benchmark [required options] [options]
+  ./benchmark [options]
 
 On Windows systems you can invoke the benchmarker like so:
 
-  benchmark.bat [required options] [options]
+  benchmark.bat [options]
 
 Or you can invoke the jar directly using Java as follows:
 
-  java -jar sparql-query-bm-cli.jar [required options] [options]
+  java -jar sparql-query-bm-cli.jar [options]
 
-The following options are required:
--m mixfile
---mix mixfile               Sets the filename of the operation mix file which contains the operations to be run
+To see full usage summary run with the -h or --help option
 
-One/more of the following options are also required, exact requirements will depend on your operation mix:
--q uri
---query-endpoint uri        Sets the SPARQL query endpoint to use
--u uri
---update-endpoint uri       Sets the SPARQL update endpoint to use
--g uri
---gsp-endpoint uri          Sets the SPARQL graph store protocol endpoint to use
---custom-endpoint name uri  Sets a custom endpoint to use for custom operations
+Soak Testing
+------------
 
-Supported Options are as follows:
--c filename.csv
---csv filename.csv        Sets filename to which the CSV results summary will be output (default results.csv)
---debug                   Sets log level to DEBUG, use in conjunction with --logging option to see detailed HTTP traces for debugging purposes
--d N
---delay N                 Sets maximum delay between queries in milliseconds, will be random delay up to this maximum, use 0 for no delay (default N=1000)
---form-url URL            Sets the login URL used for form based login
---form-user-field FIELD   Sets the user name field used for form based login (default httpd_username)
---form-pwd-field  FIELD   Sets the password field used for form based login (default httpd_password)
--h
---help                    Prints this usage message and exits
---halt-on-timeout         Halts and aborts benchmarking if any query times out
---halt-on-error           Halts and aborts benchmarking if any query errors
---halt-any                Halts and aborts benchmarking if any issue is encountered
--l N                      Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query
---limit N                 Enforces a Results Limit on queries, if N>0 result limit for query is minimum of N and M where M is the existing limit for the query
---logging                 Enables redirection of log output to console, use with --debug option to get additional information
---nocsv                   Disable CSV output, supercedes any preceding -c/--csv option but may be superceded by a subsequent -c/--csv option
---nocount                 Disables result counting, benchmarking will only record time to receive first result from the endpoint
---norand                  If present the order in which queries are executed will not be randomized
---noxml                   Disables XML output, supercedes any preceding -x/--xml option but may be superceded by a subsequent -x/--xml option
--o N
---outliers N              Sets number of outliers to ignore i.e. discards the N best and N worst results when calculating overall averages (default N=1)
---overwrite               Allows overwriting of existing results files of the same names, if not set and files exist benchmarking will abort immediately
--p N
---parallel N              Sets the number of parallel threads to use for benchmarking (default N=1 i.e. single threaded evaluation)
---password PWD            Sets the password used for authentication
---preemptive-auth         Enables use of preemptive authentication, may marginally improve performance when basic authentication is used
--q
---quiet                   Enables quiet mode so only errors will go to the console and no progress messages will be shown
--r N
---runs N                  Sets number of runs where N is an integer (default 25)
---results-ask FMT         Sets the format to request for ASK query results (default application/sparql-results+xml)
---results-graph FMT       Sets the format to request for CONSTRUCT/DESCRIBE results (default application/rdf+xml)
---results-select FMT      Sets the format to request for SELECT query results (default application/sparql-results+xml)
--s N
---sanity-checks N         Sets what level of sanity checking used to ensure the endpoint is up and running before starting benchmarking (default N=2)
--t N
---timeout N               Sets timeout for queries where N is number of seconds (default 300)
---username USER           Sets the user name used for authentication
--w N
---warmups N               Sets number of warm up runs to run prior to actual benchmarking runs (default 5)
--x filename.xml
---xml filename.xml        Request XML output and sets filename to which the XML results will be output
+The soak command is used to stress test a SPARQL system by continually running tests against it
+for some user defined period of time.
 
-Notes
------
+On *nix systems you can invoke the soak tester like so:
 
-With sanity checking enabled (as it is by default) a number of tests will be issued prior to any
-benchmarking to determine if the given endpoint is up and available for use.  There are 3 tests
-currently and by default at least 2 must pass for the benchmarker to run.  Set -s 0 to disable
+  ./soak [options]
+  
+On Windows systems you can invoke the soak tester like so:
+
+  soak.bat [options]
+  
+Or you can invoke the jar directly using Java as follows:
+
+  java -cp sparql-query-bm-cli.jar net.sf.sparql.query.benchmarking.cmd.SoakCmd [options]
+  
+To see full usage summary run with the -h or --help option
+
+General Notes
+=============
+
+With sanity checking enabled (as it is by default for all commands) a number of tests will be issued 
+prior to any benchmarking to determine if the given endpoint is up and available for use.  There are 
+3 tests currently and by default at least 2 must pass for the benchmarker to run.  Set -s 0 to disable
 these checks.
 
 If errors occur they will be logged using log4j, the --logging argument will enable log4j logging
-to stdout.  You may configure log4j manually if you prefer to have this information logged elsewhere.
+to stdout.  Alternatively the --log-file option sets a log file for log output.  The --debug or --trace
+options are used to increase the log level to DEBUG/TRACE which is useful for debugging the HTTP
+communications going on.
 
 Currently the following result formats are supported:
 - ASK results
@@ -100,7 +71,7 @@ Currently the following result formats are supported:
  - text/csv (SPARQL CSV)
  
 Authentication uses ARQ's HTTP authentication API, this supports standard HTTP authentication methods
-e.g. Basic and Digest and form based login such as that provided by Apache mod_auth_form.  When only the
+e.g. Basic, Digest, form based login such as that provided by Apache mod_auth_form.  When only the
 --username and --password options are specified then standard HTTP authentication is used, if the
 --form-url option is specified then form based login is used.
  
@@ -108,8 +79,8 @@ The --preemptive-auth option may be used to enabled preemptive authentication wh
 authentication, note that this only works if the remote server is using Basic authentication, otherwise it
 has no effect.
  
-Methodology
-===========
+Benchmarking Methodology
+========================
 
 Benchmarks are run on Query Mixes, a Query Mix contains one/more queries, a mix may repeat the same query
 several times if desired.  The actual benchmark consists of N runs of this query mix (default N=25),
@@ -204,11 +175,11 @@ being benchmarked and the hardware it was run on, where the benchmarker was run 
 benchmarked system (typically we'd expect the two to be run on the same machine or on machines
 in the same LAN) and the full output of the benchmarker (ideally either the CSV/XML output).
 
-Query Sets
-==========
+Operation Mixes
+===============
 
-This tool includes several query sets to get you started, you can create a query set for any queries you
-wish to benchmark.
+This tool includes several operation mixes to get you started, you can create an operation mix for any
+set of operations you wish to test with.
 
 - You can find SP2B queries [3] under queries\sp2b.txt
     SP2B without Query 5a which is typically the hardest and may not be runnable on some systems for
@@ -221,9 +192,15 @@ wish to benchmark.
     The ORDER BY + DISTINCT queries are designed to test how well an engine optimizes the case of an ORDER BY plus
     a DISTINCT and whether using sub-queries to force one to happen before the other makes a noticeable difference
     in performance.  These tests also cover the use of ORDER BY + REDUCED
+    
+Operation Mix Formats
+---------------------
 
-The query list file format is simply one path to a query file per line, paths may be relative and will
-be resolved treating the path to the query file as the base path.
+There are two operation mix formats currently supported - 1x and 2x.
+
+The 1x format is the format supported by the 1x releases of this tool and is a simple text file with a .txt
+extension.  Each line in the file is a path to a query file, paths may be relative and will be resolved 
+treating the path to the query file as the base path.  The 1x format only supports queries in its operation mixes
 
 API Usage
 =========
