@@ -73,6 +73,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
                 l.handleStarted(this, options);
             } catch (Exception e) {
                 System.err.println(l.getClass().getName() + " encountered an error during handleStarted() - " + e.getMessage());
+                e.printStackTrace(System.err);
                 // IMPORTANT - A startup error always halts benchmarking
                 // regardless of halting options
                 halt(options, l.getClass().getName() + " encountered an error in startup");
@@ -310,6 +311,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
                 l.handleFinished(this, options, true);
             } catch (Exception e) {
                 System.err.println(l.getClass().getName() + " encountered an error during handleFinish() - " + e.getMessage());
+                e.printStackTrace(System.err);
                 if (options.getHaltOnError() || options.getHaltAny()) {
                     halt(options, l.getClass().getName() + " encountering an error during finish");
                 }
