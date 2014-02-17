@@ -87,4 +87,10 @@ public class RandomAuthenticatorPool implements HttpAuthenticator {
         authenticator.apply(client, httpContext, target);
     }
 
+    @Override
+    public void invalidate() {
+        for (HttpAuthenticator authenticator : this.authenticators) {
+            authenticator.invalidate();
+        }
+    }
 }
