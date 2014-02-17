@@ -39,6 +39,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
 import net.sf.sparql.benchmarking.operations.AbstractOperationCallable;
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
@@ -162,6 +163,8 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
 
         } catch (HttpException e) {
             // Make sure to categorize HTTP errors appropriately
+            return new QueryRun(e.getMessage(), ErrorCategories.categorizeHttpError(e), System.nanoTime() - startTime);
+        } catch (QueryExceptionHTTP e) {
             return new QueryRun(e.getMessage(), ErrorCategories.categorizeHttpError(e), System.nanoTime() - startTime);
         } finally {
             // Clean up query execution

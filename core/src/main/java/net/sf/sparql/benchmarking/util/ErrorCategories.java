@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.util;
 
@@ -37,6 +37,8 @@ import java.util.Map;
 
 import org.apache.http.HttpStatus;
 import org.apache.jena.atlas.web.HttpException;
+
+import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
 /**
  * Helper class containing constants and methods related to error categories
@@ -157,10 +159,47 @@ public class ErrorCategories {
      */
     public static int categorizeHttpError(HttpException httpError) {
         int status = httpError.getResponseCode();
+        return categorizeHttpError(status);
+    }
 
+    /**
+     * Categorizes a {@link QueryExceptionHTTP}
+     * <p>
+     * Where possible this will use specific error categories such as
+     * {@link #AUTHENTICATION} or {@link #HTTP_NOT_FOUND} however many possible
+     * HTTP status codes are not specifically categorized and will be bucketed
+     * into {@link #HTTP_CLIENT_ERROR} or {@link #HTTP_SERVER_ERROR} as
+     * appropriate.
+     * </p>
+     * 
+     * @param httpError
+     *            HTTP error
+     * @return Most appropriate error category
+     */
+    public static int categorizeHttpError(QueryExceptionHTTP httpError) {
+        int status = httpError.getResponseCode();
+        return categorizeHttpError(status);
+    }
+
+    /**
+     * Categorizes a HTTP error based on the status code
+     * <p>
+     * Where possible this will use specific error categories such as
+     * {@link #AUTHENTICATION} or {@link #HTTP_NOT_FOUND} however many possible
+     * HTTP status codes are not specifically categorized and will be bucketed
+     * into {@link #HTTP_CLIENT_ERROR} or {@link #HTTP_SERVER_ERROR} as
+     * appropriate.
+     * </p>
+     * 
+     * @param status
+     *            Status Code
+     * @return Most appropriate error category
+     */
+    public static int categorizeHttpError(int status) {
         // Specific categories
         switch (status) {
         case -1:
+        case QueryExceptionHTTP.noResponseCode:
             // Unknown HTTP status so categorize as an Execution error
             return EXECUTION;
         case HttpStatus.SC_UNAUTHORIZED:

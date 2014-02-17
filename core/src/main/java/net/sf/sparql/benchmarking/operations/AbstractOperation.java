@@ -164,6 +164,14 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
         }
         timer.stop();
 
+        // In the event that an authentication error has been reported force an
+        // invalidation of the authenticator
+        if (!r.wasSuccessful() && r.getErrorCategory() == ErrorCategories.AUTHENTICATION) {
+            if (options.getAuthenticator() != null) {
+                options.getAuthenticator().invalidate();
+            }
+        }
+
         // Return the results
         this.addRun(r);
         r.setRunOrder(order);
