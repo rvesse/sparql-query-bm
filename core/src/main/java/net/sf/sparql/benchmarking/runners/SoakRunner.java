@@ -285,7 +285,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         reportProgress(options, "Soak Test Summary");
         reportProgress(options, "-----------------");
         reportProgress(options);
-        reportProgress(options, "Number of Runs: " + i);
+        reportProgress(options, "Number of Runs: " + options.getOperationMix().getRunCount());
         reportProgress(options, "Total Operations Run: " + (i * options.getOperationMix().size()));
         reportProgress(options);
         reportProgress(options, "Total Errors: " + options.getOperationMix().getTotalErrors());
@@ -304,6 +304,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
         reportProgress(options, "End Time: " + FormatUtils.formatInstant(endInstant));
         reportProgress(options, "Total Runtime: " + ConvertUtils.toMinutes(endTime - startTime) + " minutes");
+        reportProgress(options);
 
         // Finally inform listeners that running finished OK
         for (ProgressListener l : options.getListeners()) {

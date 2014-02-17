@@ -55,11 +55,18 @@ public interface OperationMix {
     public abstract Iterator<Operation> getOperations();
 
     /**
-     * Gets an iterator over the query mix runs
+     * Gets an iterator over the operation mix runs
      * 
      * @return Mix Runs
      */
     public abstract Iterator<OperationMixRun> getRuns();
+
+    /**
+     * Gets the number of runs for which information has been recorded
+     * 
+     * @return Number of runs
+     */
+    public abstract long getRunCount();
 
     /**
      * Gets the operation with the specified ID

@@ -93,6 +93,11 @@ public class OperationMixImpl implements OperationMix {
     public Iterator<OperationMixRun> getRuns() {
         return this.runs.iterator();
     }
+    
+    @Override
+    public long getRunCount() {
+        return this.runs.size();
+    }
 
     @Override
     public Operation getOperation(int id) {
