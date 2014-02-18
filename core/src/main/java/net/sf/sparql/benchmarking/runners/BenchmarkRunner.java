@@ -51,7 +51,6 @@ import net.sf.sparql.benchmarking.parallel.BenchmarkParallelClientManager;
 import net.sf.sparql.benchmarking.parallel.ParallelClientManagerTask;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
-import net.sf.sparql.benchmarking.util.ErrorCategories;
 import net.sf.sparql.benchmarking.util.FormatUtils;
 
 /**
@@ -168,13 +167,9 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
             reportProgress(options);
             i++;
         }
-        
+
         // Setup
-        if (options.getSetupMix() != null) {
-            reportProgress(options, "Running setup mix...");
-            options.getSetupMix().run(this, options);
-            reportProgress(options);
-        }
+        runSetup(options);
 
         // Warmups
         reportProgress(options, "Running Warmups...");
@@ -250,11 +245,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         Instant endInstant = Instant.now();
 
         // Teardown
-        if (options.getTeardownMix() != null) {
-            reportProgress(options, "Running teardown mix...");
-            options.getTeardownMix().run(this, options);
-            reportProgress(options);
-        }
+        runTeardown(options);
 
         reportProgress(options, "Finished Benchmarking...");
         reportProgress(options);
@@ -273,6 +264,11 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
             // Print Summary
             reportProgress(options, "Operation ID " + i + " of type " + op.getType() + " (" + op.getName() + ")");
             reportProgress(options, "Total Errors: " + op.getTotalErrors());
+            if (op.getTotalErrors() > 0) {
+                // Show errors by category
+                Map<Integer, List<OperationRun>> categorizedErrors = op.getCategorizedErrors();
+                this.reportCategorizedErrors(options, categorizedErrors);
+            }
             reportProgress(options, "Average Results: " + op.getAverageResults());
             reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(op.getTotalResponseTime()));
             reportProgress(options,
@@ -313,14 +309,8 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options, "Total Errors: " + options.getOperationMix().getTotalErrors());
         if (options.getOperationMix().getTotalErrors() > 0) {
             // Show errors by category
-            reportProgress(options, "Errors by Category: ");
             Map<Integer, List<OperationRun>> categorizedErrors = options.getOperationMix().getCategorizedErrors();
-            for (Integer category : categorizedErrors.keySet()) {
-                String description = ErrorCategories.getDescription(category);
-                if (description == null)
-                    description = String.format("  Unknown Category %d", category);
-                reportProgress(options, "  " + description + ": " + categorizedErrors.get(category).size() + " error(s)");
-            }
+            reportCategorizedErrors(options, categorizedErrors);
         }
         reportProgress(options);
         reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(operationMix.getTotalResponseTime()));

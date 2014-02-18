@@ -33,6 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package net.sf.sparql.benchmarking.runners;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +53,7 @@ import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.stats.QueryRun;
+import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 /**
  * Abstract implementation of a runner providing common halting and progress
@@ -229,6 +232,72 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
                 System.err.println("A specified operation cannot run with the available options");
                 halt(options, "Operation " + op.getName() + " of type " + op.getType() + " cannot run with the available options");
             }
+        }
+    }
+
+    /**
+     * Runs the tear down mix (if any) guaranteeing that operations run in
+     * precisely the order specified
+     * 
+     * @param options
+     *            Options
+     */
+    protected void runTeardown(T options) {
+        if (options.getTeardownMix() != null) {
+            // Force non-random ordering for tear down
+            boolean random = options.getRandomizeOrder();
+            if (random)
+                options.setRandomizeOrder(false);
+
+            // Run the tear down
+            reportProgress(options, "Running teardown mix...");
+            options.getTeardownMix().run(this, options);
+            reportProgress(options);
+
+            // Reset random ordering
+            options.setRandomizeOrder(random);
+        }
+    }
+
+    /**
+     * Runs the setup mix (if any) guaranteeing that operations run in precisely
+     * the order specified
+     * 
+     * @param options
+     *            Options
+     */
+    protected void runSetup(T options) {
+        if (options.getSetupMix() != null) {
+            // Force non-random ordering for setup
+            boolean random = options.getRandomizeOrder();
+            if (random)
+                options.setRandomizeOrder(false);
+
+            // Run the setup
+            reportProgress(options, "Running setup mix...");
+            options.getSetupMix().run(this, options);
+            reportProgress(options);
+
+            // Reset random ordering
+            options.setRandomizeOrder(random);
+        }
+    }
+
+    /**
+     * Reports categorized errors
+     * 
+     * @param options
+     *            Options
+     * @param categorizedErrors
+     *            Categorized Errors
+     */
+    protected void reportCategorizedErrors(T options, Map<Integer, List<OperationRun>> categorizedErrors) {
+        reportProgress(options, "Errors by Category: ");
+        for (Integer category : categorizedErrors.keySet()) {
+            String description = ErrorCategories.getDescription(category);
+            if (description == null)
+                description = String.format("  Unknown Category %d", category);
+            reportProgress(options, "  " + description + ": " + categorizedErrors.get(category).size() + " error(s)");
         }
     }
 

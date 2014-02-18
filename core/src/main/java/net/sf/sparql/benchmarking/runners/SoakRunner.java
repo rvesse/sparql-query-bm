@@ -52,7 +52,6 @@ import net.sf.sparql.benchmarking.parallel.SoakTestParallelClientManager;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.util.ConvertUtils;
-import net.sf.sparql.benchmarking.util.ErrorCategories;
 import net.sf.sparql.benchmarking.util.FormatUtils;
 
 /**
@@ -168,13 +167,9 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
             reportProgress(options);
             i++;
         }
-        
+
         // Setup
-        if (options.getSetupMix() != null) {
-            reportProgress(options, "Running setup mix...");
-            options.getSetupMix().run(this, options);
-            reportProgress(options);
-        }
+        runSetup(options);
 
         // Actual Runs
         reportProgress(options, "Running soak tests...");
@@ -182,7 +177,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         Instant endInstant = startInstant;
         reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
         reportProgress(options);
-        
+
         long startTime = System.nanoTime();
         long endTime = startTime;
         if (options.getParallelThreads() == 1) {
@@ -248,13 +243,9 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         // Get end time
         endTime = System.nanoTime();
         endInstant = Instant.now();
-        
+
         // Teardown
-        if (options.getTeardownMix() != null) {
-            reportProgress(options, "Running teardown mix...");
-            options.getTeardownMix().run(this, options);
-            reportProgress(options);
-        }
+        runTeardown(options);
 
         reportProgress(options, "Finished soak testing");
         reportProgress(options);
@@ -332,21 +323,6 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
                     halt(options, l.getClass().getName() + " encountering an error during finish");
                 }
             }
-        }
-    }
-
-    /**
-     * Reports categorized errors
-     * @param options Options
-     * @param categorizedErrors Categorized Errors
-     */
-    protected void reportCategorizedErrors(SoakOptions options, Map<Integer, List<OperationRun>> categorizedErrors) {
-        reportProgress(options, "Errors by Category: ");
-        for (Integer category : categorizedErrors.keySet()) {
-            String description = ErrorCategories.getDescription(category);
-            if (description == null)
-                description = String.format("  Unknown Category %d", category);
-            reportProgress(options, "  " + description + ": " + categorizedErrors.get(category).size() + " error(s)");
         }
     }
 }

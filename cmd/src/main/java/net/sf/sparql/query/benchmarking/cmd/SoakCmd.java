@@ -46,6 +46,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.options.SoakOptions;
+import net.sf.sparql.benchmarking.runners.AbstractRunner;
 import net.sf.sparql.benchmarking.runners.SoakRunner;
 
 /**
@@ -135,7 +136,7 @@ public class SoakCmd extends AbstractCommand {
         this.applySoakOptions(options);
 
         // Run soak tests
-        SoakRunner runner = new SoakRunner();
+        AbstractRunner<SoakOptions> runner = new SoakRunner();
         runner.run(options);
     }
 
