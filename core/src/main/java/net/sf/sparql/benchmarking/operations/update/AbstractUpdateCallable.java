@@ -83,6 +83,7 @@ public abstract class AbstractUpdateCallable<T extends Options> extends Abstract
         if (this.getOptions().getAuthenticator() != null) {
             processor.setAuthenticator(this.getOptions().getAuthenticator());
         }
+        this.customizeRequest(processor);
 
         long startTime = System.nanoTime();
         try {
@@ -98,6 +99,21 @@ public abstract class AbstractUpdateCallable<T extends Options> extends Abstract
 
         long endTime = System.nanoTime();
         return new UpdateRun(endTime - startTime);
+    }
+
+    /**
+     * Provides derived implementations the option to customize the update
+     * processor before actually executing the update e.g. to add custom
+     * parameters
+     * <p>
+     * The default implementation does nothing.
+     * </p>
+     * 
+     * @param up
+     *            Update processor
+     */
+    protected void customizeRequest(UpdateProcessRemoteBase up) {
+        // Default implementation does nothing
     }
 
 }

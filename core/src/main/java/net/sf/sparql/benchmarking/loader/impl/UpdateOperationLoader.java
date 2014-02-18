@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.update.UpdateOperationImpl;
+import net.sf.sparql.benchmarking.operations.update.FixedUpdateOperation;
 
 /**
  * Query operation loader
@@ -64,7 +64,7 @@ public class UpdateOperationLoader extends AbstractOperationLoader {
         }
 
         String update = readFile(baseDir, queryFile);
-        return new UpdateOperationImpl(name, update);
+        return new FixedUpdateOperation(name, update);
     }
 
     @Override

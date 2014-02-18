@@ -42,12 +42,12 @@ import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.UpdateRun;
 
 /**
- * An operation that makes a SPARQL Update
+ * An operation that makes a fixed SPARQL Update
  * 
  * @author rvesse
  * 
  */
-public class UpdateOperationImpl extends AbstractOperation<UpdateRun> implements UpdateOperation {
+public class FixedUpdateOperation extends AbstractOperation<UpdateRun> implements UpdateOperation {
 
     private UpdateRequest update;
     private String origUpdateStr;
@@ -60,7 +60,7 @@ public class UpdateOperationImpl extends AbstractOperation<UpdateRun> implements
      * @param updateString
      *            SPARQL Update
      */
-    public UpdateOperationImpl(String name, String updateString) {
+    public FixedUpdateOperation(String name, String updateString) {
         super(name);
         this.origUpdateStr = updateString;
         this.update = UpdateFactory.create(updateString);
@@ -69,7 +69,7 @@ public class UpdateOperationImpl extends AbstractOperation<UpdateRun> implements
     @Override
     public <T extends Options> boolean canRun(Runner<T> runner, T options) {
         if (options.getUpdateEndpoint() == null) {
-            runner.reportProgress(options, "Benchmark Updates cannot run with no update endpoint specified");
+            runner.reportProgress(options, "Updates cannot run with no update endpoint specified");
             return false;
         }
         return true;

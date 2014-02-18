@@ -117,6 +117,7 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
         if (options.getAuthenticator() != null) {
             exec.setAuthenticator(options.getAuthenticator());
         }
+        this.customizeRequest(exec);
 
         long numResults = 0;
         long responseTime = OperationRun.NOT_YET_RUN;
@@ -171,6 +172,21 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
             if (exec != null)
                 exec.close();
         }
+    }
+
+    /**
+     * Provides derived implementations the option to customize the query
+     * execution before actually executing the query e.g. to add custom
+     * parameters
+     * <p>
+     * The default implementation does nothing.
+     * </p>
+     * 
+     * @param qe
+     *            Query Execution
+     */
+    protected void customizeRequest(QueryEngineHTTP qe) {
+        // Default implementation does nothing
     }
 
     /**
