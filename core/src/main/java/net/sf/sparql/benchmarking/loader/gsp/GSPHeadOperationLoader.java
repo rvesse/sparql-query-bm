@@ -58,4 +58,9 @@ public class GSPHeadOperationLoader extends AbstractGSPOperationLoader {
         return new GSPHeadOperation(name, graphUri);
     }
 
+    @Override
+    public String getDescription() {
+        return "Determines whether a graph exists using a SPARQL Graph Store protocol HEAD request";
+    }
+
 }

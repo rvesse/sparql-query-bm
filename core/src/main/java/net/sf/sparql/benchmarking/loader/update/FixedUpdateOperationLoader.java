@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
+import net.sf.sparql.benchmarking.loader.OperationLoaderArgument;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.update.FixedUpdateOperation;
 
@@ -70,5 +71,18 @@ public class FixedUpdateOperationLoader extends AbstractOperationLoader {
     @Override
     public String getPreferredName() {
         return "update";
+    }
+    
+    @Override
+    public String getDescription() {
+        return "The update operation makes a fixed SPARQL update.";
+    }
+
+    @Override
+    public OperationLoaderArgument[] getArguments() {
+        OperationLoaderArgument[] args = new OperationLoaderArgument[2];
+        args[0] = new OperationLoaderArgument("Update File", "Provides a file that contains the SPARQL updates to be run.", OperationLoaderArgument.TYPE_FILE);
+        args[1] = AbstractOperationLoader.getNameArgument(true);
+        return args;
     }
 }

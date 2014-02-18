@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
+import net.sf.sparql.benchmarking.loader.OperationLoaderArgument;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.util.SleepOperation;
 
@@ -66,6 +67,19 @@ public class SleepOperationLoader extends AbstractOperationLoader {
     @Override
     public String getPreferredName() {
         return "sleep";
+    }
+
+    @Override
+    public String getDescription() {
+        return "The sleep operation sleeps for a set period of time in order to simulate periods of inactivity where the system being tested is not under load.";
+    }
+
+    @Override
+    public OperationLoaderArgument[] getArguments() {
+        OperationLoaderArgument[] args = new OperationLoaderArgument[2];
+        args[0] = new OperationLoaderArgument("Sleep Time", "Indicates how long the operation should sleep for in seconds.", OperationLoaderArgument.TYPE_LONG);
+        args[1] = AbstractOperationLoader.getNameArgument(true);
+        return args;
     }
 
 }

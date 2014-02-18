@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.sparql.benchmarking.loader.AbstractNvpOperationLoader;
+import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
+import net.sf.sparql.benchmarking.loader.OperationLoaderArgument;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.update.nvp.FixedNvpUpdateOperation;
 
@@ -72,4 +74,17 @@ public class FixedNvpUpdateOperationLoader extends AbstractNvpOperationLoader {
         return "nvp-update";
     }
 
+    @Override
+    public String getDescription() {
+        return "The nvp-update operation makes a fixed SPARQL update adding custom name value parameters to the HTTP request which can be used to test custom behaviour provided by a SPARQL endpoint";
+    }
+
+    @Override
+    public OperationLoaderArgument[] getArguments() {
+        OperationLoaderArgument[] args = new OperationLoaderArgument[3];
+        args[0] = new OperationLoaderArgument("Update File", "Provides a file that contains the SPARQL updates to be run.", OperationLoaderArgument.TYPE_FILE);
+        args[1] = this.getNvpsArgument();
+        args[2] = AbstractOperationLoader.getNameArgument(true);
+        return args;
+    }
 }

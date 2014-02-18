@@ -126,4 +126,17 @@ public abstract class AbstractOperationLoader implements OperationLoader {
         return f;
     }
 
+    /**
+     * Gets the standard argument for the friendly name
+     * 
+     * @param optional
+     *            Whether the friendly name is optional
+     * @return Argument
+     */
+    public static OperationLoaderArgument getNameArgument(boolean optional) {
+        return new OperationLoaderArgument("Name",
+                "Provides a friendly name for the operation that makes it more identifiable later",
+                OperationLoaderArgument.TYPE_STRING, optional);
+    }
+
 }

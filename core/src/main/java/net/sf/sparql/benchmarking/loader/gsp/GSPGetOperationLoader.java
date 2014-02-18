@@ -58,4 +58,9 @@ public class GSPGetOperationLoader extends AbstractGSPOperationLoader {
         return new GSPGetOperation(name, graphUri);
     }
 
+    @Override
+    public String getDescription() {
+        return "Retrieves a graph using a SPARQL Graph Store protocol GET request";
+    }
+
 }

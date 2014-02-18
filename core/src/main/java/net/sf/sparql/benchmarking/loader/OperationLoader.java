@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.loader;
 
@@ -39,6 +39,11 @@ import net.sf.sparql.benchmarking.operations.Operation;
 
 /**
  * Interface for operation loaders
+ * <p>
+ * Each loader is expected to load only a single type of operation since part of
+ * the interface contract provides help information to users about the operation
+ * that can be loaded.
+ * </p>
  * 
  * @author rvesse
  * 
@@ -55,7 +60,7 @@ public interface OperationLoader {
      * @return Operation
      * @throws IOException
      */
-    public Operation load(File baseDir, String[] args) throws IOException;
+    public abstract Operation load(File baseDir, String[] args) throws IOException;
 
     /**
      * Gets the name that this loader prefers to be referenced by
@@ -68,5 +73,20 @@ public interface OperationLoader {
      * 
      * @return Preferred name
      */
-    public String getPreferredName();
+    public abstract String getPreferredName();
+
+    /**
+     * Gets a description of the operation that this loader loads
+     * 
+     * @return Description of the operation
+     */
+    public abstract String getDescription();
+
+    /**
+     * Gets a description of the configuration arguments that this loader
+     * expects to receive
+     * 
+     * @return Arguments
+     */
+    public abstract OperationLoaderArgument[] getArguments();
 }

@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
+import net.sf.sparql.benchmarking.loader.OperationLoaderArgument;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.query.DatasetSizeOperation;
 
@@ -59,6 +60,18 @@ public class DatasetSizeOperationLoader extends AbstractOperationLoader {
     @Override
     public String getPreferredName() {
         return "dataset-size";
+    }
+
+    @Override
+    public String getDescription() {
+        return "The dataset-size operation makes a SPARQL query that counts all the quads in the dataset";
+    }
+
+    @Override
+    public OperationLoaderArgument[] getArguments() {
+        OperationLoaderArgument[] args = new OperationLoaderArgument[1];
+        args[0] = AbstractOperationLoader.getNameArgument(true);
+        return args;
     }
 
 }

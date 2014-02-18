@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.sparql.benchmarking.loader.AbstractNvpOperationLoader;
+import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
+import net.sf.sparql.benchmarking.loader.OperationLoaderArgument;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.query.nvp.FixedNvpQueryOperation;
 
@@ -70,6 +72,20 @@ public class FixedNvpQueryOperationLoader extends AbstractNvpOperationLoader {
     @Override
     public String getPreferredName() {
         return "nvp-query";
+    }
+
+    @Override
+    public String getDescription() {
+        return "The nvp-query operation makes a fixed SPARQL query adding custom name value parameters to the HTTP request which can be used to test custom behaviour provided by a SPARQL endpoint";
+    }
+
+    @Override
+    public OperationLoaderArgument[] getArguments() {
+        OperationLoaderArgument[] args = new OperationLoaderArgument[3];
+        args[0] = new OperationLoaderArgument("Query File", "Provides a file that contains the SPARQL query to be run.", OperationLoaderArgument.TYPE_FILE);
+        args[1] = this.getNvpsArgument();
+        args[2] = AbstractOperationLoader.getNameArgument(true);
+        return args;
     }
 
 }

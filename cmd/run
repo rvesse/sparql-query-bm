@@ -36,4 +36,8 @@ fi
 CMD=$1
 shift 1
 
-java -cp "${ACTUAL_JAR}" net.sf.sparql.query.benchmarking.cmd.$CMD $*
+# We respect JAVA_OPTIONS and CLASSPATH where appropriate
+if [ ! -z "${CLASSPATH}" ]; then
+	ACTUAL_JAR="${ACTUAL_JAR};${CLASSPATH}"
+fi
+java ${JAVA_OPTIONS} -cp "${ACTUAL_JAR}" net.sf.sparql.query.benchmarking.cmd.$CMD $*

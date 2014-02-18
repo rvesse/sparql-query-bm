@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
+import net.sf.sparql.benchmarking.loader.OperationLoaderArgument;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.query.FixedQueryOperation;
 
@@ -70,5 +71,18 @@ public class FixedQueryOperationLoader extends AbstractOperationLoader {
     @Override
     public String getPreferredName() {
         return "query";
+    }
+
+    @Override
+    public String getDescription() {
+        return "The query operation makes a fixed SPARQL query";
+    }
+
+    @Override
+    public OperationLoaderArgument[] getArguments() {
+        OperationLoaderArgument[] args = new OperationLoaderArgument[2];
+        args[0] = new OperationLoaderArgument("Query File", "Provides a file that contains the SPARQL query to be run.", OperationLoaderArgument.TYPE_FILE);
+        args[1] = AbstractOperationLoader.getNameArgument(true);
+        return args;
     }
 }

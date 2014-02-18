@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.loader;
 
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -76,18 +77,18 @@ public class OperationLoaderRegistry {
         addLoader(new ParameterizedQueryOperationLoader());
         addLoader(new ParameterizedNvpQueryOperationLoader());
         addLoader(new DatasetSizeOperationLoader());
-        
+
         // Update operations
         addLoader(new FixedUpdateOperationLoader());
         addLoader(new FixedNvpUpdateOperationLoader());
         addLoader(new ParameterizedUpdateOperationLoader());
         addLoader(new ParameterizedNvpUpdateOperationLoader());
-        
+
         // GSP operations
         addLoader(new GSPGetOperationLoader());
         addLoader(new GSPHeadOperationLoader());
         addLoader(new GSPDeleteOperationLoader());
-        
+
         // Other operations
         addLoader(new SleepOperationLoader());
     }
@@ -141,5 +142,14 @@ public class OperationLoaderRegistry {
     public static synchronized void resetLoaders() {
         loaders.clear();
         init();
+    }
+
+    /**
+     * Gets an unmodifiable copy of the registered loaders
+     * 
+     * @return Registered loaders
+     */
+    public static Map<String, OperationLoader> getLoaders() {
+        return Collections.unmodifiableMap(loaders);
     }
 }

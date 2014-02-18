@@ -45,6 +45,7 @@ import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
 
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
+import net.sf.sparql.benchmarking.loader.OperationLoaderArgument;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.parameterized.ParameterizedQueryOperation;
 
@@ -83,5 +84,23 @@ public class ParameterizedQueryOperationLoader extends AbstractOperationLoader {
     @Override
     public String getPreferredName() {
         return "param-query";
+    }
+    
+    @Override
+    public String getDescription() {
+        return "The param-query operation makes a parameterized SPARQL query where parameters are drawn at random from a set of possible parameters.";
+    }
+
+    @Override
+    public OperationLoaderArgument[] getArguments() {
+        OperationLoaderArgument[] args = new OperationLoaderArgument[3];
+        args[0] = new OperationLoaderArgument("Query File", "Provides a file that contains the SPARQL query to be run.",
+                OperationLoaderArgument.TYPE_FILE);
+        args[1] = new OperationLoaderArgument(
+                "Parameters File",
+                "Provides a file that contains the parameters to be used.  Parameters files are expected to be in SPARQL TSV results format where each result row represents a set of parameters.",
+                OperationLoaderArgument.TYPE_FILE);
+        args[2] = AbstractOperationLoader.getNameArgument(true);
+        return args;
     }
 }
