@@ -30,32 +30,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 
-package net.sf.sparql.benchmarking.loader.impl;
+package net.sf.sparql.benchmarking.loader.gsp;
 
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.gsp.GSPHeadOperation;
+import net.sf.sparql.benchmarking.operations.gsp.GSPDeleteOperation;
 
 /**
- * Operation loader for GSP Head operations
+ * An operation loader for GSP Delete operations
  * 
  * @author rvesse
  * 
  */
-public class GSPHeadOperationLoader extends AbstractGSPOperationLoader {
+public class GSPDeleteOperationLoader extends AbstractGSPOperationLoader {
 
     @Override
     public String getPreferredName() {
-        return "head";
+        return "delete";
     }
 
     @Override
     protected Operation createOperation(String name) {
-        return new GSPHeadOperation(name);
+        return new GSPDeleteOperation(name);
     }
 
     @Override
     protected Operation createOperation(String name, String graphUri) {
-        return new GSPHeadOperation(name, graphUri);
+        return new GSPDeleteOperation(name, graphUri);
     }
 
 }

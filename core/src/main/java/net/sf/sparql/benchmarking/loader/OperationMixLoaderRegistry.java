@@ -35,8 +35,8 @@ package net.sf.sparql.benchmarking.loader;
 import java.util.Hashtable;
 import java.util.Map;
 
-import net.sf.sparql.benchmarking.loader.impl.ClassicQueryMixLoader;
-import net.sf.sparql.benchmarking.loader.impl.TsvMixLoader;
+import net.sf.sparql.benchmarking.loader.mix.ClassicQueryMixLoader;
+import net.sf.sparql.benchmarking.loader.mix.TsvMixLoader;
 
 /**
  * Provides a registry of operation mix loader

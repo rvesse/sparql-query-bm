@@ -30,52 +30,39 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 
-package net.sf.sparql.benchmarking.loader.impl;
+package net.sf.sparql.benchmarking.loader.mix;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
-import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
+import net.sf.sparql.benchmarking.loader.AbstractLineBasedMixLoader;
+import net.sf.sparql.benchmarking.loader.OperationLoader;
+import net.sf.sparql.benchmarking.loader.OperationLoaderRegistry;
 import net.sf.sparql.benchmarking.operations.Operation;
 
 /**
- * Abstract operation loader for basic GSP operations
+ * An operation mix loader that provides support for the new tab separated mix
+ * file format introduced in the 2.x releases
  * 
  * @author rvesse
  * 
  */
-public abstract class AbstractGSPOperationLoader extends AbstractOperationLoader {
+public class TsvMixLoader extends AbstractLineBasedMixLoader {
 
     @Override
-    public Operation load(File baseDir, String[] args) throws IOException {
-        switch (args.length) {
-        case 1:
-            return createOperation(args[0]);
-        case 2:
-            return createOperation(args[0], args[1]);
-        default:
-            throw new IOException("Insufficient arguments to load a GSP operation");
-        }
+    public String getPreferredExtension() {
+        return "tsv";
     }
 
-    /**
-     * Create a GSP operation that runs on the default graph
-     * 
-     * @param name
-     *            Name
-     * @return GSP operation
-     */
-    protected abstract Operation createOperation(String name);
-
-    /**
-     * Creates a GSP operation that runs on a specified graph
-     * 
-     * @param name
-     *            Name
-     * @param graphUri
-     *            Graph URI
-     * @return GSP operation
-     */
-    protected abstract Operation createOperation(String name, String graphUri);
+    @Override
+    protected Operation parseLine(File baseDir, String line) throws IOException {
+        String[] fields = line.split("\t");
+        OperationLoader loader = OperationLoaderRegistry.getLoader(fields[0]);
+        if (loader == null)
+            throw new IOException("No OperationLoader is registered for the operation type " + fields[0]);
+        String[] args = Arrays.copyOfRange(fields, 1, fields.length);
+        return loader.load(baseDir, args);
+    }
 
 }

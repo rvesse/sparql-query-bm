@@ -30,35 +30,61 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.loader.impl;
+package net.sf.sparql.benchmarking.loader.update;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.sparql.engine.binding.Binding;
+
+import net.sf.sparql.benchmarking.loader.AbstractNvpOperationLoader;
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.query.DatasetSizeOperation;
+import net.sf.sparql.benchmarking.operations.parameterized.nvp.ParameterizedNvpUpdateOperation;
 
 /**
- * Loader for dataset size operation
+ * Parameterized update operation loader
  * 
  * @author rvesse
  * 
  */
-public class DatasetSizeOperationLoader extends AbstractOperationLoader {
+public class ParameterizedNvpUpdateOperationLoader extends AbstractNvpOperationLoader {
+
+    static final Logger logger = LoggerFactory.getLogger(ParameterizedNvpUpdateOperationLoader.class);
 
     @Override
     public Operation load(File baseDir, String[] args) throws IOException {
-        if (args.length == 0) {
-            return new DatasetSizeOperation();
-        } else {
-            return new DatasetSizeOperation(args[0]);
+        if (args.length < 3)
+            throw new IOException("Insufficient arguments to load a parameterized NVP update operation");
+
+        String queryFile = args[0];
+        String name = queryFile;
+        String paramsFile = args[1];
+        String nvpsFile = args[2];
+
+        if (args.length > 3) {
+            name = args[3];
         }
+
+        String update = readFile(baseDir, queryFile);
+        ResultSet rs = ResultSetFactory.fromTSV(getInputStream(baseDir, paramsFile));
+        List<Binding> params = new ArrayList<Binding>();
+        while (rs.hasNext()) {
+            params.add(rs.nextBinding());
+        }
+        Map<String, List<String>> nvps = this.parseNvps(baseDir, nvpsFile);
+        return new ParameterizedNvpUpdateOperation(update, params, name, nvps);
     }
 
     @Override
     public String getPreferredName() {
-        return "dataset-size";
+        return "param-nvp-update";
     }
-
 }

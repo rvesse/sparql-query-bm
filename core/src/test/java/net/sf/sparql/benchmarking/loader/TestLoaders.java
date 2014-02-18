@@ -35,10 +35,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
-import net.sf.sparql.benchmarking.loader.impl.ClassicQueryMixLoader;
-import net.sf.sparql.benchmarking.loader.impl.QueryOperationLoader;
-import net.sf.sparql.benchmarking.loader.impl.TsvMixLoader;
-import net.sf.sparql.benchmarking.loader.impl.UpdateOperationLoader;
+import net.sf.sparql.benchmarking.loader.mix.ClassicQueryMixLoader;
+import net.sf.sparql.benchmarking.loader.mix.TsvMixLoader;
+import net.sf.sparql.benchmarking.loader.query.FixedQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.update.FixedUpdateOperationLoader;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 
@@ -79,14 +79,14 @@ public class TestLoaders {
     public void registered_op_loaders_01() {
         OperationLoader opLoader = OperationLoaderRegistry.getLoader("query");
         Assert.assertNotNull(opLoader);
-        Assert.assertTrue(opLoader instanceof QueryOperationLoader);
+        Assert.assertTrue(opLoader instanceof FixedQueryOperationLoader);
     }
 
     @Test
     public void registered_op_loaders_02() {
         OperationLoader opLoader = OperationLoaderRegistry.getLoader("update");
         Assert.assertNotNull(opLoader);
-        Assert.assertTrue(opLoader instanceof UpdateOperationLoader);
+        Assert.assertTrue(opLoader instanceof FixedUpdateOperationLoader);
     }
 
     @Test

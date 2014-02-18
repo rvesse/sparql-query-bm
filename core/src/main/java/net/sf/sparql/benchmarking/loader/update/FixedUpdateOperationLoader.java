@@ -30,58 +30,45 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.loader.impl;
+package net.sf.sparql.benchmarking.loader.update;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.sparql.engine.binding.Binding;
-
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.parameterized.ParameterizedUpdateOperation;
+import net.sf.sparql.benchmarking.operations.update.FixedUpdateOperation;
 
 /**
- * Parameterized update operation loader
+ * An operation loader for fixed update operations
  * 
  * @author rvesse
  * 
  */
-public class ParameterizedUpdateOperationLoader extends AbstractOperationLoader {
+public class FixedUpdateOperationLoader extends AbstractOperationLoader {
 
-    static final Logger logger = LoggerFactory.getLogger(ParameterizedUpdateOperationLoader.class);
+    static final Logger logger = LoggerFactory.getLogger(FixedUpdateOperationLoader.class);
 
     @Override
     public Operation load(File baseDir, String[] args) throws IOException {
-        if (args.length < 2)
-            throw new IOException("Insufficient arguments to load a parameterized update operation");
+        if (args.length < 1)
+            throw new IOException("Insufficient arguments to load an update operation");
 
-        String queryFile = args[0];
-        String name = queryFile;
-        String paramsFile = args[1];
-
-        if (args.length > 2) {
-            name = args[2];
+        String updateFile = args[0];
+        String name = updateFile;
+        if (args.length > 1) {
+            name = args[1];
         }
 
-        String update = readFile(baseDir, queryFile);
-        ResultSet rs = ResultSetFactory.fromTSV(getInputStream(baseDir, paramsFile));
-        List<Binding> params = new ArrayList<Binding>();
-        while (rs.hasNext()) {
-            params.add(rs.nextBinding());
-        }
-        return new ParameterizedUpdateOperation(update, params, name);
+        String update = readFile(baseDir, updateFile);
+        return new FixedUpdateOperation(name, update);
     }
 
     @Override
     public String getPreferredName() {
-        return "param-update";
+        return "update";
     }
 }

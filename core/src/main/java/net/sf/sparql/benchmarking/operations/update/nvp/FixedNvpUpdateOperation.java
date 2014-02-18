@@ -30,32 +30,52 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 
-package net.sf.sparql.benchmarking.loader.impl;
+package net.sf.sparql.benchmarking.operations.update.nvp;
 
-import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.gsp.GSPDeleteOperation;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.sparql.benchmarking.operations.OperationCallable;
+import net.sf.sparql.benchmarking.operations.update.FixedUpdateOperation;
+import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.runners.Runner;
+import net.sf.sparql.benchmarking.stats.UpdateRun;
 
 /**
- * An operation loader for GSP Delete operations
+ * An operation that runs a fixed SPARQL update with custom NVPs added to the
+ * request
  * 
  * @author rvesse
  * 
  */
-public class GSPDeleteOperationLoader extends AbstractGSPOperationLoader {
+public class FixedNvpUpdateOperation extends FixedUpdateOperation {
 
-    @Override
-    public String getPreferredName() {
-        return "delete";
+    private Map<String, List<String>> nvps = new HashMap<String, List<String>>();
+
+    /**
+     * Creates a new operation
+     * 
+     * @param name
+     *            Name
+     * @param updateString
+     *            Update
+     * @param nvps
+     *            Name value pairs
+     */
+    public FixedNvpUpdateOperation(String name, String updateString, Map<String, List<String>> nvps) {
+        super(name, updateString);
+        this.nvps.putAll(nvps);
     }
 
     @Override
-    protected Operation createOperation(String name) {
-        return new GSPDeleteOperation(name);
+    protected <T extends Options> OperationCallable<T, UpdateRun> createCallable(Runner<T> runner, T options) {
+        return new NvpUpdateCallable<T>(this.getUpdate(), runner, options, this.nvps);
     }
 
     @Override
-    protected Operation createOperation(String name, String graphUri) {
-        return new GSPDeleteOperation(name, graphUri);
+    public String getType() {
+        return "SPARQL Update with NVPs";
     }
 
 }

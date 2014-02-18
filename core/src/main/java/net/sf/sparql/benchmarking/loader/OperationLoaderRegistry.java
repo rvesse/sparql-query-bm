@@ -35,15 +35,19 @@ package net.sf.sparql.benchmarking.loader;
 import java.util.Hashtable;
 import java.util.Map;
 
-import net.sf.sparql.benchmarking.loader.impl.DatasetSizeOperationLoader;
-import net.sf.sparql.benchmarking.loader.impl.GSPDeleteOperationLoader;
-import net.sf.sparql.benchmarking.loader.impl.GSPGetOperationLoader;
-import net.sf.sparql.benchmarking.loader.impl.GSPHeadOperationLoader;
-import net.sf.sparql.benchmarking.loader.impl.ParameterizedQueryOperationLoader;
-import net.sf.sparql.benchmarking.loader.impl.ParameterizedUpdateOperationLoader;
-import net.sf.sparql.benchmarking.loader.impl.QueryOperationLoader;
-import net.sf.sparql.benchmarking.loader.impl.SleepOperationLoader;
-import net.sf.sparql.benchmarking.loader.impl.UpdateOperationLoader;
+import net.sf.sparql.benchmarking.loader.gsp.GSPDeleteOperationLoader;
+import net.sf.sparql.benchmarking.loader.gsp.GSPGetOperationLoader;
+import net.sf.sparql.benchmarking.loader.gsp.GSPHeadOperationLoader;
+import net.sf.sparql.benchmarking.loader.query.DatasetSizeOperationLoader;
+import net.sf.sparql.benchmarking.loader.query.FixedNvpQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.query.ParameterizedNvpQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.query.ParameterizedQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.query.FixedQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.update.FixedNvpUpdateOperationLoader;
+import net.sf.sparql.benchmarking.loader.update.ParameterizedNvpUpdateOperationLoader;
+import net.sf.sparql.benchmarking.loader.update.ParameterizedUpdateOperationLoader;
+import net.sf.sparql.benchmarking.loader.update.FixedUpdateOperationLoader;
+import net.sf.sparql.benchmarking.loader.util.SleepOperationLoader;
 
 /**
  * Provides a registry of operation loaders
@@ -67,19 +71,25 @@ public class OperationLoaderRegistry {
 
     private synchronized static void init() {
         // Query operations
-        loaders.put("query", new QueryOperationLoader());
-        loaders.put("param-query", new ParameterizedQueryOperationLoader());
-        loaders.put("dataset-size", new DatasetSizeOperationLoader());
+        addLoader(new FixedQueryOperationLoader());
+        addLoader(new FixedNvpQueryOperationLoader());
+        addLoader(new ParameterizedQueryOperationLoader());
+        addLoader(new ParameterizedNvpQueryOperationLoader());
+        addLoader(new DatasetSizeOperationLoader());
+        
         // Update operations
-        loaders.put("update", new UpdateOperationLoader());
-        loaders.put("param-update", new ParameterizedUpdateOperationLoader());
+        addLoader(new FixedUpdateOperationLoader());
+        addLoader(new FixedNvpUpdateOperationLoader());
+        addLoader(new ParameterizedUpdateOperationLoader());
+        addLoader(new ParameterizedNvpUpdateOperationLoader());
+        
         // GSP operations
-        loaders.put("get", new GSPGetOperationLoader());
-        loaders.put("head", new GSPHeadOperationLoader());
-        loaders.put("delete", new GSPDeleteOperationLoader());
+        addLoader(new GSPGetOperationLoader());
+        addLoader(new GSPHeadOperationLoader());
+        addLoader(new GSPDeleteOperationLoader());
         
         // Other operations
-        loaders.put("sleep", new SleepOperationLoader());
+        addLoader(new SleepOperationLoader());
     }
 
     /**

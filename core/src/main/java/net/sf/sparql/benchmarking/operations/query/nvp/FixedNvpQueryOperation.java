@@ -30,42 +30,51 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 
-package net.sf.sparql.benchmarking.loader.impl;
+package net.sf.sparql.benchmarking.operations.query.nvp;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
-import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.util.SleepOperation;
+import net.sf.sparql.benchmarking.operations.OperationCallable;
+import net.sf.sparql.benchmarking.operations.query.FixedQueryOperation;
+import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.runners.Runner;
+import net.sf.sparql.benchmarking.stats.QueryRun;
 
 /**
- * Loader for sleep operation
+ * An operation that runs a fixed query with custom NVPs added to the request
  * 
  * @author rvesse
  * 
  */
-public class SleepOperationLoader extends AbstractOperationLoader {
+public class FixedNvpQueryOperation extends FixedQueryOperation {
 
-    @Override
-    public Operation load(File baseDir, String[] args) throws IOException {
-        try {
-            switch (args.length) {
-            case 0:
-                throw new IOException("Insufficient arguments to load a sleep operation");
-            case 1:
-                return new SleepOperation(Long.parseLong(args[0]));
-            default:
-                return new SleepOperation(args[1], Long.parseLong(args[0]));
-            }
-        } catch (NumberFormatException e) {
-            throw new IOException("Invalid numeric argument for sleep operation", e);
-        }
+    private Map<String, List<String>> nvps = new HashMap<String, List<String>>();
+
+    /**
+     * Creates a new fixed NVP query operation
+     * 
+     * @param name
+     *            Name
+     * @param queryString
+     *            Query string
+     * @param nvps
+     *            Name value pairs
+     */
+    public FixedNvpQueryOperation(String name, String queryString, Map<String, List<String>> nvps) {
+        super(name, queryString);
+        this.nvps.putAll(nvps);
     }
 
     @Override
-    public String getPreferredName() {
-        return "sleep";
+    public String getType() {
+        return "SPARQL Query with NVPs";
+    }
+
+    @Override
+    protected <T extends Options> OperationCallable<T, QueryRun> createCallable(Runner<T> runner, T options) {
+        return new NvpQueryCallable<T>(this.getQuery(), runner, options, this.nvps);
     }
 
 }

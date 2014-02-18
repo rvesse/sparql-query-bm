@@ -30,58 +30,46 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.loader.impl;
+package net.sf.sparql.benchmarking.loader.update;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.sparql.engine.binding.Binding;
-
-import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
+import net.sf.sparql.benchmarking.loader.AbstractNvpOperationLoader;
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.parameterized.ParameterizedQueryOperation;
+import net.sf.sparql.benchmarking.operations.update.nvp.FixedNvpUpdateOperation;
 
 /**
- * Parameterized query operation loader
+ * An operation loader for fixed query with NVP operations
  * 
  * @author rvesse
  * 
  */
-public class ParameterizedQueryOperationLoader extends AbstractOperationLoader {
-
-    static final Logger logger = LoggerFactory.getLogger(ParameterizedQueryOperationLoader.class);
+public class FixedNvpUpdateOperationLoader extends AbstractNvpOperationLoader {
 
     @Override
     public Operation load(File baseDir, String[] args) throws IOException {
         if (args.length < 2)
-            throw new IOException("Insufficient arguments to load a parameterized query operation");
+            throw new IOException("Insufficient arguments to load a NVP update operation");
 
-        String queryFile = args[0];
-        String name = queryFile;
-        String paramsFile = args[1];
-
+        String updateFile = args[0];
+        String nvpFile = args[1];
+        String name = updateFile;
         if (args.length > 2) {
             name = args[2];
         }
 
-        String query = readFile(baseDir, queryFile);
-        ResultSet rs = ResultSetFactory.fromTSV(getInputStream(baseDir, paramsFile));
-        List<Binding> params = new ArrayList<Binding>();
-        while (rs.hasNext()) {
-            params.add(rs.nextBinding());
-        }
-        return new ParameterizedQueryOperation(query, params, name);
+        // Read in data files
+        String update = readFile(baseDir, updateFile);
+        Map<String, List<String>> nvps = parseNvps(baseDir, nvpFile);
+        return new FixedNvpUpdateOperation(name, update, nvps);
     }
 
     @Override
     public String getPreferredName() {
-        return "param-query";
+        return "nvp-update";
     }
+
 }

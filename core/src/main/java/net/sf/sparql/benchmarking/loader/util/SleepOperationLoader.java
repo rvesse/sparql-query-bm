@@ -30,31 +30,42 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 
-package net.sf.sparql.benchmarking.loader.impl;
+package net.sf.sparql.benchmarking.loader.util;
 
 import java.io.File;
 import java.io.IOException;
 
-import net.sf.sparql.benchmarking.loader.AbstractLineBasedMixLoader;
+import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
 import net.sf.sparql.benchmarking.operations.Operation;
+import net.sf.sparql.benchmarking.operations.util.SleepOperation;
 
 /**
- * A loader for the text based query mix format from the 1.x releases of the API
+ * Loader for sleep operation
  * 
  * @author rvesse
  * 
  */
-public class ClassicQueryMixLoader extends AbstractLineBasedMixLoader {
-
-    private static final QueryOperationLoader loader = new QueryOperationLoader();
+public class SleepOperationLoader extends AbstractOperationLoader {
 
     @Override
-    protected Operation parseLine(File baseDir, String line) throws IOException {
-        return loader.load(baseDir, new String[] { line });
+    public Operation load(File baseDir, String[] args) throws IOException {
+        try {
+            switch (args.length) {
+            case 0:
+                throw new IOException("Insufficient arguments to load a sleep operation");
+            case 1:
+                return new SleepOperation(Long.parseLong(args[0]));
+            default:
+                return new SleepOperation(args[1], Long.parseLong(args[0]));
+            }
+        } catch (NumberFormatException e) {
+            throw new IOException("Invalid numeric argument for sleep operation", e);
+        }
     }
 
     @Override
-    public String getPreferredExtension() {
-        return "txt";
+    public String getPreferredName() {
+        return "sleep";
     }
+
 }
