@@ -76,164 +76,176 @@ public abstract class AbstractCommand {
     /**
      * Halt on timeout option
      */
-    @Option(name = "--halt-on-timeout", description = "Sets whether the tests will halt once an operation times out")
+    @Option(name = "--halt-on-timeout", description = "Sets whether the tests will halt once an operation times out.")
     public boolean haltOnTimeout = false;
 
     /**
      * Halt on error option
      */
-    @Option(name = "--halt-on-error", description = "Sets whether the tests will halt once an error is encountered")
+    @Option(name = "--halt-on-error", description = "Sets whether the tests will halt once an error is encountered.")
     public boolean haltOnError = false;
 
     /**
      * Halt on any option
      */
-    @Option(name = "--halt-any", description = "Sets whether the tests will halt once any issue is encountered")
+    @Option(name = "--halt-any", description = "Sets whether the tests will halt once any issue is encountered.")
     public boolean haltAny = false;
 
     /**
      * Timeout option
      */
-    @Option(name = { "-t", "--timeout" }, arity = 1, title = "Seconds", description = "Sets the operation timeout in seconds, a zero/negative value is used to indicate no timeout")
+    @Option(name = { "-t", "--timeout" }, arity = 1, title = "Seconds", description = "Sets the operation timeout in seconds, a zero/negative value is used to indicate no timeout.")
     public int timeout = Options.DEFAULT_TIMEOUT;
 
     /**
      * Parallel threads option
      */
-    @Option(name = { "-p", "--parallel" }, arity = 1, title = "Threads", description = "Sets the number of parallel threads to use for testing")
+    @Option(name = { "-p", "--parallel" }, arity = 1, title = "Threads", description = "Sets the number of parallel threads to use for testing.")
     public int parallelThreads = 1;
 
     /**
      * Maximum delay between operations option
      */
-    @Option(name = { "-d", "--max-delay" }, arity = 1, title = "Milliseconds", description = "Sets the maximum delay between operations in milliseconds")
+    @Option(name = { "-d", "--max-delay" }, arity = 1, title = "Milliseconds", description = "Sets the maximum delay between operations in milliseconds.")
     public int maxDelay = Options.DEFAULT_MAX_DELAY;
 
     /**
      * Query endpoint option
      */
-    @Option(name = { "-q", "--query-endpoint" }, arity = 1, title = "Query Endpoint URI", description = "Sets the SPARQL query endpoint URI")
+    @Option(name = { "-q", "--query-endpoint" }, arity = 1, title = "Query Endpoint URI", description = "Sets the SPARQL query endpoint URI.")
     public String queryEndpoint;
 
     /**
      * Update endpoint option
      */
-    @Option(name = { "-u", "--update-endpoint" }, arity = 1, title = "Update Endpoint URI", description = "Sets the SPARQL update endpoint URI")
+    @Option(name = { "-u", "--update-endpoint" }, arity = 1, title = "Update Endpoint URI", description = "Sets the SPARQL update endpoint URI.")
     public String updateEndpoint;
 
     /**
      * Graph store endpoint option
      */
-    @Option(name = { "-g", "--gsp-endpoint" }, arity = 1, title = "Graph Store Endpoint URI", description = "Sets the SPARQL graph store protocol endpoint URI")
+    @Option(name = { "-g", "--gsp-endpoint" }, arity = 1, title = "Graph Store Endpoint URI", description = "Sets the SPARQL graph store protocol endpoint URI.")
     public String gspEndpoint;
 
     /**
      * Enable compression option
      */
-    @Option(name = { "--compression", "--allow-compression" }, description = "Enables the use of GZip/Deflate compression when communicating with the server assuming the server supports it")
+    @Option(name = { "--compression", "--allow-compression" }, description = "Enables the use of GZip/Deflate compression when communicating with the server assuming the server supports it.")
     public boolean enableCompression = false;
 
     /**
      * ASK Format option
      */
-    @Option(name = { "--results-ask", "--ask-format" }, arity = 1, title = "MIME Type", description = "Sets the results format that will be requested for ASK queries")
+    @Option(name = { "--results-ask", "--ask-format" }, arity = 1, title = "MIME Type", description = "Sets the results format that will be requested for ASK queries.")
     public String askFormat = Options.DEFAULT_FORMAT_ASK;
 
     /**
      * SELECT Format option
      */
-    @Option(name = { "--results-select", "--select-format" }, arity = 1, title = "MIME Type", description = "Sets the results format that will be requested for SELECT queries")
+    @Option(name = { "--results-select", "--select-format" }, arity = 1, title = "MIME Type", description = "Sets the results format that will be requested for SELECT queries.")
     public String selectFormat = Options.DEFAULT_FORMAT_SELECT;
 
     /**
      * Graph Format option
      */
-    @Option(name = { "--results-graph", "--graph-format" }, arity = 1, title = "MIME Type", description = "Sets the results format that will be requested for CONSTRUCT/DESCRIBE queries and operations that retrieve a graph")
+    @Option(name = { "--results-graph", "--graph-format" }, arity = 1, title = "MIME Type", description = "Sets the results format that will be requested for CONSTRUCT/DESCRIBE queries and operations that retrieve a graph.")
     public String graphFormat = Options.DEFAULT_FORMAT_GRAPH;
 
     /**
      * Mix option
      */
-    @Option(name = { "-m", "--mix" }, arity = 1, title = "Mix File", required = true, description = "Sets the operation mix file which provides the mix of operations to be run")
+    @Option(name = { "-m", "--mix" }, arity = 1, title = "Mix File", required = true, description = "Sets the operation mix file which provides the mix of operations to be run.")
     public String mixFile;
 
     /**
      * Sanity checking option
      */
-    @Option(name = { "-s", "--sanity-checks" }, arity = 1, title = "Level", description = "Sets the sanity checking level, this is the number of basic sanity checks the system to be tested must pass before actual tests will be started.  This should normally be set to a value no greater than 3 though some commands may support higher sanity checking levels")
+    @Option(name = { "-s", "--sanity-checks" }, arity = 1, title = "Level", description = "Sets the sanity checking level, this is the number of basic sanity checks the system to be tested must pass before actual tests will be started.  This should normally be set to a value no greater than 3 though some commands may support higher sanity checking levels.")
     public int sanityCheckLevel = Options.DEFAULT_SANITY_CHECKS;
 
     /**
      * Disable random order option
      */
-    @Option(name = { "--norand", "--no-random" }, description = "Disables randomized ordering of operations within mixes")
+    @Option(name = { "--norand", "--no-random" }, description = "Disables randomized ordering of operations within mixes.")
     public boolean noRandom = false;
 
     /**
      * User name option
      */
-    @Option(name = { "--username" }, arity = 1, title = "Username", description = "Sets the user name used for authentication")
+    @Option(name = { "--username" }, arity = 1, title = "Username", description = "Sets the user name used for authentication.")
     public String username;
 
     /**
      * Password option
      */
-    @Option(name = { "--password" }, arity = 1, title = "Password", description = "Sets the password used for authentication")
+    @Option(name = { "--password" }, arity = 1, title = "Password", description = "Sets the password used for authentication.")
     public String password;
 
     /**
      * Pre-emptive authentication option
      */
-    @Option(name = { "--preemptive-auth" }, description = "Enables pre-emptive authentication, only has an effect if HTTP basic authentication is being used")
+    @Option(name = { "--preemptive-auth" }, description = "Enables pre-emptive authentication, only has an effect if HTTP basic authentication is being used.")
     public boolean preemptiveAuth = false;
 
     /**
      * Form URL option
      */
-    @Option(name = { "--form-url" }, arity = 1, title = "Form URL", description = "Sets the URL used to login for form based authentication")
+    @Option(name = { "--form-url" }, arity = 1, title = "Form URL", description = "Sets the URL used to login for form based authentication, this option is required if you wish to use form based authentication.  When not specified and the --username and --password options are specified standard HTTP authentication is assumed.")
     public String formUrl;
 
     /**
      * Form user name field
      */
-    @Option(name = { "--form-user-field" }, arity = 1, title = "Form User Field", description = "Sets the user name field used for form based authentication (defaults to httpd_username)")
+    @Option(name = { "--form-user-field" }, arity = 1, title = "Form User Field", description = "Sets the user name field used for form based authentication (defaults to httpd_username).")
     public String formUserField;
 
     /**
      * Form password field
      */
-    @Option(name = { "--form-password-field" }, arity = 1, title = "Form Password Field", description = "Sets the password field used for form based authentication (defaults to httpd_password)")
+    @Option(name = { "--form-password-field" }, arity = 1, title = "Form Password Field", description = "Sets the password field used for form based authentication (defaults to httpd_password).")
     public String formPwdField;
 
     /**
      * Logging to console option
      */
-    @Option(name = { "--logging" }, description = "Enables log output to the console")
+    @Option(name = { "--logging" }, description = "Enables log output to the console.")
     public boolean logToConsole = false;
 
     /**
      * Logging to file option
      */
-    @Option(name = { "--log-file" }, arity = 1, title = "File", description = "Enables logging to a file")
+    @Option(name = { "--log-file" }, arity = 1, title = "File", description = "Enables logging to a file.")
     public String logFile;
 
     /**
      * Debug option
      */
-    @Option(name = { "--debug" }, description = "Enables debug level logging, must be used with the --logging or --log-file option to have a visible effect")
+    @Option(name = { "--debug" }, description = "Enables debug level logging, must be used with the --logging or --log-file option to have a visible effect.")
     public boolean debug = false;
 
     /**
      * Trace option
      */
-    @Option(name = { "--trace" }, description = "Enables trace level logging, must be used with the --logging or --log-file option to have a visible effect")
+    @Option(name = { "--trace" }, description = "Enables trace level logging, must be used with the --logging or --log-file option to have a visible effect.")
     public boolean trace = false;
 
     /**
      * Quite mode option
      */
-    @Option(name = { "--quiet" }, description = "Enables quiet mode, in this mode general progress information is not printed to standard out")
+    @Option(name = { "--quiet" }, description = "Enables quiet mode, in this mode general progress information is not printed to standard out.")
     public boolean quiet = false;
+
+    /**
+     * Setup mix option
+     */
+    @Option(name = { "--setup" }, arity = 1, title = "Setup Mix", description = "Sets a mix file containing a mix that will be used as a setup mix i.e. it will run the operations specified in it once in the exact order given before actual testing starts.")
+    public String setupMixFile;
+
+    /**
+     * Tear down mix option
+     */
+    @Option(name = { "--teardown" }, arity = 1, title = "Teardown Mix", description = "Sets a mix fix containing a mix that will be used as a tear down mix i.e. it will run the operations specified in it once in the exact order given after actual testing finished.")
+    public String teardownMixFile;
 
     /**
      * Method that should be implemented to run the actual command
@@ -300,8 +312,22 @@ public abstract class AbstractCommand {
             throw new RuntimeException("No mix loader is associated with files with the extension "
                     + FileUtils.getExtension(this.mixFile, true, true));
 
-        // Set operation mix
+        // Set operation mixes
         options.setOperationMix(mixLoader.load(new File(this.mixFile)));
+        if (this.setupMixFile != null) {
+            mixLoader = OperationMixLoaderRegistry.getLoader(FileUtils.getExtension(this.setupMixFile, true, false));
+            if (mixLoader == null)
+                throw new RuntimeException("No mix loader is associated with files with the extension "
+                        + FileUtils.getExtension(this.setupMixFile, true, true));
+            options.setSetupMix(mixLoader.load(new File(this.setupMixFile)));
+        }
+        if (this.teardownMixFile != null) {
+            mixLoader = OperationMixLoaderRegistry.getLoader(FileUtils.getExtension(this.teardownMixFile, true, false));
+            if (mixLoader == null)
+                throw new RuntimeException("No mix loader is associated with files with the extension "
+                        + FileUtils.getExtension(this.teardownMixFile, true, true));
+            options.setTeardownMix(mixLoader.load(new File(this.teardownMixFile)));
+        }
 
         // Endpoints
         options.setQueryEndpoint(this.queryEndpoint);

@@ -146,7 +146,7 @@ public class SoakCmd extends AbstractCommand {
      * @param options
      *            Soak options to populate
      */
-    protected <T extends Options> void applySoakOptions(T options) {
+    protected <T extends Options> void applySoakOptions(SoakOptions options) {
         options.setMaxRuns(this.maxRuns);
         options.setMaxRuntime(this.runtime);
     }
