@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.http.client.HttpClient;
 import org.apache.jena.atlas.web.auth.HttpAuthenticator;
 import org.apache.jena.riot.WebContent;
 
@@ -437,5 +436,52 @@ public interface Options {
      *            Sanity Check Level
      */
     public abstract void setSanityCheckLevel(int level);
+
+    /**
+     * Gets the tear down mix to be run, {@code null} indicates no tear down mix
+     * is requested.
+     * <p>
+     * Operations in a tear down mix are guaranteed to be run exactly in the
+     * order given.
+     * </p>
+     * 
+     * @return Tear down mix or null
+     */
+    public abstract OperationMix getTeardownMix();
+
+    /**
+     * Sets the tear down mix that will be run once after testing completes
+     * successfully.
+     * <p>
+     * Operations in a tear down mix are guaranteed to be run exactly in the
+     * order given.
+     * </p>
+     * 
+     * @param mix
+     *            Tear down mix
+     */
+    public abstract void setTeardownMix(OperationMix mix);
+
+    /**
+     * Gets the setup mix to be run, {@code null} indicates no setup mix is
+     * requested.
+     * <p>
+     * Operations in a setup mix are guaranteed to be run exactly in the order
+     * given. </>
+     * 
+     * @return Setup mix or null
+     */
+    public abstract OperationMix getSetupMix();
+
+    /**
+     * Sets the setup mix that will be run once before testing starts.
+     * <p>
+     * Operations in a setup mix are guaranteed to be run exactly in the order
+     * given. </>
+     * 
+     * @param mix
+     *            Setup mix
+     */
+    public abstract void setSetupMix(OperationMix mix);
 
 }

@@ -35,8 +35,10 @@ package net.sf.sparql.benchmarking.operations;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -217,6 +219,22 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
                 total++;
         }
         return total;
+    }
+
+    @Override
+    public Map<Integer, List<OperationRun>> getCategorizedErrors() {
+        Map<Integer, List<OperationRun>> errors = new HashMap<Integer, List<OperationRun>>();
+        for (OperationRun r : this.runs) {
+            if (!r.wasSuccessful())
+                continue;
+            
+            // Categorize error
+            if (!errors.containsKey(r.getErrorCategory())) {
+                errors.put(r.getErrorCategory(), new ArrayList<OperationRun>());
+            }
+            errors.get(r.getErrorCategory()).add(r);
+        }
+        return errors;
     }
 
     @Override

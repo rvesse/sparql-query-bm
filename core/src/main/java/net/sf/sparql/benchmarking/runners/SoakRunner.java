@@ -123,8 +123,10 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         reportProgress(options, "Random Operation Order = " + (options.getRandomizeOrder() ? "On" : "Off"));
         reportProgress(options, "Timeout = " + (options.getTimeout() > 0 ? options.getTimeout() + " seconds" : "disabled"));
         reportProgress(options, "Max Delay between Operations = " + options.getMaxDelay() + " milliseconds");
-        // reportProgress(options, "Result Limit = " + (options.getLimit() <= 0
-        // ? "Query Specified" : options.getLimit()));
+        reportProgress(options, "Setup Mix = "
+                + (options.getSetupMix() != null ? options.getSetupMix().size() + " Operation(s)" : "disabled"));
+        reportProgress(options, "Teardown Mix = "
+                + (options.getTeardownMix() != null ? options.getTeardownMix().size() + " Operation(s)" : "disabled"));
         reportProgress(options, "Halt on Timeout = " + options.getHaltOnTimeout());
         reportProgress(options, "Halt on Error = " + options.getHaltOnError());
         reportProgress(options, "Halt Any = " + options.getHaltAny());
@@ -166,6 +168,13 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
             reportProgress(options);
             i++;
         }
+        
+        // Setup
+        if (options.getSetupMix() != null) {
+            reportProgress(options, "Running setup mix...");
+            options.getSetupMix().run(this, options);
+            reportProgress(options);
+        }
 
         // Actual Runs
         reportProgress(options, "Running soak tests...");
@@ -173,7 +182,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         Instant endInstant = startInstant;
         reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
         reportProgress(options);
-
+        
         long startTime = System.nanoTime();
         long endTime = startTime;
         if (options.getParallelThreads() == 1) {
@@ -239,6 +248,13 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         // Get end time
         endTime = System.nanoTime();
         endInstant = Instant.now();
+        
+        // Teardown
+        if (options.getTeardownMix() != null) {
+            reportProgress(options, "Running teardown mix...");
+            options.getTeardownMix().run(this, options);
+            reportProgress(options);
+        }
 
         reportProgress(options, "Finished soak testing");
         reportProgress(options);
@@ -256,6 +272,11 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
             // Print Summary
             reportProgress(options, "Operation ID " + i + " of type " + op.getType() + " (" + op.getName() + ")");
             reportProgress(options, "Total Errors: " + op.getTotalErrors());
+            if (op.getTotalErrors() > 0) {
+                // Show errors by category
+                Map<Integer, List<OperationRun>> categorizedErrors = op.getCategorizedErrors();
+                this.reportCategorizedErrors(options, categorizedErrors);
+            }
             reportProgress(options, "Average Results: " + op.getAverageResults());
             reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(op.getTotalResponseTime()));
             reportProgress(options,
@@ -291,14 +312,8 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         reportProgress(options, "Total Errors: " + options.getOperationMix().getTotalErrors());
         if (options.getOperationMix().getTotalErrors() > 0) {
             // Show errors by category
-            reportProgress(options, "Errors by Category: ");
             Map<Integer, List<OperationRun>> categorizedErrors = options.getOperationMix().getCategorizedErrors();
-            for (Integer category : categorizedErrors.keySet()) {
-                String description = ErrorCategories.getDescription(category);
-                if (description == null)
-                    description = String.format("  Unknown Category %d", category);
-                reportProgress(options, "  " + description + ": " + categorizedErrors.get(category).size() + " error(s)");
-            }
+            reportCategorizedErrors(options, categorizedErrors);
         }
         reportProgress(options);
         reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
@@ -317,6 +332,21 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
                     halt(options, l.getClass().getName() + " encountering an error during finish");
                 }
             }
+        }
+    }
+
+    /**
+     * Reports categorized errors
+     * @param options Options
+     * @param categorizedErrors Categorized Errors
+     */
+    protected void reportCategorizedErrors(SoakOptions options, Map<Integer, List<OperationRun>> categorizedErrors) {
+        reportProgress(options, "Errors by Category: ");
+        for (Integer category : categorizedErrors.keySet()) {
+            String description = ErrorCategories.getDescription(category);
+            if (description == null)
+                description = String.format("  Unknown Category %d", category);
+            reportProgress(options, "  " + description + ": " + categorizedErrors.get(category).size() + " error(s)");
         }
     }
 }

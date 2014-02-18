@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.options;
 
+
 /**
  * Options for soak testing
  * 
@@ -52,7 +53,6 @@ public class SoakOptions extends OptionsImpl {
 
     private int maxRuns = DEFAULT_MAX_RUNS;
     private long runtime = DEFAULT_RUNTIME;
-
     /**
      * Sets the maximum number of runs for soak testing
      * <p>

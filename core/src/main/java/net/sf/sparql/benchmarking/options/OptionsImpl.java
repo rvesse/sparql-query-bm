@@ -76,6 +76,8 @@ public class OptionsImpl implements Options {
     private AtomicLong globalOrder = new AtomicLong(0);
     private boolean randomize = true;
     int sanity = DEFAULT_SANITY_CHECKS;
+    private OperationMix setupMix;
+    private OperationMix teardownMix;
 
     @Override
     public ExecutorService getExecutor() {
@@ -310,6 +312,26 @@ public class OptionsImpl implements Options {
     @Override
     public int getSanityCheckLevel() {
         return sanity;
+    }
+
+    @Override
+    public void setSetupMix(OperationMix mix) {
+        this.setupMix = mix;
+    }
+
+    @Override
+    public OperationMix getSetupMix() {
+        return this.setupMix;
+    }
+
+    @Override
+    public void setTeardownMix(OperationMix mix) {
+        this.teardownMix = mix;
+    }
+
+    @Override
+    public OperationMix getTeardownMix() {
+        return this.teardownMix;
     }
 
 }

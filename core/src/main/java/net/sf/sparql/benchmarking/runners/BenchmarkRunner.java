@@ -168,6 +168,13 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
             reportProgress(options);
             i++;
         }
+        
+        // Setup
+        if (options.getSetupMix() != null) {
+            reportProgress(options, "Running setup mix...");
+            options.getSetupMix().run(this, options);
+            reportProgress(options);
+        }
 
         // Warmups
         reportProgress(options, "Running Warmups...");
@@ -241,7 +248,15 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
             }
         }
         Instant endInstant = Instant.now();
-        reportProgress(options, "Finished Benchmarking, calculating statistics...");
+
+        // Teardown
+        if (options.getTeardownMix() != null) {
+            reportProgress(options, "Running teardown mix...");
+            options.getTeardownMix().run(this, options);
+            reportProgress(options);
+        }
+
+        reportProgress(options, "Finished Benchmarking...");
         reportProgress(options);
 
         // Operation Summary

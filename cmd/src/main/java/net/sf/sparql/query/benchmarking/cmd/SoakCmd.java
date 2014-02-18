@@ -44,6 +44,7 @@ import java.io.IOException;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.options.SoakOptions;
 import net.sf.sparql.benchmarking.runners.SoakRunner;
 
@@ -144,7 +145,7 @@ public class SoakCmd extends AbstractCommand {
      * @param options
      *            Soak options to populate
      */
-    protected <T extends SoakOptions> void applySoakOptions(T options) {
+    protected <T extends Options> void applySoakOptions(T options) {
         options.setMaxRuns(this.maxRuns);
         options.setMaxRuntime(this.runtime);
     }

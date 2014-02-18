@@ -33,6 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package net.sf.sparql.benchmarking.operations;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
@@ -160,6 +162,13 @@ public interface Operation {
      * @return Total number of errors
      */
     public abstract long getTotalErrors();
+
+    /**
+     * Gets the information for all errors grouped by category
+     * 
+     * @return Errors grouped by category
+     */
+    public abstract Map<Integer, List<OperationRun>> getCategorizedErrors();
 
     /**
      * Gets the total number of results for this operation
