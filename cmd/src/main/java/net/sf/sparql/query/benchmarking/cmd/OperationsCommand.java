@@ -41,6 +41,7 @@ import javax.inject.Inject;
 import net.sf.sparql.benchmarking.loader.OperationLoader;
 import net.sf.sparql.benchmarking.loader.OperationLoaderArgument;
 import net.sf.sparql.benchmarking.loader.OperationLoaderRegistry;
+import net.sf.sparql.query.benchmarking.cmd.util.PrintHelper;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -72,7 +73,7 @@ public class OperationsCommand {
     /**
      * Operation option
      */
-    @Option(name = { "-o", "--operation" }, arity = 1, title = "Operation Name", description = "Requests that help for a specific operation be shown")
+    @Option(name = { "-o", "--op", "--operation" }, arity = 1, title = "Operation Name", description = "Requests that help for a specific operation be shown")
     public String op;
 
     /**
@@ -193,14 +194,20 @@ public class OperationsCommand {
             for (String key : loaders.keySet()) {
                 // Print operation name plus padding
                 System.out.print(key);
-                printIndent(maxKeyLength - key.length());
+                PrintHelper.printIndent(maxKeyLength - key.length());
 
                 // Print operation description
                 String description = loaders.get(key).getDescription();
-                printDescription(description, maxKeyLength, columnWidth);
+                PrintHelper.print(description, maxKeyLength, columnWidth);
             }
 
-            // When verbose print argument summaries for every operation
+            System.out.println();
+            PrintHelper.print(
+                    "For operation specific help run with the --op option and provide the name of the operation you wish to see help for e.g.\n"
+                            + "    ./operations --op query", 0, 100);
+
+            // When verbose PrintHelper.print argument summaries for every
+            // operation
             if (this.verbose) {
                 System.out.println();
                 for (String key : loaders.keySet()) {
@@ -213,13 +220,14 @@ public class OperationsCommand {
             OperationLoader loader = OperationLoaderRegistry.getLoader(this.op);
             if (loader == null) {
                 System.err.println(AbstractCommand.ANSI_RED + "Cannot show help for unknown operation " + this.op);
+                return;
             }
 
             System.out.println(this.op);
-            printChars('=', this.op.length());
+            PrintHelper.printChars('=', this.op.length());
             System.out.println();
             System.out.println();
-            printDescription(loader.getDescription(), 0, 100);
+            PrintHelper.print(loader.getDescription(), 0, 100);
             System.out.println();
 
             System.out.println("Operation Arguments");
@@ -231,9 +239,9 @@ public class OperationsCommand {
             // Show example usage
             OperationLoaderArgument[] args = loader.getArguments();
             int closeArgs = 0;
-            printIndent(4);
+            PrintHelper.printIndent(4);
             System.out.print(this.op);
-            printIndent(4);
+            PrintHelper.printIndent(4);
             for (int i = 0; i < args.length; i++) {
                 OperationLoaderArgument arg = args[i];
                 if (arg.isOptional()) {
@@ -242,10 +250,10 @@ public class OperationsCommand {
                 }
                 System.out.print(arg.getName());
                 if (i < args.length - 1)
-                    printIndent(4);
+                    PrintHelper.printIndent(4);
             }
             if (closeArgs > 0)
-                printChars(']', closeArgs);
+                PrintHelper.printChars(']', closeArgs);
             System.out.println();
             System.out.println();
 
@@ -253,70 +261,51 @@ public class OperationsCommand {
             System.out.println("Argument details:");
             System.out.println();
             for (int i = 0; i < args.length; i++) {
+                // Argument description
                 OperationLoaderArgument arg = args[i];
-                printIndent(4);
-                System.out.println(arg.getName());
-                printIndent(8);
-                printDescription(arg.getDescription(), 8, 92);
+                PrintHelper.printIndent(4);
+                System.out.print(arg.getName());
+                if (arg.isOptional())
+                    System.out.print(" (Optional)");
+                System.out.println();
+                PrintHelper.printIndent(8);
+                PrintHelper.print(arg.getDescription(), 8, 92);
                 System.out.println();
 
-                // TODO When verbose add additional general information about
-                // the argument type
-            }
-        }
-    }
-
-    private void printIndent(int length) {
-        printChars(' ', length);
-    }
-
-    private void printChars(char c, int length) {
-        for (int i = 0; i < length; i++) {
-            System.out.print(c);
-        }
-    }
-
-    private void printDescription(String description, int indent, int columnWidth) {
-        int newLineIndex = description.indexOf('\n');
-        if (newLineIndex == -1) {
-            printDescriptionWithoutNewLines(description, indent, columnWidth);
-        } else {
-            int start = 0;
-            while (newLineIndex > -1) {
-                String partialDescription = description.substring(0, newLineIndex - 1);
-                printDescriptionWithoutNewLines(partialDescription, indent, columnWidth);
-                printIndent(indent);
-                start = newLineIndex + 1;
-                newLineIndex = description.indexOf('\n', start);
-            }
-            printDescriptionWithoutNewLines(description.substring(start), indent, columnWidth);
-        }
-    }
-
-    private void printDescriptionWithoutNewLines(String description, int indent, int columnWidth) {
-        if (description.length() <= columnWidth) {
-            System.out.println(description);
-        } else {
-            int start = 0;
-            while (true) {
-                if (description.length() - start <= columnWidth) {
-                    printDescriptionWithoutNewLines(description.substring(start), indent, columnWidth);
-                    break;
+                // When verbose add additional general information about the
+                // argument type
+                if (this.verbose) {
+                    switch (arg.getType()) {
+                    case OperationLoaderArgument.TYPE_FILE:
+                        PrintHelper.printIndent(8);
+                        PrintHelper
+                                .print("File type arguments expect to receive a path to the file and this path may be absolute or relative.  In the case of relative paths they are resolved relative to the directory in which the mix file specifying the operation is located.\nFile type arguments can also be used to refer to classpath resources, in the case that the path specifies both a file and a classpath resource the file is used.",
+                                        8, 92);
+                        System.out.println();
+                        break;
+                    case OperationLoaderArgument.TYPE_LONG:
+                        PrintHelper.printIndent(8);
+                        PrintHelper.print(
+                                "Long type arguments expect to receive an integer value which is a valid long integer.", 8, 92);
+                        System.out.println();
+                        break;
+                    case OperationLoaderArgument.TYPE_STRING:
+                        // No special argument information
+                        break;
+                    default:
+                        PrintHelper.printIndent(8);
+                        PrintHelper.print("This argument has an unknown type, the expected values for arguments are unknown", 8,
+                                92);
+                        break;
+                    }
                 }
-                int spaceIndex = findPrecedingSpace(description, start + columnWidth);
-                printDescriptionWithoutNewLines(description.substring(start, spaceIndex), indent, columnWidth);
-                printIndent(indent);
-                start = spaceIndex + 1;
+            }
+
+            // Inform users they can use verbose to see additional argument
+            // information
+            if (!this.verbose) {
+                PrintHelper.print("To see additional information about argument types run with the -v/--verbose option", 0, 100);
             }
         }
-    }
-
-    private int findPrecedingSpace(String value, int index) {
-        char c = value.charAt(index);
-        while (!Character.isWhitespace(c) && index >= 0) {
-            index--;
-            c = value.charAt(index);
-        }
-        return index;
     }
 }

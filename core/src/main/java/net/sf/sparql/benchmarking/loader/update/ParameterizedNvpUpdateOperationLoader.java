@@ -104,7 +104,7 @@ public class ParameterizedNvpUpdateOperationLoader extends AbstractNvpOperationL
                 "Parameters File",
                 "Provides a file that contains the parameters to be used.  Parameters files are expected to be in SPARQL TSV results format where each result row represents a set of parameters.",
                 OperationLoaderArgument.TYPE_FILE);
-        args[2] = this.getNvpsArgument();
+        args[2] = AbstractNvpOperationLoader.getNvpsArgument();
         args[3] = AbstractOperationLoader.getNameArgument(true);
         return args;
     }

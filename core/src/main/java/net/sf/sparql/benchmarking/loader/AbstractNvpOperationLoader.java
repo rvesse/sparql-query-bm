@@ -124,7 +124,7 @@ public abstract class AbstractNvpOperationLoader extends AbstractOperationLoader
      * 
      * @return NVPs argument
      */
-    protected final OperationLoaderArgument getNvpsArgument() {
+    public static OperationLoaderArgument getNvpsArgument() {
         return new OperationLoaderArgument(
                 "NVPs File",
                 "Provides the path to a file containing NVPs.  This file may in either TSV or Java Properties format.\n"

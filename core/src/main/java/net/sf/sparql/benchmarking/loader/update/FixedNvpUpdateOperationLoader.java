@@ -83,7 +83,7 @@ public class FixedNvpUpdateOperationLoader extends AbstractNvpOperationLoader {
     public OperationLoaderArgument[] getArguments() {
         OperationLoaderArgument[] args = new OperationLoaderArgument[3];
         args[0] = new OperationLoaderArgument("Update File", "Provides a file that contains the SPARQL updates to be run.", OperationLoaderArgument.TYPE_FILE);
-        args[1] = this.getNvpsArgument();
+        args[1] = AbstractNvpOperationLoader.getNvpsArgument();
         args[2] = AbstractOperationLoader.getNameArgument(true);
         return args;
     }
