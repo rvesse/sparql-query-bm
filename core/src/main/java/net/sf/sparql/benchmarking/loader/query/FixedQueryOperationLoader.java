@@ -81,7 +81,8 @@ public class FixedQueryOperationLoader extends AbstractOperationLoader {
     @Override
     public OperationLoaderArgument[] getArguments() {
         OperationLoaderArgument[] args = new OperationLoaderArgument[2];
-        args[0] = new OperationLoaderArgument("Query File", "Provides a file that contains the SPARQL query to be run.", OperationLoaderArgument.TYPE_FILE);
+        args[0] = new OperationLoaderArgument("Query File", "Provides a file that contains the SPARQL query to be run.",
+                OperationLoaderArgument.TYPE_FILE);
         args[1] = AbstractOperationLoader.getNameArgument(true);
         return args;
     }
