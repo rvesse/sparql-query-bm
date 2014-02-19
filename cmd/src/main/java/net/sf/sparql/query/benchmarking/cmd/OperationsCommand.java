@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.query.benchmarking.cmd;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -43,6 +44,7 @@ import net.sf.sparql.benchmarking.loader.OperationLoaderRegistry;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import io.airlift.command.Arguments;
 import io.airlift.command.Command;
 import io.airlift.command.HelpOption;
 import io.airlift.command.Option;
@@ -73,8 +75,17 @@ public class OperationsCommand {
     @Option(name = { "-o", "--operation" }, arity = 1, title = "Operation Name", description = "Requests that help for a specific operation be shown")
     public String op;
 
+    /**
+     * Verbose option
+     */
     @Option(name = { "-v", "--verbose" }, description = "Enables verbose help")
     public boolean verbose = false;
+
+    /**
+     * Classes argument
+     */
+    @Arguments(description = "Provides additional classes that should be loaded thus allowing help for custom operations provided by additional JARs on the CLASSPATH to be shown")
+    public List<String> classes;
 
     /**
      * Entry point for the operations command
@@ -93,7 +104,8 @@ public class OperationsCommand {
                 return;
             }
 
-            // Run testing
+            // Run command
+            cmd.loadClasses();
             cmd.run();
 
             // Successful exit
@@ -123,6 +135,38 @@ public class OperationsCommand {
         } finally {
             System.err.println(AbstractCommand.ANSI_RESET);
             System.exit(exitCode);
+        }
+    }
+
+    private void loadClasses() {
+        if (this.classes == null)
+            return;
+        try {
+            for (String className : this.classes) {
+                try {
+                    Class<?> cls = Class.forName(className);
+                    Object instance = cls.newInstance();
+                    if (instance instanceof OperationLoader) {
+                        // Register it
+                        OperationLoader loader = (OperationLoader) instance;
+                        System.out.println("Successfully registered custom operation loader class " + className
+                                + " which provides operation " + loader.getPreferredName());
+                        OperationLoaderRegistry.addLoader(loader);
+                    } else {
+                        System.out.println("Successfully loaded class " + className
+                                + " and any static initializer blocks will have been invoked");
+                    }
+                } catch (ClassNotFoundException e) {
+                    System.err.println(AbstractCommand.ANSI_RED + "Class " + className + " not found on your CLASSPATH");
+                } catch (InstantiationException e) {
+                    System.err.println(AbstractCommand.ANSI_RED + "Class " + className + " could not be instantiated");
+                } catch (IllegalAccessException e) {
+                    System.err.println(AbstractCommand.ANSI_RED + "Class " + className + " is not accessible");
+                }
+            }
+            System.out.println();
+        } finally {
+            System.err.println(AbstractCommand.ANSI_RESET);
         }
     }
 
@@ -183,7 +227,7 @@ public class OperationsCommand {
             System.out.println();
             System.out.println("Example usage in a TSV mix file (note spaces are used in places of tabs for clarity):");
             System.out.println();
-            
+
             // Show example usage
             OperationLoaderArgument[] args = loader.getArguments();
             int closeArgs = 0;
@@ -204,7 +248,7 @@ public class OperationsCommand {
                 printChars(']', closeArgs);
             System.out.println();
             System.out.println();
-            
+
             // Show argument descriptions
             System.out.println("Argument details:");
             System.out.println();
