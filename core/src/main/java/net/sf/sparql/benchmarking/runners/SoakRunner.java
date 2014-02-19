@@ -298,7 +298,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         reportProgress(options, "-----------------");
         reportProgress(options);
         reportProgress(options, "Number of Runs: " + options.getOperationMix().getRunCount());
-        reportProgress(options, "Total Operations Run: " + (i * options.getOperationMix().size()));
+        reportProgress(options, "Total Operations Run: " + (options.getOperationMix().getRunCount() * options.getOperationMix().size()));
         reportProgress(options);
         reportProgress(options, "Total Errors: " + options.getOperationMix().getTotalErrors());
         if (options.getOperationMix().getTotalErrors() > 0) {
