@@ -83,9 +83,15 @@ public class OperationsCommand {
     public boolean verbose = false;
 
     /**
+     * Width option
+     */
+    @Option(name = { "-w", "--width" }, description = "Sets the desired column width which can be used to wrap the help output for restricted viewports.  This defaults to 100 when not set and a minimum value of 40 is enforced.  Some portions of the output will not wrap because doing so would make them difficult to understand.")
+    public int width = 100;
+
+    /**
      * Classes argument
      */
-    @Arguments(description = "Provides additional classes that should be loaded thus allowing help for custom operations provided by additional JARs on the CLASSPATH to be shown")
+    @Arguments(description = "Provides additional classes that should be loaded thus allowing help for custom operations provided by additional JARs on the CLASSPATH to be shown.  Classes may either be classes that implement the OperationLoader interface in which case they will be registered directly or they may be classes which use static initializer blocks to intialize register multiple custom operation loaders.")
     public List<String> classes;
 
     /**
@@ -172,6 +178,9 @@ public class OperationsCommand {
     }
 
     private void run() {
+        if (this.width < 40)
+            this.width = 40;
+
         if (this.op == null) {
             // List available operations
             System.out.println("Available Operations");
@@ -188,23 +197,31 @@ public class OperationsCommand {
             }
 
             maxKeyLength += 4;
-            int columnWidth = 100 - maxKeyLength;
-            if (columnWidth <= 0)
-                columnWidth = 60;
+            boolean fixedIndent = false;
+            int columnWidth = this.width - maxKeyLength;
+            if (columnWidth <= 20) {
+                columnWidth = this.width;
+                fixedIndent = true;
+            }
             for (String key : loaders.keySet()) {
                 // Print operation name plus padding
                 System.out.print(key);
-                PrintHelper.printIndent(maxKeyLength - key.length());
+                if (fixedIndent) {
+                    System.out.println();
+                    PrintHelper.printIndent(4);
+                } else {
+                    PrintHelper.printIndent(maxKeyLength - key.length());
+                }
 
                 // Print operation description
                 String description = loaders.get(key).getDescription();
-                PrintHelper.print(description, maxKeyLength, columnWidth);
+                PrintHelper.print(description, fixedIndent ? 4 : maxKeyLength, columnWidth);
             }
 
             System.out.println();
             PrintHelper.print(
                     "For operation specific help run with the --op option and provide the name of the operation you wish to see help for e.g.\n"
-                            + "    ./operations --op query", 0, 100);
+                            + "    ./operations --op query", 0, this.width);
 
             // When verbose PrintHelper.print argument summaries for every
             // operation
@@ -233,7 +250,8 @@ public class OperationsCommand {
             System.out.println("Operation Arguments");
             System.out.println("-------------------");
             System.out.println();
-            System.out.println("Example usage in a TSV mix file (note spaces are used in places of tabs for clarity):");
+            PrintHelper.print("Example usage in a TSV mix file (note spaces are used in places of tabs for clarity):", 0,
+                    this.width);
             System.out.println();
 
             // Show example usage
@@ -269,7 +287,7 @@ public class OperationsCommand {
                     System.out.print(" (Optional)");
                 System.out.println();
                 PrintHelper.printIndent(8);
-                PrintHelper.print(arg.getDescription(), 8, 92);
+                PrintHelper.print(arg.getDescription(), 8, this.width - 8);
                 System.out.println();
 
                 // When verbose add additional general information about the
@@ -280,13 +298,14 @@ public class OperationsCommand {
                         PrintHelper.printIndent(8);
                         PrintHelper
                                 .print("File type arguments expect to receive a path to the file and this path may be absolute or relative.  In the case of relative paths they are resolved relative to the directory in which the mix file specifying the operation is located.\nFile type arguments can also be used to refer to classpath resources, in the case that the path specifies both a file and a classpath resource the file is used.",
-                                        8, 92);
+                                        8, this.width - 8);
                         System.out.println();
                         break;
                     case OperationLoaderArgument.TYPE_LONG:
                         PrintHelper.printIndent(8);
                         PrintHelper.print(
-                                "Long type arguments expect to receive an integer value which is a valid long integer.", 8, 92);
+                                "Long type arguments expect to receive an integer value which is a valid long integer.", 8,
+                                this.width - 8);
                         System.out.println();
                         break;
                     case OperationLoaderArgument.TYPE_STRING:
@@ -295,7 +314,7 @@ public class OperationsCommand {
                     default:
                         PrintHelper.printIndent(8);
                         PrintHelper.print("This argument has an unknown type, the expected values for arguments are unknown", 8,
-                                92);
+                                this.width - 8);
                         break;
                     }
                 }
@@ -304,7 +323,8 @@ public class OperationsCommand {
             // Inform users they can use verbose to see additional argument
             // information
             if (!this.verbose) {
-                PrintHelper.print("To see additional information about argument types run with the -v/--verbose option", 0, 100);
+                PrintHelper.print("To see additional information about argument types run with the -v/--verbose option", 0,
+                        this.width);
             }
         }
     }
