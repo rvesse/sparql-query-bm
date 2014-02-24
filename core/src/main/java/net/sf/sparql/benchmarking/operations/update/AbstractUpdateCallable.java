@@ -43,7 +43,7 @@ import com.hp.hpl.jena.update.UpdateRequest;
 import net.sf.sparql.benchmarking.operations.AbstractOperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.UpdateRun;
+import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
 import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 /**

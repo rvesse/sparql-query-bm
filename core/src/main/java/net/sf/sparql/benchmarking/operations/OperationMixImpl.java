@@ -32,23 +32,17 @@ package net.sf.sparql.benchmarking.operations;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-
-import org.apache.commons.math.stat.descriptive.moment.GeometricMean;
-import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
-import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.apache.log4j.Logger;
 
 import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.parallel.ParallelTimer;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
-import net.sf.sparql.benchmarking.stats.OperationMixRunImpl;
+import net.sf.sparql.benchmarking.stats.OperationMixStats;
 import net.sf.sparql.benchmarking.stats.OperationRun;
+import net.sf.sparql.benchmarking.stats.impl.OperationMixRunImpl;
+import net.sf.sparql.benchmarking.stats.impl.OperationMixStatsImpl;
 import net.sf.sparql.benchmarking.util.ConvertUtils;
 import net.sf.sparql.benchmarking.util.FormatUtils;
 
@@ -62,13 +56,9 @@ public class OperationMixImpl implements OperationMix {
 
     protected static final Logger logger = Logger.getLogger(OperationMixImpl.class);
 
+    private OperationMixStats stats = new OperationMixStatsImpl();
     private List<Operation> operations = new ArrayList<Operation>();
-    private List<OperationMixRun> runs = new ArrayList<OperationMixRun>();
     private boolean asThread = false;
-    private ParallelTimer timer = new ParallelTimer();
-    private static final StandardDeviation sdev = new StandardDeviation(false);
-    private static final Variance var = new Variance(false);
-    private static final GeometricMean gmean = new GeometricMean();
 
     /**
      * Creates a new operation mix
@@ -90,13 +80,8 @@ public class OperationMixImpl implements OperationMix {
     }
 
     @Override
-    public Iterator<OperationMixRun> getRuns() {
-        return this.runs.iterator();
-    }
-    
-    @Override
-    public long getRunCount() {
-        return this.runs.size();
+    public OperationMixStats getStats() {
+        return this.stats;
     }
 
     @Override
@@ -116,7 +101,11 @@ public class OperationMixImpl implements OperationMix {
 
     @Override
     public <T extends Options> OperationMixRun run(Runner<T> runner, T options) {
-        OperationMixRun run = new OperationMixRunImpl(this.operations.size(), options.getGlobalOrder());
+        long runOrder = options.getGlobalOrder();
+        List<OperationRun> runs = new ArrayList<OperationRun>();
+        for (int i = 0; i < options.getOperationMix().size(); i++) {
+            runs.add(null);
+        }
 
         // If running as thread then we prefix all our progress messages with a
         // Thread ID
@@ -154,10 +143,13 @@ public class OperationMixImpl implements OperationMix {
 
         // Now run each query recording its run details
         for (Integer id : ids) {
-            runner.reportPartialProgress(options, prefix + "Running Operation " + this.operations.get(id).getName() + "...");
-            timer.start();
-            OperationRun r = this.operations.get(id).run(runner, options);
-            timer.stop();
+            Operation op = this.operations.get(id);
+            runner.reportPartialProgress(options, prefix + "Running Operation " + op.getName() + "...");
+            
+            this.stats.getTimer().start();
+            OperationRun r = op.run(runner, options);
+            this.stats.getTimer().stop();
+            runs.set(id, r);
             if (r.wasSuccessful()) {
                 runner.reportProgress(options,
                         prefix + "got " + FormatUtils.formatResultCount(r.getResultCount()) + " result(s) in " + ConvertUtils.toSeconds(r.getRuntime()) + "s");
@@ -165,8 +157,7 @@ public class OperationMixImpl implements OperationMix {
                 runner.reportProgress(options,
                         prefix + "got error after " + ConvertUtils.toSeconds(r.getRuntime()) + "s: " + r.getErrorMessage());
             }
-            runner.reportProgress(options, this.operations.get(id), r);
-            run.setRunStats(id, r);
+            runner.reportProgress(options, op, r);
 
             // Apply delay between operations
             if (options.getMaxDelay() > 0) {
@@ -184,193 +175,7 @@ public class OperationMixImpl implements OperationMix {
                 }
             }
         }
-        this.runs.add(run);
-        return run;
-    }
-
-    @Override
-    public void clear() {
-        this.runs.clear();
-        Iterator<Operation> qs = this.operations.iterator();
-        while (qs.hasNext()) {
-            Operation q = qs.next();
-            q.clear();
-        }
-    }
-
-    @Override
-    public void trim(int outliers) {
-        if (outliers <= 0)
-            return;
-
-        PriorityQueue<OperationMixRun> rs = new PriorityQueue<OperationMixRun>();
-        rs.addAll(this.runs);
-        // Discard Best N
-        for (int i = 0; i < outliers; i++) {
-            this.runs.remove(rs.remove());
-        }
-        // Discard Last N
-        while (rs.size() > outliers) {
-            rs.remove();
-        }
-        for (OperationMixRun r : rs) {
-            this.runs.remove(r);
-        }
-    }
-
-    @Override
-    public long getTotalErrors() {
-        long total = 0;
-        for (OperationMixRun r : this.runs) {
-            total += r.getTotalErrors();
-        }
-        return total;
-    }
-
-    @Override
-    public Map<Integer, List<OperationRun>> getCategorizedErrors() {
-        Map<Integer, List<OperationRun>> errors = new HashMap<Integer, List<OperationRun>>();
-        for (OperationMixRun mr : this.runs) {
-            if (mr.getTotalErrors() > 0) {
-                Iterator<OperationRun> rs = mr.getRuns();
-                while (rs.hasNext()) {
-                    OperationRun r = rs.next();
-                    if (r.wasSuccessful())
-                        continue;
-
-                    // Categorize error
-                    if (!errors.containsKey(r.getErrorCategory())) {
-                        errors.put(r.getErrorCategory(), new ArrayList<OperationRun>());
-                    }
-                    errors.get(r.getErrorCategory()).add(r);
-                }
-            }
-        }
-        return errors;
-    }
-
-    @Override
-    public long getTotalRuntime() {
-        long total = 0;
-        for (OperationMixRun r : this.runs) {
-            if (r.getTotalRuntime() == Long.MAX_VALUE)
-                return Long.MAX_VALUE;
-            total += r.getTotalRuntime();
-        }
-        return total;
-    }
-
-    @Override
-    public long getActualRuntime() {
-        return this.timer.getActualRuntime();
-    }
-
-    @Override
-    public long getTotalResponseTime() {
-        long total = 0;
-        for (OperationMixRun r : this.runs) {
-            if (r.getTotalResponseTime() == Long.MAX_VALUE)
-                return Long.MAX_VALUE;
-            total += r.getTotalResponseTime();
-        }
-        return total;
-    }
-
-    @Override
-    public long getAverageRuntime() {
-        if (this.runs.size() == 0)
-            return 0;
-        long total = this.getTotalRuntime();
-        return total / this.runs.size();
-    }
-
-    @Override
-    public long getActualAverageRuntime() {
-        if (this.runs.size() == 0)
-            return 0;
-        long total = this.getActualRuntime();
-        return total / this.runs.size();
-    }
-
-    @Override
-    public long getAverageResponseTime() {
-        if (this.runs.size() == 0)
-            return 0;
-        long total = this.getTotalResponseTime();
-        return total / this.runs.size();
-    }
-
-    @Override
-    public double getGeometricAverageRuntime() {
-        if (this.runs.size() == 0)
-            return 0;
-        double[] values = new double[this.runs.size()];
-        int i = 0;
-        for (OperationMixRun r : this.runs) {
-            values[i] = (double) r.getTotalRuntime();
-            i++;
-        }
-        return gmean.evaluate(values);
-    }
-
-    @Override
-    public long getMinimumRuntime() {
-        long min = Long.MAX_VALUE;
-        for (OperationMixRun r : this.runs) {
-            if (r.getTotalRuntime() < min) {
-                min = r.getTotalRuntime();
-            }
-        }
-        return min;
-    }
-
-    @Override
-    public long getMaximumRuntime() {
-        long max = Long.MIN_VALUE;
-        for (OperationMixRun r : this.runs) {
-            if (r.getTotalRuntime() > max) {
-                max = r.getTotalRuntime();
-            }
-        }
-        return max;
-    }
-
-    @Override
-    public double getVariance() {
-        double[] values = new double[this.runs.size()];
-        int i = 0;
-        for (OperationMixRun r : this.runs) {
-            values[i] = (double) r.getTotalRuntime();
-            i++;
-        }
-        return var.evaluate(values);
-    }
-
-    @Override
-    public double getStandardDeviation() {
-        double[] values = new double[this.runs.size()];
-        int i = 0;
-        for (OperationMixRun r : this.runs) {
-            values[i] = (double) r.getTotalRuntime();
-            i++;
-        }
-        return sdev.evaluate(values);
-    }
-
-    @Override
-    public double getOperationMixesPerHour() {
-        double avgRuntime = ConvertUtils.toSeconds(this.getAverageRuntime());
-        if (avgRuntime == 0)
-            return 0;
-        return ConvertUtils.SECONDS_PER_HOUR / avgRuntime;
-    }
-
-    @Override
-    public double getActualOperationMixesPerHour() {
-        double avgRuntime = ConvertUtils.toSeconds(this.getActualAverageRuntime());
-        if (avgRuntime == 0)
-            return 0;
-        return ConvertUtils.SECONDS_PER_HOUR / avgRuntime;
+        return new OperationMixRunImpl(runs, runOrder);
     }
 
 }

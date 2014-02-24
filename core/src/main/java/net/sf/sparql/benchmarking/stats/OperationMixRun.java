@@ -35,23 +35,14 @@ package net.sf.sparql.benchmarking.stats;
 import java.util.Iterator;
 
 /**
- * Represents a run of a Query Mix which is comprised of running each query once
+ * Represents a run of an operation mix which is comprised of some combination
+ * of the operations in the mix
  * 
  * @author rvesse
  * 
  */
 public interface OperationMixRun extends Comparable<OperationMixRun> {
-
-    /**
-     * Sets the Stats for the run of a particular operation within this mix run
-     * 
-     * @param operationId
-     *            Operation ID
-     * @param run
-     *            Run stats
-     */
-    public abstract void setRunStats(int operationId, OperationRun run);
-
+    
     /**
      * Gets an iterator over the runs that make up this operation mix
      * <p>

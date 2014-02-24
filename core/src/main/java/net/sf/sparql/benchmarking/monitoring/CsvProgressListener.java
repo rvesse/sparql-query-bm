@@ -187,25 +187,25 @@ public class CsvProgressListener implements ProgressListener {
             // Operation Summary
             this.buffer.append(FormatUtils.toCsv(op.getName()) + ",");
             this.buffer.append(FormatUtils.toCsv(op.getType()) + ",");
-            this.buffer.append(ConvertUtils.toSeconds(op.getTotalResponseTime()) + ",");
-            this.buffer.append(ConvertUtils.toSeconds(op.getAverageResponseTime()) + ",");
-            this.buffer.append(ConvertUtils.toSeconds(op.getTotalRuntime()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getStats().getTotalResponseTime()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getStats().getAverageResponseTime()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getStats().getTotalRuntime()) + ",");
             if (wasMultithreaded)
-                this.buffer.append(ConvertUtils.toSeconds(op.getActualRuntime()) + ",");
-            this.buffer.append(ConvertUtils.toSeconds(op.getAverageRuntime()) + ",");
+                this.buffer.append(ConvertUtils.toSeconds(op.getStats().getActualRuntime()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getStats().getAverageRuntime()) + ",");
             if (wasMultithreaded)
-                this.buffer.append(ConvertUtils.toSeconds(op.getActualAverageRuntime()) + ",");
-            this.buffer.append(op.getGeometricAverageRuntime() + ",");
-            this.buffer.append(ConvertUtils.toSeconds(op.getMinimumRuntime()) + ",");
-            this.buffer.append(ConvertUtils.toSeconds(op.getMaximumRuntime()) + ",");
-            this.buffer.append(ConvertUtils.toSeconds(op.getVariance()) + ",");
-            this.buffer.append(ConvertUtils.toSeconds(op.getStandardDeviation()) + ",");
-            this.buffer.append(op.getOperationsPerSecond() + ",");
+                this.buffer.append(ConvertUtils.toSeconds(op.getStats().getActualAverageRuntime()) + ",");
+            this.buffer.append(op.getStats().getGeometricAverageRuntime() + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getStats().getMinimumRuntime()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getStats().getMaximumRuntime()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getStats().getVariance()) + ",");
+            this.buffer.append(ConvertUtils.toSeconds(op.getStats().getStandardDeviation()) + ",");
+            this.buffer.append(op.getStats().getOperationsPerSecond() + ",");
             if (wasMultithreaded)
-                this.buffer.append(op.getActualOperationsPerSecond() + ",");
-            this.buffer.append(op.getOperationsPerHour());
+                this.buffer.append(op.getStats().getActualOperationsPerSecond() + ",");
+            this.buffer.append(op.getStats().getOperationsPerHour());
             if (wasMultithreaded)
-                this.buffer.append("," + op.getActualOperationsPerHour());
+                this.buffer.append("," + op.getStats().getActualOperationsPerHour());
             this.buffer.append("\n");
         }
 
@@ -218,22 +218,22 @@ public class CsvProgressListener implements ProgressListener {
             } else {
                 results.append("Total Response Time,Average Response Time (Arithmetic),Total Runtime,Average Runtime (Arithmetic),Average Runtime (Geometric),Minimum Mix Runtime,Maximum Mix Runtime,Variance,Standard Deviation,Operation Mixes per Hour\n");
             }
-            results.append(ConvertUtils.toSeconds(operationMix.getTotalResponseTime()) + ",");
-            results.append(ConvertUtils.toSeconds(operationMix.getAverageResponseTime()) + ",");
-            results.append(ConvertUtils.toSeconds(operationMix.getTotalRuntime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getStats().getTotalResponseTime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getStats().getAverageResponseTime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getStats().getTotalRuntime()) + ",");
             if (wasMultithreaded)
-                results.append(ConvertUtils.toSeconds(operationMix.getActualRuntime()) + ",");
-            results.append(ConvertUtils.toSeconds(operationMix.getAverageRuntime()) + ",");
+                results.append(ConvertUtils.toSeconds(operationMix.getStats().getActualRuntime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getStats().getAverageRuntime()) + ",");
             if (wasMultithreaded)
-                results.append(ConvertUtils.toSeconds(operationMix.getActualAverageRuntime()) + ",");
-            results.append(ConvertUtils.toSeconds(operationMix.getGeometricAverageRuntime()) + ",");
-            results.append(ConvertUtils.toSeconds(operationMix.getMinimumRuntime()) + ",");
-            results.append(ConvertUtils.toSeconds(operationMix.getMaximumRuntime()) + ",");
-            results.append(ConvertUtils.toSeconds(operationMix.getVariance()) + ",");
-            results.append(ConvertUtils.toSeconds(operationMix.getStandardDeviation()) + ",");
-            results.append(Double.toString(operationMix.getOperationMixesPerHour()));
+                results.append(ConvertUtils.toSeconds(operationMix.getStats().getActualAverageRuntime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getStats().getGeometricAverageRuntime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getStats().getMinimumRuntime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getStats().getMaximumRuntime()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getStats().getVariance()) + ",");
+            results.append(ConvertUtils.toSeconds(operationMix.getStats().getStandardDeviation()) + ",");
+            results.append(Double.toString(operationMix.getStats().getOperationMixesPerHour()));
             if (wasMultithreaded)
-                results.append("," + operationMix.getActualOperationMixesPerHour());
+                results.append("," + operationMix.getStats().getActualOperationMixesPerHour());
             results.append("\n");
             results.append(buffer.toString());
             results.close();

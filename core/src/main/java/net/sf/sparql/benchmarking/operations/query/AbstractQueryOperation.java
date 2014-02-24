@@ -36,7 +36,7 @@ import net.sf.sparql.benchmarking.operations.AbstractOperation;
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.QueryRun;
+import net.sf.sparql.benchmarking.stats.impl.QueryRun;
 
 /**
  * Abstract implementation of a query operation

@@ -34,27 +34,18 @@ package net.sf.sparql.benchmarking.operations;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.parallel.ParallelTimer;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationRun;
-import net.sf.sparql.benchmarking.util.ConvertUtils;
+import net.sf.sparql.benchmarking.stats.OperationStats;
+import net.sf.sparql.benchmarking.stats.impl.OperationStatsImpl;
 import net.sf.sparql.benchmarking.util.ErrorCategories;
 
-import org.apache.commons.math.stat.descriptive.moment.GeometricMean;
-import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
-import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,12 +61,8 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractOperation.class);
 
+    private OperationStats stats = new OperationStatsImpl();
     private String name;
-    private List<OperationRun> runs = new ArrayList<OperationRun>();
-    protected ParallelTimer timer = new ParallelTimer();
-    private static final StandardDeviation sdev = new StandardDeviation(false);
-    private static final Variance var = new Variance(false);
-    private static final GeometricMean gmean = new GeometricMean();
 
     /**
      * Creates a new operation
@@ -113,7 +100,7 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
 
     @Override
     public final <T extends Options> OperationRun run(Runner<T> runner, T options) {
-        timer.start();
+        this.getStats().getTimer().start();
         long order = options.getGlobalOrder();
 
         // Prepare and submit the task
@@ -164,7 +151,7 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
             r = this.createErrorInformation("Operation Callable encountered an error - " + e.getMessage(),
                     ErrorCategories.EXECUTION, System.nanoTime() - startTime);
         }
-        timer.stop();
+        this.getStats().getTimer().stop();
 
         // In the event that an authentication error has been reported force an
         // invalidation of the authenticator
@@ -175,235 +162,18 @@ public abstract class AbstractOperation<TRun extends OperationRun> implements Op
         }
 
         // Return the results
-        this.addRun(r);
         r.setRunOrder(order);
+        this.getStats().add(r);
         return r;
     }
-
-    /**
-     * Adds a run to the operation, typically called from a derived operations
-     * {@link #run(Runner, Options)}
-     * 
-     * @param run
-     */
-    protected final void addRun(OperationRun run) {
-        this.runs.add(run);
+    
+    @Override
+    public OperationStats getStats() {
+        return this.stats;
     }
 
     @Override
     public String getName() {
         return this.name;
     }
-
-    @Override
-    public Iterator<OperationRun> getRuns() {
-        return this.runs.iterator();
-    }
-
-    @Override
-    public long getTotalRuntime() {
-        long total = 0;
-        for (OperationRun r : this.runs) {
-            if (r.getRuntime() == Long.MAX_VALUE)
-                return Long.MAX_VALUE;
-            total += r.getRuntime();
-        }
-        return total;
-    }
-
-    @Override
-    public long getTotalErrors() {
-        long total = 0;
-        for (OperationRun r : this.runs) {
-            if (!r.wasSuccessful())
-                total++;
-        }
-        return total;
-    }
-
-    @Override
-    public Map<Integer, List<OperationRun>> getCategorizedErrors() {
-        Map<Integer, List<OperationRun>> errors = new HashMap<Integer, List<OperationRun>>();
-        for (OperationRun r : this.runs) {
-            if (!r.wasSuccessful())
-                continue;
-            
-            // Categorize error
-            if (!errors.containsKey(r.getErrorCategory())) {
-                errors.put(r.getErrorCategory(), new ArrayList<OperationRun>());
-            }
-            errors.get(r.getErrorCategory()).add(r);
-        }
-        return errors;
-    }
-
-    @Override
-    public long getActualRuntime() {
-        return this.timer.getActualRuntime();
-    }
-
-    @Override
-    public long getTotalResponseTime() {
-        long total = 0;
-        for (OperationRun r : this.runs) {
-            if (r.getResponseTime() == Long.MAX_VALUE)
-                return Long.MAX_VALUE;
-            total += r.getResponseTime();
-        }
-        return total;
-    }
-
-    @Override
-    public long getAverageRuntime() {
-        if (this.runs.size() == 0)
-            return 0;
-        return this.getTotalRuntime() / this.runs.size();
-    }
-
-    @Override
-    public long getAverageResponseTime() {
-        if (this.runs.size() == 0)
-            return 0;
-        return this.getTotalResponseTime() / this.runs.size();
-    }
-
-    @Override
-    public double getGeometricAverageRuntime() {
-        if (this.runs.size() == 0)
-            return 0;
-        double[] values = new double[this.runs.size()];
-        int i = 0;
-        for (OperationRun r : this.runs) {
-            values[i] = (double) r.getRuntime();
-            i++;
-        }
-        return gmean.evaluate(values);
-    }
-
-    @Override
-    public long getActualAverageRuntime() {
-        if (this.runs.size() == 0)
-            return 0;
-        return this.getActualRuntime() / this.runs.size();
-    }
-
-    @Override
-    public long getMinimumRuntime() {
-        long min = Long.MAX_VALUE;
-        for (OperationRun r : this.runs) {
-            if (r.getRuntime() < min) {
-                min = r.getRuntime();
-            }
-        }
-        return min;
-    }
-
-    @Override
-    public long getMaximumRuntime() {
-        long max = Long.MIN_VALUE;
-        for (OperationRun r : this.runs) {
-            if (r.getRuntime() > max) {
-                max = r.getRuntime();
-            }
-        }
-        return max;
-    }
-
-    @Override
-    public double getVariance() {
-        double[] values = new double[this.runs.size()];
-        int i = 0;
-        for (OperationRun r : this.runs) {
-            values[i] = ConvertUtils.toSeconds(r.getRuntime());
-            i++;
-        }
-        return var.evaluate(values);
-    }
-
-    @Override
-    public double getStandardDeviation() {
-        double[] values = new double[this.runs.size()];
-        int i = 0;
-        for (OperationRun r : this.runs) {
-            values[i] = (double) r.getRuntime();
-            i++;
-        }
-        return sdev.evaluate(values);
-    }
-
-    @Override
-    public long getTotalResults() {
-        long total = 0;
-        for (OperationRun r : this.runs) {
-            if (r.getResultCount() >= 0)
-                total += r.getResultCount();
-        }
-        return total;
-    }
-
-    @Override
-    public long getAverageResults() {
-        long total = this.getTotalResults();
-        if (total == 0 || this.runs.size() == 0)
-            return 0;
-        return total / this.runs.size();
-    }
-
-    @Override
-    public double getOperationsPerSecond() {
-        double avgRuntime = ConvertUtils.toSeconds(this.getAverageRuntime());
-        if (avgRuntime == 0)
-            return 0;
-        return 1 / avgRuntime;
-    }
-
-    @Override
-    public double getActualOperationsPerSecond() {
-        double avgRuntime = ConvertUtils.toSeconds(this.getActualAverageRuntime());
-        if (avgRuntime == 0)
-            return 0;
-        return 1 / avgRuntime;
-    }
-
-    @Override
-    public double getOperationsPerHour() {
-        double avgRuntime = ConvertUtils.toSeconds(this.getAverageRuntime());
-        if (avgRuntime == 0)
-            return 0;
-        return ConvertUtils.SECONDS_PER_HOUR / avgRuntime;
-    }
-
-    @Override
-    public double getActualOperationsPerHour() {
-        double avgRuntime = ConvertUtils.toSeconds(this.getActualAverageRuntime());
-        if (avgRuntime == 0)
-            return 0;
-        return ConvertUtils.SECONDS_PER_HOUR / avgRuntime;
-    }
-
-    @Override
-    public void clear() {
-        this.runs.clear();
-    }
-
-    @Override
-    public void trim(int outliers) {
-        if (outliers <= 0)
-            return;
-
-        PriorityQueue<OperationRun> rs = new PriorityQueue<OperationRun>();
-        rs.addAll(this.runs);
-        // Discard Best N
-        for (int i = 0; i < outliers; i++) {
-            this.runs.remove(rs.remove());
-        }
-        // Discard Last N
-        while (rs.size() > outliers) {
-            rs.remove();
-        }
-        for (OperationRun r : rs) {
-            this.runs.remove(r);
-        }
-    }
-
 }

@@ -32,13 +32,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationRun;
+import net.sf.sparql.benchmarking.stats.OperationStats;
 
 /**
  * Represents a single operation within a testing run
@@ -52,170 +49,12 @@ public interface Operation {
      * Gets the name of the operation
      * <p>
      * In the 1.x releases this was almost always the filename but in the 2.x
-     * code base this may be user defined
+     * code base this is often a friendly user defined name
      * </p>
      * 
      * @return Name
      */
     public abstract String getName();
-
-    /**
-     * Gets an iterator over the operation runs
-     * 
-     * @return Runs of the operation
-     */
-    public abstract Iterator<OperationRun> getRuns();
-
-    /**
-     * Gets the total runtime for the query over all runs
-     * 
-     * @return Total Runtime in nanoseconds
-     */
-    public abstract long getTotalRuntime();
-
-    /**
-     * Gets the actual runtime for the operation over all runs (takes into
-     * account operations that run in parallel)
-     * 
-     * @return Actual Runtime in nanoseconds
-     */
-    public abstract long getActualRuntime();
-
-    /**
-     * Gets the total response time for the operations over all runs
-     * <p>
-     * For non-streaming operations this will likely be equal to
-     * {@link #getTotalRuntime()}
-     * </p>
-     * 
-     * @return Total response time
-     */
-    public abstract long getTotalResponseTime();
-
-    /**
-     * Gets the average runtime for the operation over all runs (arithmetic
-     * mean) based on the total runtime
-     * 
-     * @return Arithmetic Average Runtime in nanoseconds
-     */
-    public abstract long getAverageRuntime();
-
-    /**
-     * Gets the average response time over all runs (arithmetic mean) based on
-     * the total response time
-     * <p>
-     * For non-streaming operations this will likely be equal to
-     * {@link #getAverageRuntime()}
-     * </p>
-     * 
-     * @return Average Response Time in nanoseconds
-     */
-    public abstract long getAverageResponseTime();
-
-    /**
-     * Gets the average runtime for the operation over all runs (geometric mean)
-     * based on the total runtime
-     * 
-     * @return Geometric Average Runtime in nanoseconds
-     */
-    public abstract double getGeometricAverageRuntime();
-
-    /**
-     * Gets average runtime for the operation over all runs (arithmetic mean)
-     * based on the actual runtime
-     * 
-     * @return Arithmetic Average runtime in nanoseconds
-     */
-    public abstract long getActualAverageRuntime();
-
-    /**
-     * Gets the minimum runtime for this operation over all runs
-     * 
-     * @return Minimum Runtime in nanoseconds
-     */
-    public abstract long getMinimumRuntime();
-
-    /**
-     * Gets the maximum runtime for this operation over all runs
-     * 
-     * @return Maximum Runtime in nanoseconds
-     */
-    public abstract long getMaximumRuntime();
-
-    /**
-     * Gets the variance for the operation runtimes
-     * 
-     * @return Runtime Variance in nanoseconds
-     */
-    public abstract double getVariance();
-
-    /**
-     * Gets the standard deviation for operation runtime
-     * 
-     * @return Runtime Standard Deviation in nanoseconds
-     */
-    public abstract double getStandardDeviation();
-
-    /**
-     * Gets the total number of times this operation resulted in an error
-     * 
-     * @return Total number of errors
-     */
-    public abstract long getTotalErrors();
-
-    /**
-     * Gets the information for all errors grouped by category
-     * 
-     * @return Errors grouped by category
-     */
-    public abstract Map<Integer, List<OperationRun>> getCategorizedErrors();
-
-    /**
-     * Gets the total number of results for this operation
-     * 
-     * @return Total number of results
-     */
-    public abstract long getTotalResults();
-
-    /**
-     * Gets the average number of results
-     * 
-     * @return Average number of results
-     */
-    public abstract long getAverageResults();
-
-    /**
-     * Calculates how many times this operation could be executed
-     * single-threaded per second based upon the average runtime of the
-     * operation
-     * 
-     * @return Operations per Second
-     */
-    public abstract double getOperationsPerSecond();
-
-    /**
-     * Calculates how many times this operation could be executed multi-threaded
-     * per second based upon the {@link #getActualAverageRuntime()}
-     * 
-     * @return Actual Operations per Second
-     */
-    public abstract double getActualOperationsPerSecond();
-
-    /**
-     * Calculates how many times this operation could be executed
-     * single-threaded per hour based upon the average runtime of the operation
-     * 
-     * @return Operations per Hour
-     */
-    public abstract double getOperationsPerHour();
-
-    /**
-     * Calculates how many times this operation could be executed multi-threaded
-     * per hour based upon the {@link #getActualAverageRuntime()}
-     * 
-     * @return Actual Operations per Hour
-     */
-    public abstract double getActualOperationsPerHour();
 
     /**
      * Report whether the operation can run based on the available options
@@ -229,7 +68,11 @@ public interface Operation {
     public abstract <T extends Options> boolean canRun(Runner<T> runner, T options);
 
     /**
-     * Runs the operation recording the statistics as a {@link OperationRun}
+     * Runs the operation returning the statistics as a {@link OperationRun}
+     * <p>
+     * Implementations are also expected to record the information within their
+     * local {@link OperationStats} object
+     * </p>
      * 
      * @param runner
      *            Runner
@@ -238,19 +81,6 @@ public interface Operation {
      * @return Operation Run statistics
      */
     public abstract <T extends Options> OperationRun run(Runner<T> runner, T options);
-
-    /**
-     * Clears all run statistics
-     */
-    public abstract void clear();
-
-    /**
-     * Trims the best and worst N runs
-     * 
-     * @param outliers
-     *            Number of outliers to trim
-     */
-    public abstract void trim(int outliers);
 
     /**
      * Gets a descriptive type string for the operation e.g. SPARQL Query
@@ -266,5 +96,12 @@ public interface Operation {
      * @return Content string
      */
     public abstract String getContentString();
+
+    /**
+     * Gets statistics for the operation
+     * 
+     * @return Operation statistics
+     */
+    public abstract OperationStats getStats();
 
 }

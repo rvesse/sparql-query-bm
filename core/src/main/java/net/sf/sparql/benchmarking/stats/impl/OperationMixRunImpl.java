@@ -30,11 +30,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.stats;
+package net.sf.sparql.benchmarking.stats.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import net.sf.sparql.benchmarking.stats.OperationMixRun;
+import net.sf.sparql.benchmarking.stats.OperationRun;
 
 /**
  * Implementation of an operation mix run
@@ -51,22 +55,14 @@ public class OperationMixRunImpl implements OperationMixRun {
      * Creates a new operation mix run which represents the results of running a
      * mix of operations
      * 
-     * @param numOperations
-     *            Number of operations that will be executed in this run
-     * @param order
+     * @param runs
+     *            Operation runs which make up this mix run
+     * @param runOrder
      *            Global Run Order
      */
-    public OperationMixRunImpl(int numOperations, long order) {
-        this.runs = new ArrayList<OperationRun>(numOperations);
-        for (int i = 0; i < numOperations; i++) {
-            this.runs.add(null);
-        }
-        this.order = order;
-    }
-
-    @Override
-    public void setRunStats(int operationId, OperationRun run) {
-        this.runs.set(operationId, run);
+    public OperationMixRunImpl(Collection<OperationRun> runs, long runOrder) {
+        this.runs = new ArrayList<OperationRun>(runs);
+        this.order = runOrder;
     }
 
     @Override

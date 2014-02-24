@@ -39,7 +39,7 @@ import net.sf.sparql.benchmarking.operations.AbstractOperation;
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.UpdateRun;
+import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
 
 /**
  * An operation that makes a fixed SPARQL Update

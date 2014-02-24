@@ -40,7 +40,7 @@ import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.operations.update.FixedUpdateOperation;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.UpdateRun;
+import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
 
 /**
  * An operation that runs a fixed SPARQL update with custom NVPs added to the

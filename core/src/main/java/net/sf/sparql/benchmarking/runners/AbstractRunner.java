@@ -52,7 +52,7 @@ import net.sf.sparql.benchmarking.operations.query.QueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
-import net.sf.sparql.benchmarking.stats.QueryRun;
+import net.sf.sparql.benchmarking.stats.impl.QueryRun;
 import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 /**

@@ -292,25 +292,25 @@ public class XmlProgressListener implements ProgressListener {
                 addAttribute(ATTR_ID, id);
                 addAttribute(ATTR_NAME, op.getName());
                 addAttribute(ATTR_TYPE, op.getType());
-                addAttribute(ATTR_TOTAL_RESPONSE_TIME, op.getTotalResponseTime());
-                addAttribute(ATTR_AVG_RESPONSE_TIME, op.getAverageResponseTime());
-                addAttribute(ATTR_TOTAL_RUNTIME, op.getTotalRuntime());
+                addAttribute(ATTR_TOTAL_RESPONSE_TIME, op.getStats().getTotalResponseTime());
+                addAttribute(ATTR_AVG_RESPONSE_TIME, op.getStats().getAverageResponseTime());
+                addAttribute(ATTR_TOTAL_RUNTIME, op.getStats().getTotalRuntime());
                 if (wasMultithreaded)
-                    addAttribute(ATTR_ACTUAL_RUNTIME, op.getActualRuntime());
-                addAttribute(ATTR_AVG_RUNTIME, op.getAverageRuntime());
+                    addAttribute(ATTR_ACTUAL_RUNTIME, op.getStats().getActualRuntime());
+                addAttribute(ATTR_AVG_RUNTIME, op.getStats().getAverageRuntime());
                 if (wasMultithreaded)
-                    addAttribute(ATTR_ACTUAL_AVG_RUNTIME, op.getActualAverageRuntime());
-                addAttribute(ATTR_AVG_RUNTIME_GEOM, op.getGeometricAverageRuntime());
-                addAttribute(ATTR_MIN_OPERATION_RUNTIME, op.getMinimumRuntime());
-                addAttribute(ATTR_MAX_OPERATION_RUNTIME, op.getMaximumRuntime());
-                addAttribute(ATTR_VARIANCE, op.getVariance());
-                addAttribute(ATTR_STD_DEV, op.getStandardDeviation());
-                addAttribute(ATTR_OPS, op.getOperationsPerSecond());
+                    addAttribute(ATTR_ACTUAL_AVG_RUNTIME, op.getStats().getActualAverageRuntime());
+                addAttribute(ATTR_AVG_RUNTIME_GEOM, op.getStats().getGeometricAverageRuntime());
+                addAttribute(ATTR_MIN_OPERATION_RUNTIME, op.getStats().getMinimumRuntime());
+                addAttribute(ATTR_MAX_OPERATION_RUNTIME, op.getStats().getMaximumRuntime());
+                addAttribute(ATTR_VARIANCE, op.getStats().getVariance());
+                addAttribute(ATTR_STD_DEV, op.getStats().getStandardDeviation());
+                addAttribute(ATTR_OPS, op.getStats().getOperationsPerSecond());
                 if (wasMultithreaded)
-                    addAttribute(ATTR_ACTUAL_OPS, op.getActualOperationsPerSecond());
-                addAttribute(ATTR_OPH, op.getOperationsPerHour());
+                    addAttribute(ATTR_ACTUAL_OPS, op.getStats().getActualOperationsPerSecond());
+                addAttribute(ATTR_OPH, op.getStats().getOperationsPerHour());
                 if (wasMultithreaded)
-                    addAttribute(ATTR_ACTUAL_OPH, op.getActualOperationsPerHour());
+                    addAttribute(ATTR_ACTUAL_OPH, op.getStats().getActualOperationsPerHour());
                 finishAttributes(true);
 
                 id++;
@@ -319,22 +319,22 @@ public class XmlProgressListener implements ProgressListener {
 
             // Overall Summary
             openTag(TAG_SUMMARY, true);
-            addAttribute(ATTR_TOTAL_RESPONSE_TIME, mix.getTotalResponseTime());
-            addAttribute(ATTR_AVG_RESPONSE_TIME, mix.getAverageResponseTime());
-            addAttribute(ATTR_TOTAL_RUNTIME, mix.getTotalRuntime());
+            addAttribute(ATTR_TOTAL_RESPONSE_TIME, mix.getStats().getTotalResponseTime());
+            addAttribute(ATTR_AVG_RESPONSE_TIME, mix.getStats().getAverageResponseTime());
+            addAttribute(ATTR_TOTAL_RUNTIME, mix.getStats().getTotalRuntime());
             if (wasMultithreaded)
-                addAttribute(ATTR_ACTUAL_RUNTIME, mix.getActualRuntime());
-            addAttribute(ATTR_AVG_RUNTIME, mix.getAverageRuntime());
+                addAttribute(ATTR_ACTUAL_RUNTIME, mix.getStats().getActualRuntime());
+            addAttribute(ATTR_AVG_RUNTIME, mix.getStats().getAverageRuntime());
             if (wasMultithreaded)
-                addAttribute(ATTR_ACTUAL_AVG_RUNTIME, mix.getActualAverageRuntime());
-            addAttribute(ATTR_AVG_RUNTIME_GEOM, mix.getGeometricAverageRuntime());
-            addAttribute(ATTR_MIN_MIX_RUNTIME, mix.getMinimumRuntime());
-            addAttribute(ATTR_MAX_MIX_RUNTIME, mix.getMaximumRuntime());
-            addAttribute(ATTR_VARIANCE, mix.getVariance());
-            addAttribute(ATTR_STD_DEV, mix.getStandardDeviation());
-            addAttribute(ATTR_OMPH, mix.getOperationMixesPerHour());
+                addAttribute(ATTR_ACTUAL_AVG_RUNTIME, mix.getStats().getActualAverageRuntime());
+            addAttribute(ATTR_AVG_RUNTIME_GEOM, mix.getStats().getGeometricAverageRuntime());
+            addAttribute(ATTR_MIN_MIX_RUNTIME, mix.getStats().getMinimumRuntime());
+            addAttribute(ATTR_MAX_MIX_RUNTIME, mix.getStats().getMaximumRuntime());
+            addAttribute(ATTR_VARIANCE, mix.getStats().getVariance());
+            addAttribute(ATTR_STD_DEV, mix.getStats().getStandardDeviation());
+            addAttribute(ATTR_OMPH, mix.getStats().getOperationMixesPerHour());
             if (wasMultithreaded)
-                addAttribute(ATTR_ACTUAL_OMPH, mix.getActualOperationMixesPerHour());
+                addAttribute(ATTR_ACTUAL_OMPH, mix.getStats().getActualOperationMixesPerHour());
             finishAttributes(true);
 
             closeTag(TAG_STATS);

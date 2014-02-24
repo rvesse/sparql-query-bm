@@ -38,7 +38,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.QueryRun;
+import net.sf.sparql.benchmarking.stats.impl.QueryRun;
 
 /**
  * An operation which calculates the size of the dataset

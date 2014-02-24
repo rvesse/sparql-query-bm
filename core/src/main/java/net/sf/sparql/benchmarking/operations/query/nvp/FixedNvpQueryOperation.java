@@ -40,7 +40,7 @@ import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.operations.query.FixedQueryOperation;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.QueryRun;
+import net.sf.sparql.benchmarking.stats.impl.QueryRun;
 
 /**
  * An operation that runs a fixed query with custom NVPs added to the request
