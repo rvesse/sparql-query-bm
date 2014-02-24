@@ -30,11 +30,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 
-package net.sf.sparql.benchmarking.runners;
+package net.sf.sparql.benchmarking.parallel.impl;
 
 import java.util.concurrent.Callable;
 
 import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 
 /**
@@ -46,7 +47,7 @@ import net.sf.sparql.benchmarking.stats.OperationMixRun;
  *            Options type
  * 
  */
-public class OperationMixRunner<T extends Options> implements Callable<OperationMixRun> {
+public class OperationMixCallable<T extends Options> implements Callable<OperationMixRun> {
 
     private T options;
     private Runner<T> runner;
@@ -59,7 +60,7 @@ public class OperationMixRunner<T extends Options> implements Callable<Operation
      * @param options
      *            Options
      */
-    public OperationMixRunner(Runner<T> runner, T options) {
+    public OperationMixCallable(Runner<T> runner, T options) {
         this.runner = runner;
         this.options = options;
     }

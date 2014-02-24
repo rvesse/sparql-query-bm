@@ -48,6 +48,7 @@ import net.sf.sparql.benchmarking.loader.update.FixedNvpUpdateOperationLoader;
 import net.sf.sparql.benchmarking.loader.update.ParameterizedNvpUpdateOperationLoader;
 import net.sf.sparql.benchmarking.loader.update.ParameterizedUpdateOperationLoader;
 import net.sf.sparql.benchmarking.loader.update.FixedUpdateOperationLoader;
+import net.sf.sparql.benchmarking.loader.util.MixOperationLoader;
 import net.sf.sparql.benchmarking.loader.util.SleepOperationLoader;
 
 /**
@@ -89,8 +90,9 @@ public class OperationLoaderRegistry {
         addLoader(new GSPHeadOperationLoader());
         addLoader(new GSPDeleteOperationLoader());
 
-        // Other operations
+        // Utility operations
         addLoader(new SleepOperationLoader());
+        addLoader(new MixOperationLoader());
     }
 
     /**

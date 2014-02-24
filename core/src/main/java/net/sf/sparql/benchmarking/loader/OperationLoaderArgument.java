@@ -52,6 +52,10 @@ public class OperationLoaderArgument {
      * Indicates the argument type is a string
      */
     public static final int TYPE_STRING = 0;
+    /**
+     * Indicates the argument type is a boolean
+     */
+    public static final int TYPE_BOOLEAN = -1;
 
     private boolean optional = false;
     private int type = OperationLoaderArgument.TYPE_STRING;

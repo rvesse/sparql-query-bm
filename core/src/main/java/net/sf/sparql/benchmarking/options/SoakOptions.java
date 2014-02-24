@@ -101,4 +101,14 @@ public class SoakOptions extends OptionsImpl {
     public void setMaxRuntime(long runtime) {
         this.runtime = runtime;
     }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Options> T copy() {
+        SoakOptions copy = new SoakOptions();
+        this.copyStandardOptions(copy);
+        copy.setMaxRuns(this.getMaxRuns());
+        copy.setMaxRuntime(this.getMaxRuntime());
+        return (T) copy;
+    }
 }

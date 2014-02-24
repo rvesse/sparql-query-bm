@@ -334,4 +334,47 @@ public class OptionsImpl implements Options {
         return this.teardownMix;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Options> T copy() {
+        OptionsImpl copy = new OptionsImpl();
+        this.copyStandardOptions(copy);
+        return (T) copy;
+    }
+
+    /**
+     * Copies standard options across from this instance
+     * <p>
+     * Primarily intended for use by derived implementations which extend the
+     * basic options to make it easier for them to create copies of themselves.
+     * </p>
+     * 
+     * @param copy
+     *            Copy to copy to
+     */
+    protected final void copyStandardOptions(OptionsImpl copy) {
+        copy.setAllowCompression(this.getAllowCompression());
+        copy.setAuthenticator(this.getAuthenticator());
+        for (String key : this.customEndpoints.keySet()) {
+            copy.setCustomEndpoint(key, this.getCustomEndpoint(key));
+        }
+        copy.setGraphStoreEndpoint(this.getGraphStoreEndpoint());
+        copy.setHaltAny(this.getHaltAny());
+        copy.setHaltBehaviour(this.getHaltBehaviour());
+        copy.setHaltOnError(this.getHaltOnError());
+        copy.setHaltOnTimeout(this.getHaltOnTimeout());
+        copy.setMaxDelay(this.getMaxDelay());
+        copy.setOperationMix(this.getOperationMix());
+        copy.setParallelThreads(this.getParallelThreads());
+        copy.setQueryEndpoint(this.getQueryEndpoint());
+        copy.setRandomizeOrder(this.getRandomizeOrder());
+        copy.setResultsAskFormat(this.getResultsAskFormat());
+        copy.setResultsGraphFormat(this.getResultsGraphFormat());
+        copy.setResultsSelectFormat(this.getResultsSelectFormat());
+        copy.setSanityCheckLevel(this.getSanityCheckLevel());
+        copy.setSetupMix(this.getSetupMix());
+        copy.setTeardownMix(this.getTeardownMix());
+        copy.setTimeout(this.getTimeout());
+        copy.globalOrder.set(this.globalOrder.get());
+    }
 }

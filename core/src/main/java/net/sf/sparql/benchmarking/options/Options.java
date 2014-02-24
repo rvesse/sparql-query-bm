@@ -484,4 +484,19 @@ public interface Options {
      */
     public abstract void setSetupMix(OperationMix mix);
 
+    /**
+     * Makes a copy of the options
+     * <p>
+     * While this is guaranteed to take a copy of primitive typed properties
+     * there is no guarantee that it takes a copy of reference types so changing
+     * some properties will still affect the original options. This method is
+     * primarily intended for use in cases where you need to tweak an option
+     * without interfering with other consumers of the options which is
+     * particularly relevant when running multi-threaded testing.
+     * </p>
+     * 
+     * @return Copied options
+     */
+    public abstract <T extends Options> T copy();
+
 }

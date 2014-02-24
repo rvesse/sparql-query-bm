@@ -66,6 +66,13 @@ public interface OperationMixRun extends Comparable<OperationMixRun> {
     public abstract long getTotalErrors();
 
     /**
+     * Gets the total number of results for the operation mix
+     * 
+     * @return Total number of results
+     */
+    public abstract long getTotalResults();
+
+    /**
      * Gets the total runtime for the Operation Mix
      * 
      * @return Total Runtime in nanoseconds

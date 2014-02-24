@@ -93,6 +93,16 @@ public class OperationMixRunImpl implements OperationMixRun {
     }
 
     @Override
+    public long getTotalResults() {
+        long total = 0;
+        for (OperationRun r : this.runs) {
+            if (r != null && r.wasSuccessful() && r.getResultCount() > 0)
+                total += r.getResultCount();
+        }
+        return total;
+    }
+
+    @Override
     public long getTotalRuntime() {
         Iterator<OperationRun> rs = this.getRuns();
         long total = 0;

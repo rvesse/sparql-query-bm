@@ -34,6 +34,7 @@ package net.sf.sparql.benchmarking.runners;
 import java.util.concurrent.FutureTask;
 
 import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.parallel.impl.OperationMixCallable;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 
 /**
@@ -55,6 +56,6 @@ public class OperationMixTask<T extends Options> extends FutureTask<OperationMix
      *            Options
      */
     public OperationMixTask(Runner<T> runner, T options) {
-        super(new OperationMixRunner<T>(runner, options));
+        super(new OperationMixCallable<T>(runner, options));
     }
 }

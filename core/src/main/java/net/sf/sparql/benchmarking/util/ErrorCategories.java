@@ -60,6 +60,7 @@ public class ErrorCategories {
         descriptions.put(INTERRUPT, "Operation Interrupted");
         descriptions.put(EXECUTION, "Execution Error");
         descriptions.put(AUTHENTICATION, "Authentication Error");
+        descriptions.put(CHILD_MIX, "Child Mix Error");
         descriptions.put(HTTP_CLIENT_ERROR, "HTTP Client Error (4xx)");
         descriptions.put(HTTP_SERVER_ERROR, "HTTP Server Error (5xx)");
         descriptions.put(HTTP_NOT_FOUND, "HTTP Not Found (404/410)");
@@ -142,6 +143,11 @@ public class ErrorCategories {
      * Category indicating a HTTP Not Found (404/410 error)
      */
     public static final int HTTP_NOT_FOUND = 404;
+    
+    /**
+     * Category indicating errors in a child mix
+     */
+    public static final int CHILD_MIX = 5;
 
     /**
      * Categorizes a {@link HttpException}

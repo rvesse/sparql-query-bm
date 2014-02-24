@@ -275,4 +275,21 @@ public class BenchmarkOptions extends OptionsImpl {
     public int getWarmups() {
         return warmups;
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Options> T copy() {
+        BenchmarkOptions copy = new BenchmarkOptions();
+        this.copyStandardOptions(copy);
+        copy.setAllowOverwrite(this.getAllowOverwrite());
+        copy.setCsvResultsFile(this.getCsvResultsFile());
+        copy.setLimit(this.getLimit());
+        copy.setNoCount(this.getNoCount());
+        copy.setOutliers(this.getOutliers());
+        copy.setRuns(this.getRuns());
+        copy.setWarmups(this.getWarmups());
+        copy.setXmlResultsFile(this.getXmlResultsFile());
+
+        return (T) copy;
+    }
 }
