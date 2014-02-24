@@ -1,1 +1,1 @@
-java -cp target/sparql-query-bm-cli.jar net.sf.sparql.query.benchmarking.cmd.SoakCmd %*
+java -cp target/sparql-query-bm-cli.jar net.sf.sparql.query.benchmarking.cmd.SoakCommand %*

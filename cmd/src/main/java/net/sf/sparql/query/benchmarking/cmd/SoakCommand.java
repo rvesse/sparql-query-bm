@@ -56,7 +56,7 @@ import net.sf.sparql.benchmarking.runners.SoakRunner;
  * 
  */
 @Command(name = "soak", description = "Runs a soak test which consists of running the configured operation mix continuously for some period of time in order to soak test a system.")
-public class SoakCmd extends AbstractCommand {
+public class SoakCommand extends AbstractCommand {
 
     /**
      * Max runs option
@@ -80,7 +80,7 @@ public class SoakCmd extends AbstractCommand {
         int exitCode = 0;
         try {
             // Parse options
-            SoakCmd cmd = SingleCommand.singleCommand(SoakCmd.class).parse(args);
+            SoakCommand cmd = SingleCommand.singleCommand(SoakCommand.class).parse(args);
 
             // Show help if requested
             if (cmd.helpOption.showHelpIfRequested()) {
@@ -97,14 +97,14 @@ public class SoakCmd extends AbstractCommand {
                 System.err.println(ANSI_RED + e.getMessage());
                 System.err.println();
             }
-            showUsage(SoakCmd.class);
+            showUsage(SoakCommand.class);
             exitCode = 1;
         } catch (ParseOptionMissingValueException e) {
             if (!ArrayUtils.contains(args, "--help")) {
                 System.err.println(ANSI_RED + e.getMessage());
                 System.err.println();
             }
-            showUsage(SoakCmd.class);
+            showUsage(SoakCommand.class);
             exitCode = 2;
         } catch (ParseArgumentsMissingException e) {
             System.err.println(ANSI_RED + e.getMessage());

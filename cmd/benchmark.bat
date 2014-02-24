@@ -1,1 +1,1 @@
-java -jar target/sparql-query-bm-cli.jar %*
+java -cp target/sparql-query-bm-cli.jar net.sf.sparql.query.bencharmking.cmd.BenchmarkCommand %*

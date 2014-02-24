@@ -54,7 +54,7 @@ import net.sf.sparql.benchmarking.runners.BenchmarkRunner;
  * 
  */
 @Command(name = "benchmark", description = "Runs a benchmark which consists of running the configured operation mix a set number of times and calculating statistics over those runs.  Benchmarking behaviour can be configured in various ways to cope with different desired benchmark characteristics and systems to be benchmarked.")
-public class BenchmarkerCmd extends AbstractCommand {
+public class BenchmarkCommand extends AbstractCommand {
 
     /**
      * Runs option
@@ -114,7 +114,7 @@ public class BenchmarkerCmd extends AbstractCommand {
         int exitCode = 0;
         try {
             // Parse options
-            BenchmarkerCmd cmd = SingleCommand.singleCommand(BenchmarkerCmd.class).parse(args);
+            BenchmarkCommand cmd = SingleCommand.singleCommand(BenchmarkCommand.class).parse(args);
 
             // Show help if requested
             if (cmd.helpOption.showHelpIfRequested()) {
@@ -131,14 +131,14 @@ public class BenchmarkerCmd extends AbstractCommand {
                 System.err.println(ANSI_RED + e.getMessage());
                 System.err.println();
             }
-            showUsage(BenchmarkerCmd.class);
+            showUsage(BenchmarkCommand.class);
             exitCode = 1;
         } catch (ParseOptionMissingValueException e) {
             if (!ArrayUtils.contains(args, "--help")) {
                 System.err.println(ANSI_RED + e.getMessage());
                 System.err.println();
             }
-            showUsage(BenchmarkerCmd.class);
+            showUsage(BenchmarkCommand.class);
             exitCode = 2;
         } catch (ParseArgumentsMissingException e) {
             System.err.println(ANSI_RED + e.getMessage());

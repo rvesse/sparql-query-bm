@@ -11,4 +11,4 @@ SCRIPT_PATH=`pwd`;
 popd  > /dev/null
 SCRIPT_NAME=`basename $BASH_SOURCE`
 
-${SCRIPT_PATH}/run SoakCmd $*
+${SCRIPT_PATH}/run SoakCommand $*
