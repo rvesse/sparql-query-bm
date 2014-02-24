@@ -71,7 +71,7 @@ public interface Operation {
      * Runs the operation returning the statistics as a {@link OperationRun}
      * <p>
      * Implementations are also expected to record the information within their
-     * local {@link OperationStats} object
+     * local {@link OperationStats} object prior to returning the statistics.
      * </p>
      * 
      * @param runner

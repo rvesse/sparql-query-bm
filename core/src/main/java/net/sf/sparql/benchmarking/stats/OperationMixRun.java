@@ -36,19 +36,15 @@ import java.util.Iterator;
 
 /**
  * Represents a run of an operation mix which is comprised of some combination
- * of the operations in the mix
+ * of runs of the operations in the mix
  * 
  * @author rvesse
  * 
  */
 public interface OperationMixRun extends Comparable<OperationMixRun> {
-    
+
     /**
      * Gets an iterator over the runs that make up this operation mix
-     * <p>
-     * The runs are in the same order as the operations are in the originating
-     * mix i.e. the order does not reflect the execution order
-     * </p>
      * 
      * @return Iterator over the runs
      */

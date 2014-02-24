@@ -55,7 +55,7 @@ public class ParallelClientTask<T extends Options> extends FutureTask<Object> {
      *            Client ID
      */
     public ParallelClientTask(ParallelClientManager<T> manager, int id) {
-        super(new ParallelClient<T>(manager, id));
+        super(manager.createClient(id));
     }
 
 }

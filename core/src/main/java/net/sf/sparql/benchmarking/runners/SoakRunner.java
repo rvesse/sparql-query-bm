@@ -48,7 +48,7 @@ import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.options.SoakOptions;
 import net.sf.sparql.benchmarking.parallel.ParallelClientManagerTask;
-import net.sf.sparql.benchmarking.parallel.SoakTestParallelClientManager;
+import net.sf.sparql.benchmarking.parallel.impl.SoakTestParallelClientManager;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.util.ConvertUtils;

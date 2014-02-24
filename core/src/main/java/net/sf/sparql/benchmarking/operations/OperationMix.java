@@ -77,8 +77,12 @@ public interface OperationMix {
     public abstract void setRunAsThread(boolean asThread);
 
     /**
-     * Performs a operation mix run recording the results as a
+     * Performs a operation mix run returning the statistics as a
      * {@link OperationMixRun}
+     * <p>
+     * Implementations are also expected to record the information within their
+     * local {@link OperationMixStats} object prior to returning the statistics.
+     * </p>
      * 
      * @param runner
      *            Runner

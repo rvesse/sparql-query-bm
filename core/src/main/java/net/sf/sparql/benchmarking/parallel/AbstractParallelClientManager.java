@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.parallel.impl.DefaultParallelClient;
 import net.sf.sparql.benchmarking.runners.Runner;
 
 /**
@@ -141,5 +142,9 @@ public abstract class AbstractParallelClientManager<T extends Options> implement
     
         return null;
     }
-
+    
+    @Override
+    public ParallelClient<T> createClient(int id) {
+        return new DefaultParallelClient<T>(this, id);
+    }
 }

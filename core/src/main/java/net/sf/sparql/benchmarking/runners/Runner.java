@@ -54,7 +54,7 @@ public interface Runner<T extends Options> {
      * @param options
      */
     public abstract void run(T options);
-
+    
     /**
      * Reports progress with the information from a single run of the operation
      * mix

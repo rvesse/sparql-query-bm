@@ -30,9 +30,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.parallel;
+package net.sf.sparql.benchmarking.parallel.impl;
 
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
+import net.sf.sparql.benchmarking.parallel.AbstractParallelClientManager;
 import net.sf.sparql.benchmarking.runners.Runner;
 
 /**

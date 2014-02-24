@@ -91,4 +91,14 @@ public interface ParallelClientManager<T extends Options> extends Callable<Objec
      */
     public abstract T getOptions();
 
+    /**
+     * Creates a new parallel client
+     * 
+     * @param id
+     *            Client ID
+     * 
+     * @return Parallel client
+     */
+    public abstract ParallelClient<T> createClient(int id);
+
 }
