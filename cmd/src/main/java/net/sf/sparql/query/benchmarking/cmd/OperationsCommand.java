@@ -311,6 +311,11 @@ public class OperationsCommand {
                     case OperationLoaderArgument.TYPE_STRING:
                         // No special argument information
                         break;
+                    case OperationLoaderArgument.TYPE_BOOLEAN:
+                        PrintHelper.printIndent(8);
+                        PrintHelper.print("Boolean type arguments expect to receive a boolean value of true or false", 8,
+                                this.width - 8);
+                        break;
                     default:
                         PrintHelper.printIndent(8);
                         PrintHelper.print("This argument has an unknown type, the expected values for arguments are unknown", 8,

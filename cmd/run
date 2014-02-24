@@ -11,7 +11,7 @@ SCRIPT_PATH=`pwd`;
 popd  > /dev/null
 SCRIPT_NAME=`basename $BASH_SOURCE`
 
-# Search the obvious locations for the CLI
+# Search the obvious locations for the CLI JAR
 TARGET_JAR=sparql-query-bm-cli.jar
 ACTUAL_JAR=
 
