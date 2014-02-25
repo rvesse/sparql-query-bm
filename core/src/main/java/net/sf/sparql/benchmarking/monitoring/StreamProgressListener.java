@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.monitoring;
 
@@ -52,6 +52,9 @@ import net.sf.sparql.benchmarking.stats.OperationRun;
 public class StreamProgressListener implements ProgressListener {
     private PrintStream output;
     private boolean closeOnFinish = true;
+    private boolean disambiguate = false;
+    private long lastThread = -1;
+    private boolean needsNewLine = false;
 
     /**
      * Creates a Progress Listener without a stream
@@ -86,8 +89,7 @@ public class StreamProgressListener implements ProgressListener {
      *            Output Stream
      * @param closeOnFinish
      *            Whether the Output Stream should be closed when the listener
-     *            receives the {@link #finish(Runner, Options, boolean)}
-     *            call
+     *            receives the {@link #finish(Runner, Options, boolean)} call
      */
     public StreamProgressListener(PrintStream output, boolean closeOnFinish) {
         if (output == null)
@@ -123,8 +125,7 @@ public class StreamProgressListener implements ProgressListener {
      *            Output Stream
      * @param closeOnFinish
      *            Whether the stream should be closed when the
-     *            {@link #finish(Runner, Options, boolean)} event is
-     *            received
+     *            {@link #finish(Runner, Options, boolean)} event is received
      */
     public StreamProgressListener(OutputStream output, boolean closeOnFinish) {
         this(new PrintStream(output), closeOnFinish);
@@ -140,12 +141,53 @@ public class StreamProgressListener implements ProgressListener {
         return null;
     }
 
+    /**
+     * Gets whether this listener will disambiguate multi-threaded output by
+     * ensuring output from different threads is never printed on the same line
+     * as output from a different thread
+     * 
+     * @return True if multi-threaded output will be disambiguated, false
+     *         otherwise
+     */
+    public boolean getDisambiguateMultiThreadedOutput() {
+        return this.disambiguate;
+    }
+
+    /**
+     * Sets whether this listener will disambiguate multi-threaded output by
+     * ensuring output from different threads is never printed on the same line
+     * as output from a different thread
+     * 
+     * @param disambiguate
+     *            True to enable disambiguation, false to disable it
+     */
+    public void setDisambiguateMultiThreadedOutput(boolean disambiguate) {
+        this.disambiguate = disambiguate;
+    }
+
     @Override
     public <T extends Options> void progress(Runner<T> runner, T options, String message) {
-        if (this.output != null)
-            this.output.print(message);
+        if (this.output != null) {
+            if (!this.disambiguate) {
+                this.output.print(message);
+            } else {
+                synchronized (this.output) {
+                    // If switching threads we may need to insert a new line
+                    if (this.lastThread != Thread.currentThread().getId() && this.needsNewLine) {
+                        System.out.println();
+                        this.needsNewLine = false;
+                    }
+
+                    // Update thread
+                    this.lastThread = Thread.currentThread().getId();
+                    this.needsNewLine = !message.endsWith("\n");
+                    
+                    this.output.print(message);
+                }
+            }
+        }
     }
-    
+
     @Override
     public <T extends Options> void beforeOperation(Runner<T> runner, T options, Operation operation) {
     }
@@ -153,7 +195,7 @@ public class StreamProgressListener implements ProgressListener {
     @Override
     public <T extends Options> void afterOperation(Runner<T> runner, T options, Operation operation, OperationRun run) {
     }
-    
+
     @Override
     public <T extends Options> void beforeOperationMix(Runner<T> runner, T options, OperationMix mix) {
     }

@@ -150,6 +150,7 @@ public class OperationMixImpl implements OperationMix {
             this.stats.getTimer().start();
             OperationRun r = op.run(runner, options);
             this.stats.getTimer().stop();
+            runner.reportAfterOperation(options, op, r);
             runs.set(id, r);
             if (r.wasSuccessful()) {
                 runner.reportProgress(options,
@@ -158,7 +159,6 @@ public class OperationMixImpl implements OperationMix {
                 runner.reportProgress(options,
                         prefix + "got error after " + ConvertUtils.toSeconds(r.getRuntime()) + "s: " + r.getErrorMessage());
             }
-            runner.reportAfterOperation(options, op, r);
 
             // Apply delay between operations
             if (options.getMaxDelay() > 0) {
