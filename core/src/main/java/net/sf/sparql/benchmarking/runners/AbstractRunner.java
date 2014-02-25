@@ -93,7 +93,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
         // Inform Listeners that Benchmarking Finished with a halt condition
         for (ProgressListener l : options.getListeners()) {
             try {
-                l.handleFinished(this, options, false);
+                l.finish(this, options, false);
             } catch (Exception e) {
                 System.err.println(l.getClass().getName() + " encountered an error during handleFinish() - " + e.getMessage());
                 if (options.getHaltOnError() || options.getHaltAny()) {
@@ -125,7 +125,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
     public void reportPartialProgress(T options, String message) {
         for (ProgressListener l : options.getListeners()) {
             try {
-                l.handleProgress(this, options, message);
+                l.progress(this, options, message);
             } catch (Exception e) {
                 System.err.println(l.getClass().getName() + " encountered an error during handleProgress() - " + e.getMessage());
                 if (options.getHaltAny() || options.getHaltOnError()) {
@@ -144,7 +144,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
     public void reportProgress(T options, Operation operation, OperationRun run) {
         for (ProgressListener l : options.getListeners()) {
             try {
-                l.handleProgress(this, options, operation, run);
+                l.afterOperation(this, options, operation, run);
             } catch (Exception e) {
                 System.err.println(l.getClass().getName() + " encountered an error during handleProgress() - " + e.getMessage());
                 if (options.getHaltAny() || options.getHaltOnTimeout()) {
@@ -158,7 +158,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
     public void reportProgress(T options, OperationMixRun run) {
         for (ProgressListener l : options.getListeners()) {
             try {
-                l.handleProgress(this, options, run);
+                l.afterOperationMix(this, options, null, run);
             } catch (Exception e) {
                 System.err.println(l.getClass().getName() + " encountered an error during handleProgress() - " + e.getMessage());
                 if (options.getHaltAny() || options.getHaltOnError()) {

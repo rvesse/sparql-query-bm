@@ -69,7 +69,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         // Inform Listeners that we are starting benchmarking
         for (ProgressListener l : options.getListeners()) {
             try {
-                l.handleStarted(this, options);
+                l.start(this, options);
             } catch (Exception e) {
                 System.err.println(l.getClass().getName() + " encountered an error during handleStarted() - " + e.getMessage());
                 e.printStackTrace(System.err);
@@ -315,7 +315,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         // Finally inform listeners that running finished OK
         for (ProgressListener l : options.getListeners()) {
             try {
-                l.handleFinished(this, options, true);
+                l.finish(this, options, true);
             } catch (Exception e) {
                 System.err.println(l.getClass().getName() + " encountered an error during handleFinish() - " + e.getMessage());
                 e.printStackTrace(System.err);

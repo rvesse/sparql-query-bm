@@ -158,7 +158,7 @@ public class XmlProgressListener implements ProgressListener {
      * Handles the started event by printing run configuration to the XML file
      */
     @Override
-    public <T extends Options> void handleStarted(Runner<T> runner, T options) {
+    public <T extends Options> void start(Runner<T> runner, T options) {
         if (!FileUtils.checkFile(this.file, allowOverwrite)) {
             throw new RuntimeException("XML Output File is not a file, already exists or is not writable");
         }
@@ -263,7 +263,7 @@ public class XmlProgressListener implements ProgressListener {
      *            Whether benchmarking finished OK
      */
     @Override
-    public <T extends Options> void handleFinished(Runner<T> runner, T options, boolean ok) {
+    public <T extends Options> void finish(Runner<T> runner, T options, boolean ok) {
         if (writer == null)
             throw new RuntimeException(
                     "handleFinished() on XmlProgressListener was called but it appears handleStarted() was never called, another listener may have caused handleStarted() to be bypassed for this listener");
@@ -351,19 +351,37 @@ public class XmlProgressListener implements ProgressListener {
     }
 
     @Override
-    public <T extends Options> void handleProgress(Runner<T> runner, T options, String message) {
+    public <T extends Options> void progress(Runner<T> runner, T options, String message) {
         // Not relevant for XML output
     }
 
+    /**
+     * Does nothing as this listener discards individual operation run
+     * statistics
+     * 
+     * @param operation
+     *            Benchmark Operation
+     */
     @Override
-    public <T extends Options> void handleProgress(Runner<T> runner, T options, Operation operation, OperationRun run) {
+    public <T extends Options> void beforeOperation(Runner<T> runner, T options, Operation operation) {
+        // We don't handle before operation events
+    }
+
+    @Override
+    public <T extends Options> void afterOperation(Runner<T> runner, T options, Operation operation, OperationRun run) {
         // We don't handle individual operation run stats, we only handle mix
         // and
         // aggregate stats
     }
 
     @Override
-    public synchronized <T extends Options> void handleProgress(Runner<T> runner, T options, OperationMixRun run) {
+    public <T extends Options> void beforeOperationMix(Runner<T> runner, T options, OperationMix mix) {
+        // We don't handle before operation mix events
+    }
+
+    @Override
+    public synchronized <T extends Options> void afterOperationMix(Runner<T> runner, T options, OperationMix mix,
+            OperationMixRun run) {
         // Print run information
         openTag(TAG_MIX_RUN, true);
 

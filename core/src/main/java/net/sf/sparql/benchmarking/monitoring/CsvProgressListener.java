@@ -101,7 +101,7 @@ public class CsvProgressListener implements ProgressListener {
      *            Options
      */
     @Override
-    public <T extends Options> void handleStarted(Runner<T> runner, T options) {
+    public <T extends Options> void start(Runner<T> runner, T options) {
         if (!FileUtils.checkFile(this.f, this.allowOverwrite)) {
             throw new RuntimeException("CSV Output File is not a file, already exists or is not writable");
         }
@@ -159,7 +159,7 @@ public class CsvProgressListener implements ProgressListener {
      *            Whether benchmarking finished OK
      */
     @Override
-    public <T extends Options> void handleFinished(Runner<T> runner, T options, boolean ok) {
+    public <T extends Options> void finish(Runner<T> runner, T options, boolean ok) {
         if (!this.ready)
             throw new RuntimeException(
                     "handleFinished() was called on CsvProgressListener but it appears handleStarted() was not called or encountered an error, another listener may be the cause of this issue");
@@ -252,8 +252,20 @@ public class CsvProgressListener implements ProgressListener {
      *            Informational Message
      */
     @Override
-    public <T extends Options> void handleProgress(Runner<T> runner, T options, String message) {
+    public <T extends Options> void progress(Runner<T> runner, T options, String message) {
         // We don't handle informational messages
+    }
+    
+    /**
+     * Does nothing as this listener discards individual operation run
+     * statistics
+     * 
+     * @param operation
+     *            Benchmark Operation
+     */
+    @Override
+    public <T extends Options> void beforeOperation(Runner<T> runner, T options, Operation operation) {
+        // We don't handle before operation events
     }
 
     /**
@@ -266,9 +278,14 @@ public class CsvProgressListener implements ProgressListener {
      *            Operation Run statistics
      */
     @Override
-    public <T extends Options> void handleProgress(Runner<T> runner, T options, Operation operation, OperationRun run) {
+    public <T extends Options> void afterOperation(Runner<T> runner, T options, Operation operation, OperationRun run) {
         // We don't handle query run stats as they are produced, we're only
         // interested in aggregate stats at the end
+    }
+    
+    @Override
+    public <T extends Options> void beforeOperationMix(Runner<T> runner, T options, OperationMix mix) {
+        // We don't handle before operation mix events
     }
 
     /**
@@ -276,7 +293,7 @@ public class CsvProgressListener implements ProgressListener {
      * printing to the CSV file
      */
     @Override
-    public synchronized <T extends Options> void handleProgress(Runner<T> runner, T options, OperationMixRun run) {
+    public synchronized <T extends Options> void afterOperationMix(Runner<T> runner, T options, OperationMix mix, OperationMixRun run) {
         this.buffer.append(this.run + ",");
         this.buffer.append(ConvertUtils.toSeconds(run.getTotalResponseTime()) + ",");
         this.buffer.append(ConvertUtils.toSeconds(run.getTotalRuntime()) + ",");

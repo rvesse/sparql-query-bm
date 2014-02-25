@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import net.sf.sparql.benchmarking.operations.Operation;
+import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
@@ -85,7 +86,7 @@ public class StreamProgressListener implements ProgressListener {
      *            Output Stream
      * @param closeOnFinish
      *            Whether the Output Stream should be closed when the listener
-     *            receives the {@link #handleFinished(Runner, Options, boolean)}
+     *            receives the {@link #finish(Runner, Options, boolean)}
      *            call
      */
     public StreamProgressListener(PrintStream output, boolean closeOnFinish) {
@@ -122,7 +123,7 @@ public class StreamProgressListener implements ProgressListener {
      *            Output Stream
      * @param closeOnFinish
      *            Whether the stream should be closed when the
-     *            {@link #handleFinished(Runner, Options, boolean)} event is
+     *            {@link #finish(Runner, Options, boolean)} event is
      *            received
      */
     public StreamProgressListener(OutputStream output, boolean closeOnFinish) {
@@ -139,58 +140,38 @@ public class StreamProgressListener implements ProgressListener {
         return null;
     }
 
-    /**
-     * Writes the message to the underlying {@link PrintStream}
-     * 
-     * @param message
-     *            Informational Message
-     */
     @Override
-    public <T extends Options> void handleProgress(Runner<T> runner, T options, String message) {
+    public <T extends Options> void progress(Runner<T> runner, T options, String message) {
         if (this.output != null)
             this.output.print(message);
     }
-
-    /**
-     * Does nothing, you may wish to override in derived classes
-     */
+    
     @Override
-    public <T extends Options> void handleProgress(Runner<T> runner, T options, Operation operation, OperationRun run) {
+    public <T extends Options> void beforeOperation(Runner<T> runner, T options, Operation operation) {
     }
 
-    /**
-     * Does nothing, you may wish to override in derived classes
-     */
     @Override
-    public <T extends Options> void handleProgress(Runner<T> runner, T options, OperationMixRun run) {
+    public <T extends Options> void afterOperation(Runner<T> runner, T options, Operation operation, OperationRun run) {
+    }
+    
+    @Override
+    public <T extends Options> void beforeOperationMix(Runner<T> runner, T options, OperationMix mix) {
     }
 
-    /**
-     * Starts benchmarking
-     * <p>
-     * If this class was derived from and you instantiated it without an
-     * explicit stream it will call the {@link #openStream()} method to try and
-     * open the stream for output. Otherwise this function does nothing by
-     * default, if overriding this function you should ensure to always call
-     * <strong>super()</strong> unless you know that you will always have an
-     * explicit stream
-     * </p>
-     */
-    @SuppressWarnings("javadoc")
     @Override
-    public <T extends Options> void handleStarted(Runner<T> runner, T options) {
+    public <T extends Options> void afterOperationMix(Runner<T> runner, T options, OperationMix mix, OperationMixRun run) {
+    }
+
+    @Override
+    public <T extends Options> void start(Runner<T> runner, T options) {
         // If the stream is null then use the openStream() method to try and get
         if (this.output == null) {
             this.output = new PrintStream(this.openStream());
         }
     }
 
-    /**
-     * Closes the stream if the closeOnFinish parameter was true when this
-     * listener was instantiated
-     */
     @Override
-    public <T extends Options> void handleFinished(Runner<T> runner, T options, boolean ok) {
+    public <T extends Options> void finish(Runner<T> runner, T options, boolean ok) {
         if (this.closeOnFinish && this.output != null) {
             this.output.close();
         }

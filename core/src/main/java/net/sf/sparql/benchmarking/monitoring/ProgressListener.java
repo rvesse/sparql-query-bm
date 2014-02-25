@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,36 +28,37 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.monitoring;
 
 import net.sf.sparql.benchmarking.operations.Operation;
+import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
 
 /**
- * Interface for Progress Listeners that can be used to monitor progress of
- * benchmarking
+ * Interface for Progress Listeners that can be used to monitor progress of test
+ * runs
  * 
  * @author rvesse
  * 
  */
 public interface ProgressListener {
     /**
-     * Handles starting of running
+     * Invoked when test runs start
      * 
      * @param runner
      *            Runner
      * @param options
      *            Options
      */
-    <T extends Options> void handleStarted(Runner<T> runner, T options);
+    <T extends Options> void start(Runner<T> runner, T options);
 
     /**
-     * Handles finishing of running
+     * Invoked when test runs finish
      * 
      * @param runner
      *            Runner
@@ -67,10 +68,10 @@ public interface ProgressListener {
      *            Indicates whether running finished normally, if false then
      *            some error condition caused running to be halted
      */
-    <T extends Options> void handleFinished(Runner<T> runner, T options, boolean ok);
+    <T extends Options> void finish(Runner<T> runner, T options, boolean ok);
 
     /**
-     * Handles an informational progress message
+     * Invoked when an informational progress message is available
      * 
      * @param runner
      *            Runner
@@ -79,10 +80,22 @@ public interface ProgressListener {
      * @param message
      *            Message
      */
-    <T extends Options> void handleProgress(Runner<T> runner, T options, String message);
+    <T extends Options> void progress(Runner<T> runner, T options, String message);
 
     /**
-     * Handles statistics for a single run of an operation
+     * Invoked before each run of an operation
+     * 
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
+     * @param operation
+     *            Operation
+     */
+    <T extends Options> void beforeOperation(Runner<T> runner, T options, Operation operation);
+
+    /**
+     * Invoked after each run of an operation
      * 
      * @param runner
      *            Runner
@@ -93,17 +106,31 @@ public interface ProgressListener {
      * @param run
      *            Run information
      */
-    <T extends Options> void handleProgress(Runner<T> runner, T options, Operation operation, OperationRun run);
+    <T extends Options> void afterOperation(Runner<T> runner, T options, Operation operation, OperationRun run);
 
     /**
-     * Handles statistics for a single run of the operation mix
+     * Invoked before each run of an operation mix
      * 
      * @param runner
      *            Runner
      * @param options
      *            Options
+     * @param mix
+     *            Operation Mix
+     */
+    <T extends Options> void beforeOperationMix(Runner<T> runner, T options, OperationMix mix);
+
+    /**
+     * Invoked after each run of an operation mix
+     * 
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
+     * @param mix
+     *            TODO
      * @param run
      *            Mix run information
      */
-    <T extends Options> void handleProgress(Runner<T> runner, T options, OperationMixRun run);
+    <T extends Options> void afterOperationMix(Runner<T> runner, T options, OperationMix mix, OperationMixRun run);
 }
