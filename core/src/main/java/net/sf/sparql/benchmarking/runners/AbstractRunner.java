@@ -48,6 +48,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.Operation;
+import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.operations.query.QueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
@@ -141,12 +142,12 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
     }
 
     @Override
-    public void reportProgress(T options, Operation operation, OperationRun run) {
+    public void reportBeforeOperation(T options, Operation operation) {
         for (ProgressListener l : options.getListeners()) {
             try {
-                l.afterOperation(this, options, operation, run);
+                l.beforeOperation(this, options, operation);
             } catch (Exception e) {
-                System.err.println(l.getClass().getName() + " encountered an error during handleProgress() - " + e.getMessage());
+                System.err.println(l.getClass().getName() + " encountered an error during beforeOperation() - " + e.getMessage());
                 if (options.getHaltAny() || options.getHaltOnTimeout()) {
                     halt(options, l.getClass().getName() + " encountering an error in progress reporting");
                 }
@@ -155,12 +156,42 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
     }
 
     @Override
-    public void reportProgress(T options, OperationMixRun run) {
+    public void reportAfterOperation(T options, Operation operation, OperationRun run) {
         for (ProgressListener l : options.getListeners()) {
             try {
-                l.afterOperationMix(this, options, null, run);
+                l.afterOperation(this, options, operation, run);
             } catch (Exception e) {
-                System.err.println(l.getClass().getName() + " encountered an error during handleProgress() - " + e.getMessage());
+                System.err.println(l.getClass().getName() + " encountered an error during afterOperation() - " + e.getMessage());
+                if (options.getHaltAny() || options.getHaltOnTimeout()) {
+                    halt(options, l.getClass().getName() + " encountering an error in progress reporting");
+                }
+            }
+        }
+    }
+
+    @Override
+    public void reportBeforeOperationMix(T options, OperationMix mix) {
+        for (ProgressListener l : options.getListeners()) {
+            try {
+                l.beforeOperationMix(this, options, mix);
+            } catch (Exception e) {
+                System.err.println(l.getClass().getName() + " encountered an error during beforeOperationMix() - "
+                        + e.getMessage());
+                if (options.getHaltAny() || options.getHaltOnError()) {
+                    halt(options, l.getClass().getName() + " encountering an error in progress reporting");
+                }
+            }
+        }
+    }
+
+    @Override
+    public void reportAfterOperationMix(T options, OperationMix mix, OperationMixRun run) {
+        for (ProgressListener l : options.getListeners()) {
+            try {
+                l.afterOperationMix(this, options, mix, run);
+            } catch (Exception e) {
+                System.err.println(l.getClass().getName() + " encountered an error during afterOperationMix() - "
+                        + e.getMessage());
                 if (options.getHaltAny() || options.getHaltOnError()) {
                     halt(options, l.getClass().getName() + " encountering an error in progress reporting");
                 }
@@ -251,7 +282,9 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
 
             // Run the tear down
             reportProgress(options, "Running teardown mix...");
-            options.getTeardownMix().run(this, options);
+            reportBeforeOperationMix(options, options.getTeardownMix());
+            OperationMixRun r = options.getTeardownMix().run(this, options);
+            reportAfterOperationMix(options, options.getTeardownMix(), r);
             reportProgress(options);
 
             // Reset random ordering
@@ -275,7 +308,9 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
 
             // Run the setup
             reportProgress(options, "Running setup mix...");
-            options.getSetupMix().run(this, options);
+            reportBeforeOperationMix(options, options.getSetupMix());
+            OperationMixRun r = options.getSetupMix().run(this, options);
+            reportAfterOperationMix(options, options.getTeardownMix(), r);
             reportProgress(options);
 
             // Reset random ordering

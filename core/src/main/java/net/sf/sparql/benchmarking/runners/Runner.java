@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,12 +28,13 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.runners;
 
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.Operation;
+import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
@@ -54,21 +55,41 @@ public interface Runner<T extends Options> {
      * @param options
      */
     public abstract void run(T options);
-    
+
     /**
-     * Reports progress with the information from a single run of the operation
-     * mix
+     * Reports progress before we run an operation mix
      * 
      * @param options
      *            Options
+     * @param mix
+     *            Operation mix
+     */
+    public abstract void reportBeforeOperationMix(T options, OperationMix mix);
+
+    /**
+     * Reports progress after we complete a run of the operation mix
+     * 
+     * @param options
+     *            Options
+     * @param mix
+     *            Operation mix
      * @param run
      *            Operation mix run information
      */
-    public abstract void reportProgress(T options, OperationMixRun run);
+    public abstract void reportAfterOperationMix(T options, OperationMix mix, OperationMixRun run);
 
     /**
-     * Reports progress with the information from a single run of a specific
-     * operation
+     * Reports progress before we run an operation
+     * 
+     * @param options
+     *            Options
+     * @param operation
+     *            Operation
+     */
+    public abstract void reportBeforeOperation(T options, Operation operation);
+
+    /**
+     * Reports progress after we have run an operation
      * 
      * @param options
      *            Options
@@ -77,7 +98,7 @@ public interface Runner<T extends Options> {
      * @param run
      *            Run information
      */
-    public abstract void reportProgress(T options, Operation operation, OperationRun run);
+    public abstract void reportAfterOperation(T options, Operation operation, OperationRun run);
 
     /**
      * Reports progress with an informational message

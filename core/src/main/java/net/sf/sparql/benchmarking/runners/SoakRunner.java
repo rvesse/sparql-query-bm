@@ -198,8 +198,9 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
                                     + " minutes of " + options.getMaxRuntime() + " minutes");
                 }
                 i++;
+                reportBeforeOperationMix(options, options.getOperationMix());
                 OperationMixRun r = options.getOperationMix().run(this, options);
-                reportProgress(options, r);
+                reportAfterOperationMix(options, null, r);
                 reportProgress(options);
 
                 if (options.getMaxRuns() > 0 && i >= options.getMaxRuns()) {
@@ -275,15 +276,20 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
             reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(op.getStats().getTotalRuntime()));
             if (options.getParallelThreads() > 1)
                 reportProgress(options, "Actual Runtime: " + FormatUtils.formatSeconds(op.getStats().getActualRuntime()));
-            reportProgress(options, "Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(op.getStats().getAverageRuntime()));
+            reportProgress(options,
+                    "Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(op.getStats().getAverageRuntime()));
             if (options.getParallelThreads() > 1)
-                reportProgress(options,
-                        "Actual Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(op.getStats().getActualAverageRuntime()));
-            reportProgress(options, "Average Runtime (Geometric): " + FormatUtils.formatSeconds(op.getStats().getGeometricAverageRuntime()));
+                reportProgress(
+                        options,
+                        "Actual Average Runtime (Arithmetic): "
+                                + FormatUtils.formatSeconds(op.getStats().getActualAverageRuntime()));
+            reportProgress(options,
+                    "Average Runtime (Geometric): " + FormatUtils.formatSeconds(op.getStats().getGeometricAverageRuntime()));
             reportProgress(options, "Minimum Runtime: " + FormatUtils.formatSeconds(op.getStats().getMinimumRuntime()));
             reportProgress(options, "Maximum Runtime: " + FormatUtils.formatSeconds(op.getStats().getMaximumRuntime()));
             reportProgress(options, "Runtime Variance: " + FormatUtils.formatSeconds(op.getStats().getVariance()));
-            reportProgress(options, "Runtime Standard Deviation: " + FormatUtils.formatSeconds(op.getStats().getStandardDeviation()));
+            reportProgress(options,
+                    "Runtime Standard Deviation: " + FormatUtils.formatSeconds(op.getStats().getStandardDeviation()));
             reportProgress(options, "Operations per Second: " + op.getStats().getOperationsPerSecond());
             if (options.getParallelThreads() > 1)
                 reportProgress(options, "Actual Operations per Second: " + op.getStats().getActualOperationsPerSecond());
@@ -298,7 +304,8 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
         reportProgress(options, "-----------------");
         reportProgress(options);
         reportProgress(options, "Number of Runs: " + options.getOperationMix().getStats().getRunCount());
-        reportProgress(options, "Total Operations Run: " + (options.getOperationMix().getStats().getRunCount() * options.getOperationMix().size()));
+        reportProgress(options, "Total Operations Run: "
+                + (options.getOperationMix().getStats().getRunCount() * options.getOperationMix().size()));
         reportProgress(options);
         reportProgress(options, "Total Errors: " + options.getOperationMix().getStats().getTotalErrors());
         if (options.getOperationMix().getStats().getTotalErrors() > 0) {

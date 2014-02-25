@@ -206,8 +206,9 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
             for (i = 0; i < options.getRuns(); i++) {
                 reportProgress(options, "Operation Mix Run " + (i + 1) + " of " + options.getRuns());
                 reportProgress(options, "Current Time: " + FormatUtils.formatInstant(Instant.now()));
+                reportBeforeOperationMix(options, options.getOperationMix());
                 OperationMixRun r = options.getOperationMix().run(this, options);
-                reportProgress(options, r);
+                reportAfterOperationMix(options, options.getOperationMix(), r);
                 reportProgress(options);
                 reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(r.getTotalResponseTime()));
                 reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(r.getTotalRuntime()));

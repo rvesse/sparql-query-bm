@@ -87,6 +87,7 @@ public class DefaultParallelClient<T extends Options> extends AbstractParallelCl
                 runner.reportProgress(options, "Current Time: " + FormatUtils.formatInstant(Instant.now()));
 
                 // Run a query mix
+                runner.reportBeforeOperationMix(options, operationMix);
                 OperationMixTask<T> task = new OperationMixTask<T>(runner, options);
                 options.getExecutor().submit(task);
                 OperationMixRun r = task.get();
@@ -94,7 +95,7 @@ public class DefaultParallelClient<T extends Options> extends AbstractParallelCl
                 // Report completed run
                 int completedRun = manager.completeRun();
                 runner.reportProgress(options, "Operation Mix Run " + completedRun + " by Client " + this.getID());
-                runner.reportProgress(options, r);
+                runner.reportAfterOperationMix(options, operationMix, r);
                 runner.reportProgress(options);
                 runner.reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(r.getTotalResponseTime()));
                 runner.reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(r.getTotalRuntime()));
