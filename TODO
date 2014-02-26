@@ -15,8 +15,6 @@ API
 - Use an RDF vocabulary to describe query mixes instead of current text file
 	- Allows for marking queries to be included multiple times
 	- Allows for adding user friendly name
-- When the same query occurs multiple times in a mix the results are not currently amalgamated. It would be nice if
-  the tool was capable of automatically doing this
 - RdfProgressListener
 	- Generate an RDF form output, define a vocabulary for this
 	- Add a --rdf flag to set this file for benchmark command
@@ -25,5 +23,6 @@ API
 	- Adjust all values for the endpoint by this delay
 - XSLT Stylesheets for rendering XML results in usable form in browsers
 - GSP Operation support
+	- Basics are supported by PUT and POST support should be added
 - In-memory operation support
 	- i.e. allow for benchmarking without using HTTP
