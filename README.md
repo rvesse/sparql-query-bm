@@ -1,19 +1,26 @@
-Introduction
-============
+# Introduction
 
-SPARQL Query Benchmarker is a combination of an API and a Command Line interface that can be used
-to benchmark any set of queries against any HTTP based SPARQL endpoint.
+SPARQL Query Benchmarker started life purely as a SPARQL over HTTP benchmarking tool.
+Over time it has evolved into a general purpose API that while designed primarily for
+testing SPARQL servers (including queries, updates and GSP requests) can in principal
+be extended to test much more than that.
 
-See the API document under the core directory for general API documentation
-See the README document under the cmd directory for CLI documentation
+The API is described by javadoc available at TBD and in the documentation at TBD
 
-Build
-=====
+The command line currently comprises three main tools:
 
-See the BUILD document in this directory
+- `benchmark` - Runs a benchmark of operations against a SPARQL server.
+- `soak` - Runs a soak test of operations against a SPARQL server.
+- `operations` - Provides command line help with available operations
 
-License
-=======
+See the [CLI documentation](https://sourceforge.net/p/sparql-query-bm/wiki/CLI) for examples
+or running the various commands.
+
+# Build
+
+See the BUILD.md document in this directory
+
+# License
 
 Copyright 2011-2014 Cray Inc. All Rights Reserved
 
@@ -44,8 +51,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-Acknowledgements
-=================
+# Acknowledgments
+
+This tool was originally developed at Cray Inc (http://www.cray.com) and its development
+continues to be in part supported by Cray
 
 SPARQL Query Benchmarker uses the the Apache Jena ARQ query engine for issuing queries 
 and parsing the results - http://jena.apache.org
