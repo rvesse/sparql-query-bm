@@ -57,7 +57,7 @@ import net.sf.sparql.benchmarking.util.ErrorCategories;
  * 
  * @param <T>
  */
-public abstract class AbstractQueryCallable<T extends Options> extends AbstractOperationCallable<T, QueryRun> {
+public abstract class AbstractQueryCallable<T extends Options> extends AbstractOperationCallable<T> {
 
     private static final Logger logger = Logger.getLogger(QueryCallable.class);
 

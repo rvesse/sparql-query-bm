@@ -44,7 +44,7 @@ import net.sf.sparql.benchmarking.stats.impl.QueryRun;
  * @author rvesse
  * 
  */
-public abstract class AbstractQueryOperation extends AbstractOperation<QueryRun> implements QueryOperation {
+public abstract class AbstractQueryOperation extends AbstractOperation implements QueryOperation {
 
     /**
      * Creates a new operation
@@ -66,12 +66,12 @@ public abstract class AbstractQueryOperation extends AbstractOperation<QueryRun>
     }
 
     @Override
-    protected <T extends Options> OperationCallable<T, QueryRun> createCallable(Runner<T> runner, T options) {
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
         return new QueryCallable<T>(this.getQuery(), runner, options);
     }
 
     @Override
-    protected QueryRun createErrorInformation(String message, int category, long runtime) {
+    public QueryRun createErrorInformation(String message, int category, long runtime) {
         return new QueryRun(message, category, runtime);
     }
 

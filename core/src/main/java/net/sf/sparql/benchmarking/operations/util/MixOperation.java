@@ -49,7 +49,7 @@ import net.sf.sparql.benchmarking.stats.OperationRunImpl;
  * @author rvesse
  * 
  */
-public class MixOperation extends AbstractOperation<OperationRun> {
+public class MixOperation extends AbstractOperation {
 
     private OperationMix mix;
     private boolean randomOrder = false;
@@ -103,12 +103,12 @@ public class MixOperation extends AbstractOperation<OperationRun> {
     }
 
     @Override
-    protected <T extends Options> OperationCallable<T, OperationRun> createCallable(Runner<T> runner, T options) {
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
         return new MixOperationCallable<T>(runner, options, this.mix, this.randomOrder);
     }
 
     @Override
-    protected OperationRun createErrorInformation(String message, int category, long runtime) {
+    public OperationRun createErrorInformation(String message, int category, long runtime) {
         return new OperationRunImpl(message, category, runtime);
     }
 

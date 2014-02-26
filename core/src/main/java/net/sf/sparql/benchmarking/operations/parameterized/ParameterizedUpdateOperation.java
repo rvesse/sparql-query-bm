@@ -50,7 +50,7 @@ import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
  * @author rvesse
  * 
  */
-public class ParameterizedUpdateOperation extends AbstractParameterizedSparqlOperation<UpdateRun> implements UpdateOperation {
+public class ParameterizedUpdateOperation extends AbstractParameterizedSparqlOperation implements UpdateOperation {
 
     /**
      * Creates a new parameterized update operation
@@ -81,12 +81,12 @@ public class ParameterizedUpdateOperation extends AbstractParameterizedSparqlOpe
     }
 
     @Override
-    protected <T extends Options> OperationCallable<T, UpdateRun> createCallable(Runner<T> runner, T options) {
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
         return new UpdateCallable<T>(this.getUpdate(), runner, options);
     }
 
     @Override
-    protected UpdateRun createErrorInformation(String message, int category, long runtime) {
+    public UpdateRun createErrorInformation(String message, int category, long runtime) {
         return new UpdateRun(message, category, runtime);
     }
 

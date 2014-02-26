@@ -51,7 +51,7 @@ import net.sf.sparql.benchmarking.util.ErrorCategories;
  * 
  * @param <T>
  */
-public class MixOperationCallable<T extends Options> extends AbstractOperationCallable<T, OperationRun> {
+public class MixOperationCallable<T extends Options> extends AbstractOperationCallable<T> {
 
     private OperationMix mix;
     private OperationMixRunner defaultRunner;

@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package net.sf.sparql.benchmarking.options;
 
 import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
+import net.sf.sparql.benchmarking.runners.operations.DefaultOperationRunner;
 
 /**
  * Options for soak testing
@@ -60,6 +61,7 @@ public class SoakOptions extends OptionsImpl {
      */
     public SoakOptions() {
         super.setMixRunner(new DefaultOperationMixRunner());
+        super.setOperationRunner(new DefaultOperationRunner());
     }
 
     /**

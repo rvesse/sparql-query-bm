@@ -40,7 +40,6 @@ import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.operations.query.FixedQueryOperation;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.impl.QueryRun;
 
 /**
  * An operation that runs a fixed query with custom NVPs added to the request
@@ -73,7 +72,7 @@ public class FixedNvpQueryOperation extends FixedQueryOperation {
     }
 
     @Override
-    protected <T extends Options> OperationCallable<T, QueryRun> createCallable(Runner<T> runner, T options) {
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
         return new NvpQueryCallable<T>(this.getQuery(), runner, options, this.nvps);
     }
 

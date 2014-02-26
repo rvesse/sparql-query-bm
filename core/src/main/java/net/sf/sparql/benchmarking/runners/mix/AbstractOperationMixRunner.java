@@ -30,51 +30,46 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 
-package net.sf.sparql.benchmarking.operations.update.nvp;
+package net.sf.sparql.benchmarking.runners.mix;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import net.sf.sparql.benchmarking.operations.OperationCallable;
-import net.sf.sparql.benchmarking.operations.update.FixedUpdateOperation;
+import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
+import net.sf.sparql.benchmarking.runners.operations.DefaultOperationRunner;
+import net.sf.sparql.benchmarking.runners.operations.OperationRunner;
+import net.sf.sparql.benchmarking.stats.OperationRun;
 
 /**
- * An operation that runs a fixed SPARQL update with custom NVPs added to the
- * request
+ * Abstract implementation of an operation mix runner
  * 
  * @author rvesse
  * 
  */
-public class FixedNvpUpdateOperation extends FixedUpdateOperation {
+public abstract class AbstractOperationMixRunner implements OperationMixRunner {
 
-    private Map<String, List<String>> nvps = new HashMap<String, List<String>>();
+    protected boolean asThread = false;
+    private OperationRunner defaultRunner = new DefaultOperationRunner();
+
+    @Override
+    public void setRunAsThread(boolean asThread) {
+        this.asThread = asThread;
+    }
 
     /**
-     * Creates a new operation
+     * Runs an operation based on the configured {@link OperationRunner} using
+     * the {@link DefaultOperationRunner} if none is configured
      * 
-     * @param name
-     *            Name
-     * @param updateString
-     *            Update
-     * @param nvps
-     *            Name value pairs
+     * @param options
+     *            Options
+     * @param op
+     *            Operation to run
+     * @return Operation run information
      */
-    public FixedNvpUpdateOperation(String name, String updateString, Map<String, List<String>> nvps) {
-        super(name, updateString);
-        this.nvps.putAll(nvps);
-    }
-
-    @Override
-    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
-        return new NvpUpdateCallable<T>(this.getUpdate(), runner, options, this.nvps);
-    }
-
-    @Override
-    public String getType() {
-        return "SPARQL Update with NVPs";
+    protected <T extends Options> OperationRun runOp(Runner<T> runner, T options, Operation op) {
+        OperationRunner opRunner = options.getOperationRunner();
+        if (opRunner == null)
+            opRunner = this.defaultRunner;
+        return opRunner.run(runner, options, op);
     }
 
 }

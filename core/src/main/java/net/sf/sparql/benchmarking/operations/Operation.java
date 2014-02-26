@@ -68,19 +68,28 @@ public interface Operation {
     public abstract <T extends Options> boolean canRun(Runner<T> runner, T options);
 
     /**
-     * Runs the operation returning the statistics as a {@link OperationRun}
-     * <p>
-     * Implementations are also expected to record the information within their
-     * local {@link OperationStats} object prior to returning the statistics.
-     * </p>
+     * Creates the callable for running the operation in a background thread
      * 
      * @param runner
      *            Runner
      * @param options
      *            Options
-     * @return Operation Run statistics
+     * @return Callable
      */
-    public abstract <T extends Options> OperationRun run(Runner<T> runner, T options);
+    public abstract <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options);
+
+    /**
+     * Creates run information for an error
+     * 
+     * @param message
+     *            Error message
+     * @param category
+     *            Error category
+     * @param runtime
+     *            Runtime
+     * @return Error information
+     */
+    public abstract OperationRun createErrorInformation(String message, int category, long runtime);
 
     /**
      * Gets a descriptive type string for the operation e.g. SPARQL Query

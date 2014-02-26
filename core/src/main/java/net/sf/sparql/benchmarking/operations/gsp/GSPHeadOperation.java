@@ -35,7 +35,6 @@ package net.sf.sparql.benchmarking.operations.gsp;
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.OperationRun;
 
 /**
  * An operation which runs a Graph Store Protocol HEAD operation
@@ -78,7 +77,7 @@ public class GSPHeadOperation extends AbstractGSPOperation {
     }
 
     @Override
-    protected <T extends Options> OperationCallable<T, OperationRun> createCallable(Runner<T> runner, T options) {
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
         return new GSPHeadCallable<T>(runner, options, this.getGraphUri());
     }
 

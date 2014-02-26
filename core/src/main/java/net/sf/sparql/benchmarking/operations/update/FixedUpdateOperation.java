@@ -39,6 +39,7 @@ import net.sf.sparql.benchmarking.operations.AbstractOperation;
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
+import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
 
 /**
@@ -47,7 +48,7 @@ import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
  * @author rvesse
  * 
  */
-public class FixedUpdateOperation extends AbstractOperation<UpdateRun> implements UpdateOperation {
+public class FixedUpdateOperation extends AbstractOperation implements UpdateOperation {
 
     private UpdateRequest update;
     private String origUpdateStr;
@@ -76,12 +77,12 @@ public class FixedUpdateOperation extends AbstractOperation<UpdateRun> implement
     }
 
     @Override
-    protected <T extends Options> OperationCallable<T, UpdateRun> createCallable(Runner<T> runner, T options) {
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
         return new UpdateCallable<T>(this.update, runner, options);
     }
 
     @Override
-    protected UpdateRun createErrorInformation(String message, int category, long runtime) {
+    public OperationRun createErrorInformation(String message, int category, long runtime) {
         return new UpdateRun(message, category, runtime);
     }
 

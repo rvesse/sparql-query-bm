@@ -43,17 +43,14 @@ import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
 
 import net.sf.sparql.benchmarking.operations.AbstractOperation;
-import net.sf.sparql.benchmarking.stats.OperationRun;
 
 /**
  * Abstract parameterized SPARQL operation
  * 
  * @author rvesse
  * 
- * @param <TRun>
- *            Run information type
  */
-public abstract class AbstractParameterizedSparqlOperation<TRun extends OperationRun> extends AbstractOperation<TRun> {
+public abstract class AbstractParameterizedSparqlOperation extends AbstractOperation {
 
     private ParameterizedSparqlString sparqlStr;
     private List<Binding> pool = new ArrayList<Binding>();

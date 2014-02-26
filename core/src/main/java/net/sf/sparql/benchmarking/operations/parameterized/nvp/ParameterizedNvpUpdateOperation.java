@@ -43,7 +43,6 @@ import net.sf.sparql.benchmarking.operations.parameterized.ParameterizedUpdateOp
 import net.sf.sparql.benchmarking.operations.update.nvp.NvpUpdateCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
 
 /**
  * An operation that runs a parameterized update with custom NVPs added to the
@@ -75,7 +74,7 @@ public class ParameterizedNvpUpdateOperation extends ParameterizedUpdateOperatio
     }
 
     @Override
-    protected <T extends Options> OperationCallable<T, UpdateRun> createCallable(Runner<T> runner, T options) {
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
         return new NvpUpdateCallable<T>(this.getUpdate(), runner, options, this.nvps);
     }
     

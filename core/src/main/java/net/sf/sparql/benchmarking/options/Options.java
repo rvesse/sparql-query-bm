@@ -43,6 +43,8 @@ import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
 import net.sf.sparql.benchmarking.runners.mix.OperationMixRunner;
+import net.sf.sparql.benchmarking.runners.operations.DefaultOperationRunner;
+import net.sf.sparql.benchmarking.runners.operations.OperationRunner;
 
 /**
  * Interface for generic runner options
@@ -517,4 +519,21 @@ public interface Options {
      *            Operation mix runner
      */
     public abstract void setMixRunner(OperationMixRunner runner);
+
+    /**
+     * Sets the operation runner to use, if set to {@code null} then the default
+     * {@link DefaultOperationRunner} should be used
+     * 
+     * @param runner
+     *            Operation runner
+     */
+    public abstract void setOperationRunner(OperationRunner runner);
+
+    /**
+     * Gets the operation runner to use, if {@code null} is returned then the
+     * default {@link OperationRunner} should be used
+     * 
+     * @return Operation runner
+     */
+    public abstract OperationRunner getOperationRunner();
 }

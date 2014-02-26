@@ -44,7 +44,7 @@ import net.sf.sparql.benchmarking.stats.OperationRunImpl;
  * @author rvesse
  * 
  */
-public abstract class AbstractGSPOperation extends AbstractOperation<OperationRun> {
+public abstract class AbstractGSPOperation extends AbstractOperation {
 
     private String uri;
 
@@ -91,7 +91,7 @@ public abstract class AbstractGSPOperation extends AbstractOperation<OperationRu
     }
 
     @Override
-    protected OperationRun createErrorInformation(String message, int category, long runtime) {
+    public OperationRun createErrorInformation(String message, int category, long runtime) {
         return new OperationRunImpl(message, category, runtime);
     }
 

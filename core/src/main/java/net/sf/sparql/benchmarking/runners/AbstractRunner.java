@@ -54,9 +54,10 @@ import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
 import net.sf.sparql.benchmarking.runners.mix.InOrderOperationMixRunner;
 import net.sf.sparql.benchmarking.runners.mix.OperationMixRunner;
+import net.sf.sparql.benchmarking.runners.operations.DefaultOperationRunner;
+import net.sf.sparql.benchmarking.runners.operations.OperationRunner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
-import net.sf.sparql.benchmarking.stats.impl.QueryRun;
 import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 /**
@@ -73,6 +74,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
 
     private OperationMixRunner inOrderRunner = new InOrderOperationMixRunner();
     private OperationMixRunner defaultRunner = new DefaultOperationMixRunner();
+    private OperationRunner defaultOpRunner = new DefaultOperationRunner();
     private boolean halted = false;
 
     @Override
@@ -224,7 +226,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
         int passed = 0;
         for (int i = 0; i < checks.length; i++) {
             Query q = QueryFactory.create(checks[i]);
-            FutureTask<QueryRun> task = new FutureTask<QueryRun>(new QueryCallable<T>(q, this, options));
+            FutureTask<OperationRun> task = new FutureTask<OperationRun>(new QueryCallable<T>(q, this, options));
             reportPartialProgress(options, "Sanity Check " + (i + 1) + " of " + checks.length + "...");
             try {
                 // Run the operation using a 30 second timeout
@@ -305,6 +307,24 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             reportAfterOperationMix(options, options.getTeardownMix(), r);
             reportProgress(options);
         }
+    }
+
+    /**
+     * Runs an operation using the configured operation runner, if there is no
+     * configured runner then it uses the {@link DefaultOperationRunner} to run
+     * the operation.
+     * 
+     * @param options
+     *            Options
+     * @param op
+     *            Operation to run
+     * @return Operation run information
+     */
+    protected OperationRun runOp(T options, Operation op) {
+        OperationRunner runner = options.getOperationRunner();
+        if (runner == null)
+            runner = this.defaultOpRunner;
+        return runner.run(this, options, op);
     }
 
     /**

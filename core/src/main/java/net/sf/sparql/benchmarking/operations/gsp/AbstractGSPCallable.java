@@ -51,7 +51,7 @@ import net.sf.sparql.benchmarking.stats.OperationRunImpl;
  * @param <T>
  *            Options type
  */
-public abstract class AbstractGSPCallable<T extends Options> extends AbstractOperationCallable<T, OperationRun> {
+public abstract class AbstractGSPCallable<T extends Options> extends AbstractOperationCallable<T> {
 
     private String uri;
 

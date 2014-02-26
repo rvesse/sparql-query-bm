@@ -30,26 +30,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.operations;
+package net.sf.sparql.benchmarking.runners.operations;
 
-import java.util.concurrent.Callable;
-
+import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationRun;
+import net.sf.sparql.benchmarking.stats.OperationStats;
 
 /**
- * Interface for operation callables
+ * Interface for runners which run operations
  * 
  * @author rvesse
  * 
- * @param <T>
- *            Options type
  */
-public interface OperationCallable<T extends Options> extends Callable<OperationRun> {
+public interface OperationRunner {
 
     /**
-     * Cancels the runner
+     * Runs the operation returning the statistics as an {@link OperationRun}
+     * <p>
+     * Implementations are also expected to record the information within their
+     * the {@link OperationStats} object of the provided {@link Operation}
+     * instance prior to returning the statistics.
+     * </p>
+     * 
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
+     * @param op
+     *            Operation to run
+     * @return Operation Run statistics
      */
-    public abstract void cancel();
-
+    public abstract <T extends Options> OperationRun run(Runner<T> runner, T options, Operation op);
 }

@@ -36,6 +36,7 @@ import net.sf.sparql.benchmarking.monitoring.CsvProgressListener;
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.monitoring.XmlProgressListener;
 import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
+import net.sf.sparql.benchmarking.runners.operations.DefaultOperationRunner;
 
 /**
  * Options for benchmarks
@@ -79,6 +80,7 @@ public class BenchmarkOptions extends OptionsImpl {
      */
     public BenchmarkOptions() {
         super.setMixRunner(new DefaultOperationMixRunner());
+        super.setOperationRunner(new DefaultOperationRunner());
     }
 
     /**

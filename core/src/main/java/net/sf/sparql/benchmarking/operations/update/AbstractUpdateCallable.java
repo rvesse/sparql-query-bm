@@ -54,7 +54,7 @@ import net.sf.sparql.benchmarking.util.ErrorCategories;
  * @param <T>
  *            Options type
  */
-public abstract class AbstractUpdateCallable<T extends Options> extends AbstractOperationCallable<T, UpdateRun> {
+public abstract class AbstractUpdateCallable<T extends Options> extends AbstractOperationCallable<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateCallable.class);
 

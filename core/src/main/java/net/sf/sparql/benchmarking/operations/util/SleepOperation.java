@@ -45,7 +45,7 @@ import net.sf.sparql.benchmarking.stats.OperationRunImpl;
  * @author rvesse
  * 
  */
-public class SleepOperation extends AbstractOperation<OperationRun> {
+public class SleepOperation extends AbstractOperation {
 
     private long sleep;
 
@@ -94,12 +94,12 @@ public class SleepOperation extends AbstractOperation<OperationRun> {
     }
 
     @Override
-    protected <T extends Options> OperationCallable<T, OperationRun> createCallable(Runner<T> runner, T options) {
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
         return new SleepCallable<T>(sleep, runner, options);
     }
 
     @Override
-    protected OperationRun createErrorInformation(String message, int category, long runtime) {
+    public OperationRun createErrorInformation(String message, int category, long runtime) {
         return new OperationRunImpl(message, category, runtime);
     }
 }

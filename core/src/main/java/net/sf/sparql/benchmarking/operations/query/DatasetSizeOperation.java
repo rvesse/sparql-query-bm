@@ -38,7 +38,6 @@ import com.hp.hpl.jena.query.QueryFactory;
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.impl.QueryRun;
 
 /**
  * An operation which calculates the size of the dataset
@@ -89,7 +88,7 @@ public class DatasetSizeOperation extends AbstractQueryOperation {
     }
 
     @Override
-    protected <T extends Options> OperationCallable<T, QueryRun> createCallable(Runner<T> runner, T options) {
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
         return new LongValueCallable<T>(this.getQuery(), COUNT_VARIABLE, runner, options);
     }
 }

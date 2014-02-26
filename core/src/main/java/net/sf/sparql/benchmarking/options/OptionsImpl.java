@@ -46,6 +46,7 @@ import org.apache.jena.atlas.web.auth.HttpAuthenticator;
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.runners.mix.OperationMixRunner;
+import net.sf.sparql.benchmarking.runners.operations.OperationRunner;
 
 /**
  * Implementation of generic options
@@ -80,6 +81,7 @@ public class OptionsImpl implements Options {
     private OperationMix setupMix;
     private OperationMix teardownMix;
     private OperationMixRunner mixRunner;
+    private OperationRunner opRunner;
 
     @Override
     public ExecutorService getExecutor() {
@@ -345,6 +347,16 @@ public class OptionsImpl implements Options {
     public OperationMixRunner getMixRunner() {
         return this.mixRunner;
     }
+    
+    @Override
+    public void setOperationRunner(OperationRunner runner) {
+        this.opRunner = runner;
+    }
+    
+    @Override
+    public OperationRunner getOperationRunner() {
+        return this.opRunner;
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -376,7 +388,9 @@ public class OptionsImpl implements Options {
         copy.setHaltOnError(this.getHaltOnError());
         copy.setHaltOnTimeout(this.getHaltOnTimeout());
         copy.setMaxDelay(this.getMaxDelay());
+        copy.setMixRunner(this.getMixRunner());
         copy.setOperationMix(this.getOperationMix());
+        copy.setOperationRunner(this.getOperationRunner());
         copy.setParallelThreads(this.getParallelThreads());
         copy.setQueryEndpoint(this.getQueryEndpoint());
         copy.setRandomizeOrder(this.getRandomizeOrder());
