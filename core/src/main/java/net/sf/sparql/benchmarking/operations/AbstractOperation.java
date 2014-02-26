@@ -45,6 +45,7 @@ public abstract class AbstractOperation implements Operation {
 
     private OperationStats stats = new OperationStatsImpl();
     private String name;
+    private int id = -1;
 
     /**
      * Creates a new operation
@@ -64,5 +65,15 @@ public abstract class AbstractOperation implements Operation {
     @Override
     public String getName() {
         return this.name;
+    }
+    
+    @Override
+    public int getId() {
+        return this.id;
+    }
+    
+    @Override
+    public void setId(int id) {
+        this.id = id;
     }
 }

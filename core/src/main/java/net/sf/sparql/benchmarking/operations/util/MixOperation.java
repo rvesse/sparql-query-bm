@@ -41,7 +41,7 @@ import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationRun;
-import net.sf.sparql.benchmarking.stats.OperationRunImpl;
+import net.sf.sparql.benchmarking.stats.impl.OperationRunImpl;
 
 /**
  * An operation that runs an entire operation mix

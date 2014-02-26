@@ -36,7 +36,7 @@ import net.sf.sparql.benchmarking.operations.AbstractOperation;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationRun;
-import net.sf.sparql.benchmarking.stats.OperationRunImpl;
+import net.sf.sparql.benchmarking.stats.impl.OperationRunImpl;
 
 /**
  * Abstract implementation of a SPARQL Graph Store Protocol operation

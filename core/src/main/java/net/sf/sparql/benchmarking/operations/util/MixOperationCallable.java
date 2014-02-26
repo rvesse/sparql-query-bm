@@ -41,7 +41,7 @@ import net.sf.sparql.benchmarking.runners.mix.InOrderOperationMixRunner;
 import net.sf.sparql.benchmarking.runners.mix.OperationMixRunner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
-import net.sf.sparql.benchmarking.stats.OperationRunImpl;
+import net.sf.sparql.benchmarking.stats.impl.OperationRunImpl;
 import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 /**

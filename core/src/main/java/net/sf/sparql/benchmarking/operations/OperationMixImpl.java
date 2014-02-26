@@ -64,6 +64,9 @@ public class OperationMixImpl implements OperationMix {
         this.operations.addAll(ops);
         if (this.operations.size() == 0)
             throw new IllegalArgumentException("Cannot have an empty operation mix");
+        for (int i = 0; i < this.operations.size(); i++) {
+            this.operations.get(i).setId(i);
+        }
     }
 
     @Override
@@ -78,6 +81,8 @@ public class OperationMixImpl implements OperationMix {
 
     @Override
     public Operation getOperation(int id) {
+        if (id < 0 || id >= this.operations.size())
+            throw new IllegalArgumentException("ID must be in range 0-" + this.operations.size() + " but got " + id);
         return this.operations.get(id);
     }
 

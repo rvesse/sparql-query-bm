@@ -34,6 +34,8 @@ package net.sf.sparql.benchmarking.stats;
 
 import java.util.Iterator;
 
+import net.sf.sparql.benchmarking.operations.OperationMix;
+
 /**
  * Represents a run of an operation mix which is comprised of some combination
  * of runs of the operations in the mix
@@ -45,6 +47,14 @@ public interface OperationMixRun extends Comparable<OperationMixRun> {
 
     /**
      * Gets an iterator over the runs that make up this operation mix
+     * <p>
+     * Implementations need not make any guarantee that the runs are returned in
+     * any specific order, users <strong>should not</should> rely on the order
+     * of runs in order to look up their associated operations. The recommended
+     * way to do this is to use the {@link OperationRun#getId()} to obtain the
+     * ID of the associated operation and then call
+     * {@link OperationMix#getOperation(int)} to look up the actual operation.
+     * </p>
      * 
      * @return Iterator over the runs
      */

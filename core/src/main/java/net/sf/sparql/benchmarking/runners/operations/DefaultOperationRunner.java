@@ -123,6 +123,7 @@ public class DefaultOperationRunner implements OperationRunner {
         }
 
         // Return the results
+        r.setId(op.getId());
         r.setRunOrder(order);
         op.getStats().add(r);
         return r;

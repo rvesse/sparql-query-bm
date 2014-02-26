@@ -113,4 +113,20 @@ public interface Operation {
      */
     public abstract OperationStats getStats();
 
+    /**
+     * Gets the ID used to identify the operation within an operation mix (if
+     * known)
+     * 
+     * @return ID or -1 if no ID unknown
+     */
+    public int getId();
+
+    /**
+     * Sets the ID used to identify the operation within an operation mix
+     * 
+     * @param id
+     *            ID
+     */
+    public void setId(int id);
+
 }

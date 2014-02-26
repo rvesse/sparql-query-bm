@@ -51,10 +51,18 @@ public interface OperationMix {
 
     /**
      * Gets the operation with the specified ID
+     * <p>
+     * Generally it should be assumed that operation IDs are allocated using a
+     * zero based index so 0 would obtain the first operation in the mix while
+     * {@code size()-1} would obtain the last operation in the mix. All the
+     * built-in implementations of this interface follow this rule.
+     * </p>
      * 
      * @param id
      *            ID
      * @return Operation
+     * @throws IllegalArgumentException
+     *             Thrown if the ID is not valid
      */
     public abstract Operation getOperation(int id);
 

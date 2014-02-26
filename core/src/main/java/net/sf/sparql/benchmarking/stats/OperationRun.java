@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.stats;
 
+import net.sf.sparql.benchmarking.runners.mix.OperationMixRunner;
+import net.sf.sparql.benchmarking.runners.operations.OperationRunner;
 import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 /**
@@ -125,10 +127,11 @@ public interface OperationRun extends Comparable<OperationRun> {
     /**
      * Sets the global run order for this operation run
      * <p>
-     * Only for internal use to allow setting the order of this operation
-     * relative to all other operations run in the benchmark, this is primarily
-     * useful when tracking multi-threaded benchmarks. Trying to set this once
-     * it has been set will lead to an {@link IllegalAccessError}
+     * Intended for use by {@link OperationRunner} implementations to allow them
+     * to record the run order of this operation relative to all other
+     * operations run, this is primarily useful when tracking multi-threaded
+     * runs. Trying to set this once it has been set will lead to an
+     * {@link IllegalAccessError}
      * </p>
      * 
      * @param order
@@ -137,5 +140,30 @@ public interface OperationRun extends Comparable<OperationRun> {
      *             Thrown if you try to set the run order after it has been set
      */
     public abstract void setRunOrder(long order) throws IllegalAccessError;
+
+    /**
+     * Gets the ID for the operation (if known)
+     * <p>
+     * This ID can be used to link the operation run back to an operation in the
+     * originating operation mix, this can be useful when using
+     * {@link OperationMixRunner} implementations which may run the same
+     * operation multiple times in a single mix run or may not necessarily run
+     * all operations every time.
+     * </p>
+     * 
+     * @return ID if known, {@link OperationRun#UNKNOWN} otherwise
+     */
+    public abstract int getId();
+
+    /**
+     * Sets the ID for the operation
+     * <p>
+     * 
+     * </p>
+     * 
+     * @param id
+     * @throws IllegalAccessError
+     */
+    public abstract void setId(int id) throws IllegalAccessError;
 
 }

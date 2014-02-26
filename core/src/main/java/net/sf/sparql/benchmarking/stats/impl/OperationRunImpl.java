@@ -30,9 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.stats;
+package net.sf.sparql.benchmarking.stats.impl;
 
-import net.sf.sparql.benchmarking.stats.impl.AbstractOperationRun;
 
 /**
  * A general purpose operation run implementation

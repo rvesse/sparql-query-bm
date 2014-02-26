@@ -65,13 +65,6 @@ public class OperationMixRunImpl implements OperationMixRun {
         this.order = runOrder;
     }
 
-    /**
-     * Gets an iterator over the runs that make up this operation mix
-     * <p>
-     * The runs are in the same order as the operations are in the originating
-     * mix i.e. the order does not reflect the execution order
-     * </p>
-     **/
     @Override
     public Iterator<OperationRun> getRuns() {
         return this.runs.iterator();

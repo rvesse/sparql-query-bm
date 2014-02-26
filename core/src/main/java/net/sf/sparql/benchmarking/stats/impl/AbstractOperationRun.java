@@ -49,6 +49,7 @@ public abstract class AbstractOperationRun implements OperationRun {
     private String errorMessage;
     private int errorCategory = ErrorCategories.NONE;
     private long order = NOT_YET_RUN;
+    private int id = (int) UNKNOWN;
 
     /**
      * Creates a operation run which represents that the running of an operation
@@ -141,6 +142,20 @@ public abstract class AbstractOperationRun implements OperationRun {
             this.order = order;
         } else {
             throw new IllegalAccessError("Cannot set the run order after it has been set");
+        }
+    }
+
+    @Override
+    public int getId() {
+        return this.id;
+    }
+
+    @Override
+    public void setId(int id) throws IllegalAccessError {
+        if (this.id == UNKNOWN) {
+            this.id = id;
+        } else {
+            throw new IllegalAccessError("Cannot set the Operation ID after it has been set");
         }
     }
 
