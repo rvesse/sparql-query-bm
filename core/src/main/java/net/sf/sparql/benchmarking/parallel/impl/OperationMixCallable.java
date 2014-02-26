@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.parallel.impl;
 
@@ -36,6 +36,8 @@ import java.util.concurrent.Callable;
 
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
+import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
+import net.sf.sparql.benchmarking.runners.mix.OperationMixRunner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 
 /**
@@ -51,6 +53,7 @@ public class OperationMixCallable<T extends Options> implements Callable<Operati
 
     private T options;
     private Runner<T> runner;
+    private OperationMixRunner defaultRunner = new DefaultOperationMixRunner();
 
     /**
      * Creates a new operation mix runner
@@ -70,7 +73,10 @@ public class OperationMixCallable<T extends Options> implements Callable<Operati
      */
     @Override
     public OperationMixRun call() {
-        return this.options.getOperationMix().run(this.runner, this.options);
+        OperationMixRunner runner = this.options.getMixRunner();
+        if (runner == null)
+            runner = this.defaultRunner;
+        return runner.run(this.runner, this.options, this.options.getOperationMix());
     }
 
 }

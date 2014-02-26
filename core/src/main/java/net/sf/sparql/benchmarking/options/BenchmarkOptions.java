@@ -35,6 +35,7 @@ package net.sf.sparql.benchmarking.options;
 import net.sf.sparql.benchmarking.monitoring.CsvProgressListener;
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.monitoring.XmlProgressListener;
+import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
 
 /**
  * Options for benchmarks
@@ -72,6 +73,13 @@ public class BenchmarkOptions extends OptionsImpl {
     private ProgressListener xmlListener = null;
     private int runs = DEFAULT_RUNS;
     private int warmups = DEFAULT_WARMUPS;
+
+    /**
+     * Creates new benchmark options
+     */
+    public BenchmarkOptions() {
+        super.setMixRunner(new DefaultOperationMixRunner());
+    }
 
     /**
      * Sets the number of outliers to be discarded

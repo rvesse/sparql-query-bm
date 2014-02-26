@@ -36,7 +36,6 @@ import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.parallel.AbstractParallelClient;
 import net.sf.sparql.benchmarking.parallel.ParallelClientManager;
-import net.sf.sparql.benchmarking.runners.OperationMixTask;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.util.FormatUtils;

@@ -199,7 +199,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
                 }
                 i++;
                 reportBeforeOperationMix(options, options.getOperationMix());
-                OperationMixRun r = options.getOperationMix().run(this, options);
+                OperationMixRun r = this.runMix(options);
                 reportAfterOperationMix(options, null, r);
                 reportProgress(options);
 
@@ -219,7 +219,9 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
             }
         } else {
             // Multi Threaded Benchmark
-            options.getOperationMix().setRunAsThread(true);
+            if (options.getMixRunner() != null) {
+                options.getMixRunner().setRunAsThread(true);
+            }
             ParallelClientManagerTask<SoakOptions> task = new ParallelClientManagerTask<SoakOptions>(
                     new SoakTestParallelClientManager(this, options));
             options.getExecutor().submit(task);

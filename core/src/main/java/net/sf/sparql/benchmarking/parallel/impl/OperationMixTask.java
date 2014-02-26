@@ -29,12 +29,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package net.sf.sparql.benchmarking.runners;
+package net.sf.sparql.benchmarking.parallel.impl;
 
 import java.util.concurrent.FutureTask;
 
 import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.parallel.impl.OperationMixCallable;
+import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 
 /**

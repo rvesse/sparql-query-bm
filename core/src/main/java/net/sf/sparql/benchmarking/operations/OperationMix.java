@@ -32,9 +32,6 @@ package net.sf.sparql.benchmarking.operations;
 
 import java.util.Iterator;
 
-import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationMixStats;
 
 /**
@@ -66,31 +63,6 @@ public interface OperationMix {
      * @return Number of operations
      */
     public abstract int size();
-
-    /**
-     * Sets whether the operation mix is being run as a thread, if so it will
-     * prefix thread identifier to its progress messages
-     * 
-     * @param asThread
-     *            Whether the operation mix is being run as a thread
-     */
-    public abstract void setRunAsThread(boolean asThread);
-
-    /**
-     * Performs a operation mix run returning the statistics as a
-     * {@link OperationMixRun}
-     * <p>
-     * Implementations are also expected to record the information within their
-     * local {@link OperationMixStats} object prior to returning the statistics.
-     * </p>
-     * 
-     * @param runner
-     *            Runner
-     * @param options
-     *            Options
-     * @return Operation Mix run details
-     */
-    public abstract <T extends Options> OperationMixRun run(Runner<T> runner, T options);
 
     /**
      * Gets the statistics for the operation mix

@@ -51,6 +51,9 @@ import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.operations.query.QueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
+import net.sf.sparql.benchmarking.runners.mix.InOrderOperationMixRunner;
+import net.sf.sparql.benchmarking.runners.mix.OperationMixRunner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.stats.impl.QueryRun;
@@ -68,6 +71,8 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractRunner.class);
 
+    private OperationMixRunner inOrderRunner = new InOrderOperationMixRunner();
+    private OperationMixRunner defaultRunner = new DefaultOperationMixRunner();
     private boolean halted = false;
 
     @Override
@@ -275,20 +280,12 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
      */
     protected void runTeardown(T options) {
         if (options.getTeardownMix() != null) {
-            // Force non-random ordering for tear down
-            boolean random = options.getRandomizeOrder();
-            if (random)
-                options.setRandomizeOrder(false);
-
             // Run the tear down
             reportProgress(options, "Running teardown mix...");
             reportBeforeOperationMix(options, options.getTeardownMix());
-            OperationMixRun r = options.getTeardownMix().run(this, options);
+            OperationMixRun r = this.inOrderRunner.run(this, options, options.getTeardownMix());
             reportAfterOperationMix(options, options.getTeardownMix(), r);
             reportProgress(options);
-
-            // Reset random ordering
-            options.setRandomizeOrder(random);
         }
     }
 
@@ -301,21 +298,30 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
      */
     protected void runSetup(T options) {
         if (options.getSetupMix() != null) {
-            // Force non-random ordering for setup
-            boolean random = options.getRandomizeOrder();
-            if (random)
-                options.setRandomizeOrder(false);
-
             // Run the setup
             reportProgress(options, "Running setup mix...");
             reportBeforeOperationMix(options, options.getSetupMix());
-            OperationMixRun r = options.getSetupMix().run(this, options);
+            OperationMixRun r = this.inOrderRunner.run(this, options, options.getSetupMix());
             reportAfterOperationMix(options, options.getTeardownMix(), r);
             reportProgress(options);
-
-            // Reset random ordering
-            options.setRandomizeOrder(random);
         }
+    }
+
+    /**
+     * Runs the actual operation mix using the configured operation mix runner,
+     * if there is no configured runner then it uses the
+     * {@link DefaultOperationMixRunner} to run the mix
+     * 
+     * @param options
+     *            Options
+     * @return Operation Mix run
+     */
+    protected OperationMixRun runMix(T options) {
+        OperationMixRunner runner = options.getMixRunner();
+        if (runner == null)
+            runner = this.defaultRunner;
+
+        return runner.run(this, options, options.getOperationMix());
     }
 
     /**

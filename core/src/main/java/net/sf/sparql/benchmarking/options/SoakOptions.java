@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.options;
 
+import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
 
 /**
  * Options for soak testing
@@ -53,6 +54,14 @@ public class SoakOptions extends OptionsImpl {
 
     private int maxRuns = DEFAULT_MAX_RUNS;
     private long runtime = DEFAULT_RUNTIME;
+
+    /**
+     * Creates new soak options
+     */
+    public SoakOptions() {
+        super.setMixRunner(new DefaultOperationMixRunner());
+    }
+
     /**
      * Sets the maximum number of runs for soak testing
      * <p>
@@ -101,7 +110,7 @@ public class SoakOptions extends OptionsImpl {
     public void setMaxRuntime(long runtime) {
         this.runtime = runtime;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Options> T copy() {

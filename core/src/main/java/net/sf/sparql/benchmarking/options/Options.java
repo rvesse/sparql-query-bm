@@ -41,6 +41,8 @@ import org.apache.jena.riot.WebContent;
 
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.OperationMix;
+import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
+import net.sf.sparql.benchmarking.runners.mix.OperationMixRunner;
 
 /**
  * Interface for generic runner options
@@ -499,4 +501,20 @@ public interface Options {
      */
     public abstract <T extends Options> T copy();
 
+    /**
+     * Gets the operation mix runner to use, if {@code null} is returned then
+     * the default {@link DefaultOperationMixRunner} should be used
+     * 
+     * @return Operation mix runner
+     */
+    public abstract OperationMixRunner getMixRunner();
+
+    /**
+     * Sets the operation mix runner to use, if set to {@code null} then the
+     * default {@link DefaultOperationMixRunner} should be used
+     * 
+     * @param runner
+     *            Operation mix runner
+     */
+    public abstract void setMixRunner(OperationMixRunner runner);
 }

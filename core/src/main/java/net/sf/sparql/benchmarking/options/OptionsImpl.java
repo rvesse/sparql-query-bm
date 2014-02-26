@@ -45,6 +45,7 @@ import org.apache.jena.atlas.web.auth.HttpAuthenticator;
 
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.OperationMix;
+import net.sf.sparql.benchmarking.runners.mix.OperationMixRunner;
 
 /**
  * Implementation of generic options
@@ -78,6 +79,7 @@ public class OptionsImpl implements Options {
     int sanity = DEFAULT_SANITY_CHECKS;
     private OperationMix setupMix;
     private OperationMix teardownMix;
+    private OperationMixRunner mixRunner;
 
     @Override
     public ExecutorService getExecutor() {
@@ -332,6 +334,16 @@ public class OptionsImpl implements Options {
     @Override
     public OperationMix getTeardownMix() {
         return this.teardownMix;
+    }
+
+    @Override
+    public void setMixRunner(OperationMixRunner runner) {
+        this.mixRunner = runner;
+    }
+
+    @Override
+    public OperationMixRunner getMixRunner() {
+        return this.mixRunner;
     }
 
     @SuppressWarnings("unchecked")
