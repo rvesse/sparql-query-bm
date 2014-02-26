@@ -43,7 +43,6 @@ import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
@@ -66,17 +65,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
     @Override
     public void run(BenchmarkOptions options) {
         // Inform Listeners that we are starting benchmarking
-        for (ProgressListener l : options.getListeners()) {
-            try {
-                l.start(this, options);
-            } catch (Exception e) {
-                System.err.println(l.getClass().getName() + " encountered an error during handleStarted() - " + e.getMessage());
-                e.printStackTrace(System.err);
-                // IMPORTANT - A startup error always halts benchmarking
-                // regardless of halting options
-                halt(options, l.getClass().getName() + " encountered an error in startup");
-            }
-        }
+        started(options);
 
         // Validate Options
         if (options.getQueryEndpoint() == null && options.getUpdateEndpoint() == null && options.getGraphStoreEndpoint() == null
@@ -102,43 +91,8 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         checkOperations(options);
 
         // Print Options for User Reference
-        reportProgress(options, "Benchmark Options");
-        reportProgress(options, "-----------------");
-        reportProgress(options);
-        reportProgress(options,
-                "Query Endpoint = " + (options.getQueryEndpoint() == null ? "not specified" : options.getQueryEndpoint()));
-        reportProgress(options,
-                "Update Endpoint = " + (options.getUpdateEndpoint() == null ? "not specified" : options.getUpdateEndpoint()));
-        reportProgress(options, "Graph Store Protocol Endpoint = "
-                + (options.getGraphStoreEndpoint() == null ? "not specified" : options.getGraphStoreEndpoint()));
-        if (options.getCustomEndpoints().size() > 0) {
-            for (String key : options.getCustomEndpoints().keySet()) {
-                String value = options.getCustomEndpoint(key);
-                reportProgress(options, "Custom Endpoint (" + key + ") = " + (value == null ? "not specified" : value));
-            }
-        }
-        reportProgress(options, "Sanity Checking Level = " + options.getSanityCheckLevel());
-        reportProgress(options, "Warmups = " + options.getWarmups());
-        reportProgress(options, "Runs = " + options.getRuns());
-        reportProgress(options, "Random Operation Order = " + (options.getRandomizeOrder() ? "On" : "Off"));
-        reportProgress(options, "Outliers = " + options.getOutliers());
-        reportProgress(options, "Timeout = " + (options.getTimeout() > 0 ? options.getTimeout() + " seconds" : "disabled"));
-        reportProgress(options, "Max Delay between Operations = " + options.getMaxDelay() + " milliseconds");
-        reportProgress(options, "Result Limit = " + (options.getLimit() <= 0 ? "Query Specified" : options.getLimit()));
-        reportProgress(options,
-                "CSV Results File = " + (options.getCsvResultsFile() == null ? "disabled" : options.getCsvResultsFile()));
-        reportProgress(options,
-                "XML Results File = " + (options.getXmlResultsFile() == null ? "disabled" : options.getXmlResultsFile()));
-        reportProgress(options, "Halt on Timeout = " + options.getHaltOnTimeout());
-        reportProgress(options, "Halt on Error = " + options.getHaltOnError());
-        reportProgress(options, "Halt Any = " + options.getHaltAny());
-        reportProgress(options, "ASK Results Format = " + options.getResultsAskFormat());
-        reportProgress(options, "Graph Results Format = " + options.getResultsGraphFormat());
-        reportProgress(options, "SELECT Results Format = " + options.getResultsSelectFormat());
-        reportProgress(options, "Compression = " + (options.getAllowCompression() ? "enabled" : "disabled"));
-        reportProgress(options, "Parallel Threads = " + options.getParallelThreads());
-        reportProgress(options, "Result Counting = " + (options.getNoCount() ? "disabled" : "enabled"));
-        reportProgress(options, "Authentication = " + (options.getAuthenticator() != null ? "enabled" : "disabled"));
+        reportGeneralOptions(options);
+        reportBenchmarkOptions(options);
         reportProgress(options);
 
         // Sanity Checking
@@ -258,49 +212,13 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options, "-----------------");
         reportProgress(options);
         ops = options.getOperationMix().getOperations();
-        i = 0;
         while (ops.hasNext()) {
             Operation op = ops.next();
             // Trim outliers
             op.getStats().trim(options.getOutliers());
 
             // Print Summary
-            reportProgress(options, "Operation ID " + i + " of type " + op.getType() + " (" + op.getName() + ")");
-            reportProgress(options, "Total Errors: " + op.getStats().getTotalErrors());
-            if (op.getStats().getTotalErrors() > 0) {
-                // Show errors by category
-                Map<Integer, List<OperationRun>> categorizedErrors = op.getStats().getCategorizedErrors();
-                this.reportCategorizedErrors(options, categorizedErrors);
-            }
-            reportProgress(options, "Average Results: " + op.getStats().getAverageResults());
-            reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(op.getStats().getTotalResponseTime()));
-            reportProgress(options,
-                    "Average Response Time (Arithmetic): " + FormatUtils.formatSeconds(op.getStats().getAverageResponseTime()));
-            reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(op.getStats().getTotalRuntime()));
-            if (options.getParallelThreads() > 1)
-                reportProgress(options, "Actual Runtime: " + FormatUtils.formatSeconds(op.getStats().getActualRuntime()));
-            reportProgress(options,
-                    "Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(op.getStats().getAverageRuntime()));
-            if (options.getParallelThreads() > 1)
-                reportProgress(
-                        options,
-                        "Actual Average Runtime (Arithmetic): "
-                                + FormatUtils.formatSeconds(op.getStats().getActualAverageRuntime()));
-            reportProgress(options,
-                    "Average Runtime (Geometric): " + FormatUtils.formatSeconds(op.getStats().getGeometricAverageRuntime()));
-            reportProgress(options, "Minimum Runtime: " + FormatUtils.formatSeconds(op.getStats().getMinimumRuntime()));
-            reportProgress(options, "Maximum Runtime: " + FormatUtils.formatSeconds(op.getStats().getMaximumRuntime()));
-            reportProgress(options, "Runtime Variance: " + FormatUtils.formatSeconds(op.getStats().getVariance()));
-            reportProgress(options,
-                    "Runtime Standard Deviation: " + FormatUtils.formatSeconds(op.getStats().getStandardDeviation()));
-            reportProgress(options, "Operations per Second: " + op.getStats().getOperationsPerSecond());
-            if (options.getParallelThreads() > 1)
-                reportProgress(options, "Actual Operations per Second: " + op.getStats().getActualOperationsPerSecond());
-            reportProgress(options, "Operations per Hour: " + op.getStats().getOperationsPerHour());
-            if (options.getParallelThreads() > 1)
-                reportProgress(options, "Actual Operations per Hour: " + op.getStats().getActualOperationsPerHour());
-            reportProgress(options);
-            i++;
+            reportOperationSummary(options, op);
         }
 
         // Benchmark Summary
@@ -309,8 +227,8 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options, "Operation Mix Summary");
         reportProgress(options, "---------------------");
         reportProgress(options);
-        reportProgress(options,
-                "Ran Operation Mix containing " + operationMix.size() + " operations a total of " + options.getRuns() + " times");
+        reportProgress(options, "Total Mix Runs: " + options.getRuns());
+        reportProgress(options, "Total Operation Runs: " + options.getOperationMix().getStats().getTotalOperations());
         reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
         reportProgress(options, "End Time: " + FormatUtils.formatInstant(endInstant));
         reportProgress(options);
@@ -350,16 +268,21 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options);
 
         // Finally inform listeners that benchmarking finished OK
-        for (ProgressListener l : options.getListeners()) {
-            try {
-                l.finish(this, options, true);
-            } catch (Exception e) {
-                System.err.println(l.getClass().getName() + " encountered an error during handleFinish() - " + e.getMessage());
-                e.printStackTrace(System.err);
-                if (options.getHaltOnError() || options.getHaltAny()) {
-                    halt(options, l.getClass().getName() + " encountering an error during finish");
-                }
-            }
-        }
+        finished(options);
+    }
+
+    private void reportBenchmarkOptions(BenchmarkOptions options) {
+        reportProgress(options, "Benchmark Options");
+        reportProgress(options, "---------------");
+        reportProgress(options);
+        reportProgress(options, "Warmups = " + options.getWarmups());
+        reportProgress(options, "Runs = " + options.getRuns());
+        reportProgress(options, "Outliers = " + options.getOutliers());
+        reportProgress(options, "Result Limit = " + (options.getLimit() <= 0 ? "Query Specified" : options.getLimit()));
+        reportProgress(options,
+                "CSV Results File = " + (options.getCsvResultsFile() == null ? "disabled" : options.getCsvResultsFile()));
+        reportProgress(options,
+                "XML Results File = " + (options.getXmlResultsFile() == null ? "disabled" : options.getXmlResultsFile()));
+        reportProgress(options);
     }
 }

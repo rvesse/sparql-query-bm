@@ -59,6 +59,7 @@ import net.sf.sparql.benchmarking.runners.operations.OperationRunner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.util.ErrorCategories;
+import net.sf.sparql.benchmarking.util.FormatUtils;
 
 /**
  * Abstract implementation of a runner providing common halting and progress
@@ -360,6 +361,133 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
                 description = String.format("  Unknown Category %d", category);
             reportProgress(options, "  " + description + ": " + categorizedErrors.get(category).size() + " error(s)");
         }
+    }
+
+    /**
+     * Informs all registered progress listeners that the run has finished
+     * 
+     * @param options
+     *            Options
+     */
+    protected void finished(T options) {
+        for (ProgressListener l : options.getListeners()) {
+            try {
+                l.finish(this, options, true);
+            } catch (Exception e) {
+                System.err.println(l.getClass().getName() + " encountered an error during handleFinish() - " + e.getMessage());
+                e.printStackTrace(System.err);
+                if (options.getHaltOnError() || options.getHaltAny()) {
+                    halt(options, l.getClass().getName() + " encountering an error during finish");
+                }
+            }
+        }
+    }
+
+    /**
+     * Informs all registered progress listeners that the run has started
+     * 
+     * @param options
+     *            Options
+     */
+    protected void started(T options) {
+        for (ProgressListener l : options.getListeners()) {
+            try {
+                l.start(this, options);
+            } catch (Exception e) {
+                System.err.println(l.getClass().getName() + " encountered an error during handleStarted() - " + e.getMessage());
+                e.printStackTrace(System.err);
+                // IMPORTANT - A startup error always halts benchmarking
+                // regardless of halting options
+                halt(options, l.getClass().getName() + " encountered an error in startup");
+            }
+        }
+    }
+
+    /**
+     * Reports information about the general options specified
+     * 
+     * @param options
+     *            Options
+     */
+    protected void reportGeneralOptions(T options) {
+        reportProgress(options, "General Options");
+        reportProgress(options, "---------------");
+        reportProgress(options);
+        reportProgress(options,
+                "Query Endpoint = " + (options.getQueryEndpoint() == null ? "not specified" : options.getQueryEndpoint()));
+        reportProgress(options,
+                "Update Endpoint = " + (options.getUpdateEndpoint() == null ? "not specified" : options.getUpdateEndpoint()));
+        reportProgress(options, "Graph Store Protocol Endpoint = "
+                + (options.getGraphStoreEndpoint() == null ? "not specified" : options.getGraphStoreEndpoint()));
+        if (options.getCustomEndpoints().size() > 0) {
+            for (String key : options.getCustomEndpoints().keySet()) {
+                String value = options.getCustomEndpoint(key);
+                reportProgress(options, "Custom Endpoint (" + key + ") = " + (value == null ? "not specified" : value));
+            }
+        }
+        reportProgress(options, "Sanity Checking Level = " + options.getSanityCheckLevel());
+        reportProgress(options, "Random Operation Order = " + (options.getRandomizeOrder() ? "On" : "Off"));
+        reportProgress(options, "Setup Mix = "
+                + (options.getSetupMix() != null ? options.getSetupMix().size() + " Operation(s)" : "disabled"));
+        reportProgress(options, "Teardown Mix = "
+                + (options.getTeardownMix() != null ? options.getTeardownMix().size() + " Operation(s)" : "disabled"));
+        reportProgress(options, "Timeout = " + (options.getTimeout() > 0 ? options.getTimeout() + " seconds" : "disabled"));
+        reportProgress(options, "Max Delay between Operations = " + options.getMaxDelay() + " milliseconds");
+        reportProgress(options, "Halt on Timeout = " + options.getHaltOnTimeout());
+        reportProgress(options, "Halt on Error = " + options.getHaltOnError());
+        reportProgress(options, "Halt Any = " + options.getHaltAny());
+        reportProgress(options, "ASK Results Format = " + options.getResultsAskFormat());
+        reportProgress(options, "Graph Results Format = " + options.getResultsGraphFormat());
+        reportProgress(options, "SELECT Results Format = " + options.getResultsSelectFormat());
+        reportProgress(options, "Compression = " + (options.getAllowCompression() ? "enabled" : "disabled"));
+        reportProgress(options, "Parallel Threads = " + options.getParallelThreads());
+        reportProgress(options, "Authentication = " + (options.getAuthenticator() != null ? "enabled" : "disabled"));
+        reportProgress(options);
+    }
+
+    /**
+     * Reports a summary of the operation
+     * 
+     * @param options
+     *            Options
+     * @param op
+     *            Operation
+     */
+    protected void reportOperationSummary(T options, Operation op) {
+        reportProgress(options, "Operation ID " + op.getId() + " of type " + op.getType() + " (" + op.getName() + ")");
+        reportProgress(options, "Total Runs: " + op.getStats().getRunCount());
+        reportProgress(options, "Total Errors: " + op.getStats().getTotalErrors());
+        if (op.getStats().getTotalErrors() > 0) {
+            // Show errors by category
+            Map<Integer, List<OperationRun>> categorizedErrors = op.getStats().getCategorizedErrors();
+            this.reportCategorizedErrors(options, categorizedErrors);
+        }
+        reportProgress(options, "Total Results: " + op.getStats().getTotalResults());
+        reportProgress(options, "Average Results: " + op.getStats().getAverageResults());
+        reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(op.getStats().getTotalResponseTime()));
+        reportProgress(options,
+                "Average Response Time (Arithmetic): " + FormatUtils.formatSeconds(op.getStats().getAverageResponseTime()));
+        reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(op.getStats().getTotalRuntime()));
+        if (options.getParallelThreads() > 1)
+            reportProgress(options, "Actual Runtime: " + FormatUtils.formatSeconds(op.getStats().getActualRuntime()));
+        reportProgress(options, "Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(op.getStats().getAverageRuntime()));
+        if (options.getParallelThreads() > 1)
+            reportProgress(options,
+                    "Actual Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(op.getStats().getActualAverageRuntime()));
+        reportProgress(options,
+                "Average Runtime (Geometric): " + FormatUtils.formatSeconds(op.getStats().getGeometricAverageRuntime()));
+        reportProgress(options, "Minimum Runtime: " + FormatUtils.formatSeconds(op.getStats().getMinimumRuntime()));
+        reportProgress(options, "Maximum Runtime: " + FormatUtils.formatSeconds(op.getStats().getMaximumRuntime()));
+        reportProgress(options, "Runtime Variance: " + FormatUtils.formatSeconds(op.getStats().getVariance()));
+        reportProgress(options, "Runtime Standard Deviation: " + FormatUtils.formatSeconds(op.getStats().getStandardDeviation()));
+        reportProgress(options);
+        reportProgress(options, "Operations per Second: " + op.getStats().getOperationsPerSecond());
+        if (options.getParallelThreads() > 1)
+            reportProgress(options, "Actual Operations per Second: " + op.getStats().getActualOperationsPerSecond());
+        reportProgress(options, "Operations per Hour: " + op.getStats().getOperationsPerHour());
+        if (options.getParallelThreads() > 1)
+            reportProgress(options, "Actual Operations per Hour: " + op.getStats().getActualOperationsPerHour());
+        reportProgress(options);
     }
 
 }

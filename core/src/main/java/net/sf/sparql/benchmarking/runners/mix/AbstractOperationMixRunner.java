@@ -107,6 +107,9 @@ public abstract class AbstractOperationMixRunner implements OperationMixRunner {
 
     @Override
     public <T extends Options> OperationMixRun run(Runner<T> runner, T options, OperationMix mix) {
+        if (mix.size() == 0)
+            throw new IllegalArgumentException("Cannot run an empty operation mix");
+
         long runOrder = options.getGlobalOrder();
         List<OperationRun> runs = new ArrayList<OperationRun>();
 

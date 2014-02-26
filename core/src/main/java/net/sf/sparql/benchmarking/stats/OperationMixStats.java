@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.stats;
 
@@ -38,11 +38,11 @@ import java.util.Map;
 
 import net.sf.sparql.benchmarking.parallel.ParallelTimer;
 
-
 /**
  * Represents statistics for an operation mix
+ * 
  * @author rvesse
- *
+ * 
  */
 public interface OperationMixStats {
 
@@ -59,7 +59,7 @@ public interface OperationMixStats {
      * @return Number of runs
      */
     public abstract long getRunCount();
-    
+
     /**
      * Adds information for the given run to the statistics
      * 
@@ -80,6 +80,13 @@ public interface OperationMixStats {
      *            Number of outliers to trim
      */
     public abstract void trim(int outliers);
+
+    /**
+     * Gets the total number of operations run across all mix runs
+     * 
+     * @return Total operations run
+     */
+    public abstract long getTotalOperations();
 
     /**
      * Gets the total number of errors over all runs
@@ -189,7 +196,7 @@ public interface OperationMixStats {
      * @return Operation Mixes per Hour
      */
     public abstract double getActualOperationMixesPerHour();
-    
+
     /**
      * Gets the parallel timer used to track actual runtime
      * 

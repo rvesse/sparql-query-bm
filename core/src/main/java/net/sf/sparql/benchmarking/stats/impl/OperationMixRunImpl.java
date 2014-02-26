@@ -34,6 +34,7 @@ package net.sf.sparql.benchmarking.stats.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -68,6 +69,21 @@ public class OperationMixRunImpl implements OperationMixRun {
     @Override
     public Iterator<OperationRun> getRuns() {
         return this.runs.iterator();
+    }
+
+    @Override
+    public List<OperationRun> getRuns(int id) {
+        List<OperationRun> rs = new ArrayList<OperationRun>();
+        for (OperationRun r : this.runs) {
+            if (r.getId() == id)
+                rs.add(r);
+        }
+        return Collections.unmodifiableList(rs);
+    }
+
+    @Override
+    public long getRunCount() {
+        return this.runs.size();
     }
 
     @Override
@@ -144,14 +160,12 @@ public class OperationMixRunImpl implements OperationMixRun {
     public int getMinimumRuntimeOperationID() {
         Iterator<OperationRun> rs = this.getRuns();
         long min = Long.MAX_VALUE;
-        int id = 0;
-        int i = -1;
+        int id = -1;
         while (rs.hasNext()) {
             OperationRun r = rs.next();
-            i++;
             if (r != null) {
                 if (r.getRuntime() < min) {
-                    id = i;
+                    id = r.getId();
                     min = r.getRuntime();
                 }
             }
@@ -178,14 +192,12 @@ public class OperationMixRunImpl implements OperationMixRun {
     public int getMaximumRuntimeOperationID() {
         Iterator<OperationRun> rs = this.getRuns();
         long max = Long.MIN_VALUE;
-        int id = 0;
-        int i = -1;
+        int id = -1;
         while (rs.hasNext()) {
             OperationRun r = rs.next();
-            i++;
             if (r != null) {
                 if (r.getRuntime() > max) {
-                    id = i;
+                    id = r.getId();
                     max = r.getRuntime();
                 }
             }

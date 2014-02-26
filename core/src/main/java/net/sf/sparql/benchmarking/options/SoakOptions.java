@@ -81,6 +81,10 @@ public class SoakOptions extends OptionsImpl {
 
     /**
      * Gets the maximum number of runs for soak testing
+     * <p>
+     * A value <= 0 is considered to indicate that there is no maximum number of
+     * runs
+     * </p>
      * 
      * @return Maximum number of runs
      */
@@ -90,7 +94,9 @@ public class SoakOptions extends OptionsImpl {
 
     /**
      * Gets the maximum soak runtime in minutes
-     * 
+     * <p>
+     * A value <= 0 is considered to indicate that there is no maximum runtime
+     * </p>
      * 
      * @return Soak runtime in minutes
      */

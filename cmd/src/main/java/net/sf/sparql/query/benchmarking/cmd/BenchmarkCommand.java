@@ -45,6 +45,7 @@ import io.airlift.command.ParseOptionMissingValueException;
 import io.airlift.command.SingleCommand;
 
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
+import net.sf.sparql.benchmarking.runners.AbstractRunner;
 import net.sf.sparql.benchmarking.runners.BenchmarkRunner;
 
 /**
@@ -170,7 +171,7 @@ public class BenchmarkCommand extends AbstractCommand {
         this.applyBenchmarkOptions(options);
 
         // Run benchmark
-        BenchmarkRunner runner = new BenchmarkRunner();
+        AbstractRunner<BenchmarkOptions> runner = new BenchmarkRunner();
         runner.run(options);
     }
 

@@ -33,12 +33,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package net.sf.sparql.benchmarking.stats;
 
 import java.util.Iterator;
+import java.util.List;
 
 import net.sf.sparql.benchmarking.operations.OperationMix;
+import net.sf.sparql.benchmarking.runners.mix.OperationMixRunner;
 
 /**
  * Represents a run of an operation mix which is comprised of some combination
  * of runs of the operations in the mix
+ * <p>
+ * Depending on the {@link OperationMixRunner} being used an
+ * {@link OperationMixRun} may not contain {@link OperationRun} information for
+ * every operation since it may not run all operations, equally some operations
+ * may have been run multiple times.
+ * </p>
  * 
  * @author rvesse
  * 
@@ -61,12 +69,30 @@ public interface OperationMixRun extends Comparable<OperationMixRun> {
     public abstract Iterator<OperationRun> getRuns();
 
     /**
+     * Gets the list of run information for the given operation ID, if there are
+     * no runs for that given operation within this mix run then an empty list
+     * is returned.
+     * 
+     * @param id
+     *            Operation ID
+     * @return List of operation runs (possibly empty)
+     */
+    public abstract List<OperationRun> getRuns(int id);
+
+    /**
      * Gets the global run order that reflects the order in which the operation
      * mixes and operations were run
      * 
      * @return Global Order
      */
     public abstract long getRunOrder();
+
+    /**
+     * Gets the number of operations runs that comprised this mix run
+     * 
+     * @return Number of operations run
+     */
+    public abstract long getRunCount();
 
     /**
      * Gets the total number of errors for the operation mix

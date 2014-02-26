@@ -48,6 +48,7 @@ import net.sf.sparql.benchmarking.loader.OperationMixLoaderRegistry;
 import net.sf.sparql.benchmarking.monitoring.ConsoleProgressListener;
 import net.sf.sparql.benchmarking.options.HaltBehaviour;
 import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.runners.mix.SamplingOperationMixRunner;
 import net.sf.sparql.benchmarking.util.AuthUtils;
 import net.sf.sparql.benchmarking.util.FileUtils;
 import io.airlift.command.Help;
@@ -168,6 +169,18 @@ public abstract class AbstractCommand {
      */
     @Option(name = { "--norand", "--no-random" }, description = "Disables randomized ordering of operations within mixes.")
     public boolean noRandom = false;
+
+    /**
+     * Sample size option
+     */
+    @Option(name = { "--sample-size" }, arity = 1, title = "Sample Size", description = "Sets the sample size used, this controls how many of the operations in the mix are run in each run of the mix.  You may also want to set --sample-repeats when setting a sample size larger than the mix size otherwise the sample size will be capped at the mix size.  When neither this nor --sample-repeats is specified the default behaviour of running every operation in every mix run is used.")
+    public int sampleSize = 0;
+
+    /**
+     * Sample repeats option
+     */
+    @Option(name = { "--sample-repeats" }, description = "Enables repeats for sampling, this allows an operation to potentially run multiple times within a single run of the mix.  You may also want to set --sample-size to control how many operations are run in each mix run.  When neither this nor --sample-repeats is specified the default behaviour of running every operation in every mix run is used.")
+    public boolean sampleRepeats = false;
 
     /**
      * User name option
@@ -350,6 +363,11 @@ public abstract class AbstractCommand {
         options.setRandomizeOrder(!this.noRandom);
         options.setSanityCheckLevel(this.sanityCheckLevel);
         options.setTimeout(this.timeout);
+
+        // Mix Runner
+        if (this.sampleRepeats || this.sampleSize > 0) {
+            options.setMixRunner(new SamplingOperationMixRunner(this.sampleSize, this.sampleRepeats));
+        }
 
         // Authentication
         options.setAuthenticator(AuthUtils.prepareAuthenticator(this.username, this.password, this.preemptiveAuth, formUrl,

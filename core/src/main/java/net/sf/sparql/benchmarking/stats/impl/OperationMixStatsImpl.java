@@ -97,6 +97,15 @@ public class OperationMixStatsImpl implements OperationMixStats {
             this.runs.remove(r);
         }
     }
+    
+    @Override
+    public long getTotalOperations() {
+        long total = 0;
+        for (OperationMixRun r : this.runs) {
+            total += r.getRunCount();
+        }
+        return total;
+    }
 
     @Override
     public long getTotalErrors() {
