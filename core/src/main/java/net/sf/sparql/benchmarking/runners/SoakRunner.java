@@ -171,9 +171,6 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
             }
         } else {
             // Multi Threaded Benchmark
-            if (options.getMixRunner() != null) {
-                options.getMixRunner().setRunAsThread(true);
-            }
             ParallelClientManagerTask<SoakOptions> task = new ParallelClientManagerTask<SoakOptions>(
                     new SoakTestParallelClientManager(this, options));
             options.getExecutor().submit(task);

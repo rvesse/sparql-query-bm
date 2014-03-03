@@ -52,9 +52,7 @@ import net.sf.sparql.benchmarking.stats.OperationRun;
 public class StreamProgressListener implements ProgressListener {
     private PrintStream output;
     private boolean closeOnFinish = true;
-    private boolean disambiguate = false;
     private long lastThread = -1;
-    private boolean needsNewLine = false;
 
     /**
      * Creates a Progress Listener without a stream
@@ -141,48 +139,22 @@ public class StreamProgressListener implements ProgressListener {
         return null;
     }
 
-    /**
-     * Gets whether this listener will disambiguate multi-threaded output by
-     * ensuring output from different threads is never printed on the same line
-     * as output from a different thread
-     * 
-     * @return True if multi-threaded output will be disambiguated, false
-     *         otherwise
-     */
-    public boolean getDisambiguateMultiThreadedOutput() {
-        return this.disambiguate;
-    }
-
-    /**
-     * Sets whether this listener will disambiguate multi-threaded output by
-     * ensuring output from different threads is never printed on the same line
-     * as output from a different thread
-     * 
-     * @param disambiguate
-     *            True to enable disambiguation, false to disable it
-     */
-    public void setDisambiguateMultiThreadedOutput(boolean disambiguate) {
-        this.disambiguate = disambiguate;
-    }
-
     @Override
     public <T extends Options> void progress(Runner<T> runner, T options, String message) {
         if (this.output != null) {
-            if (!this.disambiguate) {
+            if (options.getParallelThreads() == 1)
+            {
                 this.output.print(message);
             } else {
                 synchronized (this.output) {
-                    // If switching threads we may need to insert a new line
-                    if (this.lastThread != Thread.currentThread().getId() && this.needsNewLine) {
+                    // If switching threads we need to insert a new line
+                    if (this.lastThread != Thread.currentThread().getId()) {
                         System.out.println();
-                        this.needsNewLine = false;
                     }
 
                     // Update thread
                     this.lastThread = Thread.currentThread().getId();
-                    this.needsNewLine = !message.endsWith("\n");
-                    
-                    this.output.print(message);
+                    this.output.print(String.format("[Thread %d] %s", this.lastThread, message));
                 }
             }
         }

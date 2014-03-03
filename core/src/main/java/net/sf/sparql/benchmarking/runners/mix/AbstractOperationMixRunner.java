@@ -55,13 +55,7 @@ import net.sf.sparql.benchmarking.util.FormatUtils;
  */
 public abstract class AbstractOperationMixRunner implements OperationMixRunner {
 
-    protected boolean asThread = false;
     private OperationRunner defaultRunner = new DefaultOperationRunner();
-
-    @Override
-    public void setRunAsThread(boolean asThread) {
-        this.asThread = asThread;
-    }
 
     /**
      * Runs an operation based on the configured {@link OperationRunner} using
@@ -113,17 +107,13 @@ public abstract class AbstractOperationMixRunner implements OperationMixRunner {
         long runOrder = options.getGlobalOrder();
         List<OperationRun> runs = new ArrayList<OperationRun>();
 
-        // If running as thread then we prefix all our progress messages with a
-        // Thread ID
-        String prefix = this.asThread ? "[Thread " + Thread.currentThread().getId() + "] " : "";
-
         // Generate a random sequence of integers so we execute the queries in a
         // random order
         // each time the query set is run
         List<Integer> ids = this.getOperationOrder(options, mix);
         if (this.reportOperationOrder(options)) {
             StringBuffer operationOrder = new StringBuffer();
-            operationOrder.append(prefix + "Operation Order for this Run is ");
+            operationOrder.append("Operation Order for this Run is ");
             for (int i = 0; i < ids.size(); i++) {
                 operationOrder.append(ids.get(i).toString());
                 if (i < ids.size() - 1)
@@ -135,7 +125,7 @@ public abstract class AbstractOperationMixRunner implements OperationMixRunner {
         // Now run each query recording its run details
         for (Integer id : ids) {
             Operation op = mix.getOperation(id);
-            runner.reportPartialProgress(options, prefix + "Running Operation " + op.getName() + "...");
+            runner.reportPartialProgress(options, "Running Operation " + op.getName() + "...");
 
             runner.reportBeforeOperation(options, op);
             mix.getStats().getTimer().start();
@@ -147,11 +137,11 @@ public abstract class AbstractOperationMixRunner implements OperationMixRunner {
             runner.reportAfterOperation(options, op, r);
             runs.add(r);
             if (r.wasSuccessful()) {
-                runner.reportProgress(options, prefix + "got " + FormatUtils.formatResultCount(r.getResultCount())
+                runner.reportProgress(options, "got " + FormatUtils.formatResultCount(r.getResultCount())
                         + " result(s) in " + ConvertUtils.toSeconds(r.getRuntime()) + "s");
             } else {
                 runner.reportProgress(options,
-                        prefix + "got error after " + ConvertUtils.toSeconds(r.getRuntime()) + "s: " + r.getErrorMessage());
+                        "got error after " + ConvertUtils.toSeconds(r.getRuntime()) + "s: " + r.getErrorMessage());
             }
 
             // Apply delay between operations
@@ -160,7 +150,7 @@ public abstract class AbstractOperationMixRunner implements OperationMixRunner {
                     long delay = (long) (Math.random() * options.getMaxDelay());
                     runner.reportProgress(
                             options,
-                            prefix + "Sleeping for "
+                            "Sleeping for "
                                     + ConvertUtils.toSeconds((long) (delay * ConvertUtils.NANOSECONDS_PER_MILLISECONDS))
                                     + "s before next operation");
                     Thread.sleep(delay);

@@ -79,20 +79,41 @@ public class SoakTestParallelClientManager extends AbstractParallelClientManager
         }
 
         // Otherwise good to go
+        return true;
+    }
+    
+    @Override
+    public synchronized boolean startRun() {
+        if (this.shouldHalt())
+            return false;
+        // Check max runtime first
+        if (this.getOptions().getMaxRuntime() > 0) {
+            double runtime = ConvertUtils.toMinutes(System.nanoTime() - this.startTime);
+            if (runtime >= this.getOptions().getMaxRuntime())
+                return false;
+        }
+
+        // Then check max runs
+        if (this.getOptions().getMaxRuns() > 0) {
+            if (startedRuns >= this.getOptions().getMaxRuns())
+                return false;
+        }
+
+        // Otherwise good to go
         startedRuns++;
         return true;
     }
 
-    /**
-     * Method that will be called by parallel clients to indicate they have
-     * completed a run and to obtain what run completion it is
-     * 
-     * @return Run completion number
-     */
+    @Override
     public synchronized int completeRun() {
         completedRuns++;
         int x = completedRuns;
         return x;
+    }
+    
+    @Override
+    public synchronized boolean hasFinished() {
+        return this.completedRuns == this.startedRuns;
     }
 
 }

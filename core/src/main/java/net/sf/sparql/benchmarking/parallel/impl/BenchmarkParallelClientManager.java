@@ -67,6 +67,17 @@ public class BenchmarkParallelClientManager<T extends BenchmarkOptions> extends 
         if (this.shouldHalt())
             return false;
         if (startedRuns < this.getOptions().getRuns()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    @Override
+    public synchronized boolean startRun() {
+        if (this.shouldHalt())
+            return false;
+        if (startedRuns < this.getOptions().getRuns()) {
             startedRuns++;
             return true;
         } else {
@@ -79,6 +90,11 @@ public class BenchmarkParallelClientManager<T extends BenchmarkOptions> extends 
         completedRuns++;
         int x = completedRuns;
         return x;
+    }
+    
+    @Override
+    public synchronized boolean hasFinished() {
+        return completedRuns >= this.getOptions().getRuns();
     }
 
 }

@@ -47,15 +47,6 @@ import net.sf.sparql.benchmarking.stats.OperationMixStats;
 public interface OperationMixRunner {
 
     /**
-     * Sets whether the operation mix is being run as a thread, if so it should
-     * prefix some thread identifier to its progress messages
-     * 
-     * @param asThread
-     *            Whether the operation mix is being run as a thread
-     */
-    public abstract void setRunAsThread(boolean asThread);
-
-    /**
      * Performs a operation mix run returning the statistics as a
      * {@link OperationMixRun}
      * <p>

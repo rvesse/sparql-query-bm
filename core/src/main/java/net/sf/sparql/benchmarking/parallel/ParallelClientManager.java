@@ -58,11 +58,32 @@ public interface ParallelClientManager<T extends Options> extends Callable<Objec
 
     /**
      * Method that will be called by parallel clients to indicate they have
+     * started a new run
+     * <p>
+     * A boolean is returned indicating whether the client should actually go
+     * ahead with the run, this is to help avoid race conditions where multiple
+     * threads check {@link #shouldRun()} to see if they should proceed and then
+     * attempt to start more runs than actually necessary.
+     * </p>
+     * 
+     * @return True if the run should actually run, false otherwise
+     */
+    public abstract boolean startRun();
+
+    /**
+     * Method that will be called by parallel clients to indicate they have
      * completed a run and to obtain what run completion number it is
      * 
      * @return Run completion number
      */
-    int completeRun();
+    public abstract int completeRun();
+
+    /**
+     * Returns whether the parallel clients have finished all necessary runs
+     * 
+     * @return True if all runs have finished, false otherwise
+     */
+    public abstract boolean hasFinished();
 
     /**
      * Method called by parallel clients to tell the manager that they

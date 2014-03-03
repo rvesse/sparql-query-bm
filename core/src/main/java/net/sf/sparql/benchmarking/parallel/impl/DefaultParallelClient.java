@@ -81,6 +81,10 @@ public class DefaultParallelClient<T extends Options> extends AbstractParallelCl
 
         // While there is work to do run benchmarks
         while (manager.shouldRun()) {
+            // Check we should actually start a run
+            if (!manager.startRun())
+                continue;
+
             try {
                 runner.reportProgress(options, "Client " + this.getID() + " starting new operation mix run");
                 runner.reportProgress(options, "Current Time: " + FormatUtils.formatInstant(Instant.now()));

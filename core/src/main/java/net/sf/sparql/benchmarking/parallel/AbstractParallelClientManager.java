@@ -124,19 +124,9 @@ public abstract class AbstractParallelClientManager<T extends Options> implement
         }
         this.getRunner().reportProgress(this.getOptions(), "Parallel Client manager is starting clients...");
         this.setReady();
-    
-        // Now the manager should wait until all runs have at least started
-        while (this.shouldRun()) {
-            Thread.sleep(100);
-        }
-        
+            
         // And then wait until all runs have finished
-        while (true) {
-            int numFinished = 0;
-            for (ParallelClientTask<T> task : tasks) {
-                if (task.isDone() || task.isCancelled()) numFinished++;
-            }
-            if (numFinished >= tasks.size()) break;
+        while (!this.hasFinished() && !this.halt) {
             Thread.sleep(100);
         }
     
