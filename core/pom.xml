@@ -22,9 +22,9 @@
 	</licenses>
 
 	<scm>
-		<url>http://svn.code.sf.net/p/sparql-query-bm/code/trunk</url>
-		<developerConnection>scm:svn:https://svn.code.sf.net/p/sparql-query-bm/code/trunk</developerConnection>
-		<connection>scm:svn:http://svn.code.sf.net/p/sparql-query-bm/code/trunk</connection>
+		<url>https://sourceforge.net/p/sparql-query-bm/git/</url>
+		<developerConnection>scm:git:ssh://git.code.sf.net/p/sparql-query-bm/git</developerConnection>
+		<connection>scm:git:git://git.code.sf.net/p/sparql-query-bm/git</connection>
 	</scm>
 	<developers>
 		<developer>

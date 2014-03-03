@@ -1,22 +1,19 @@
-Build
-=====
+# Build
 
 SPARQL Query Benchmarker uses a multi-module maven build.
 
-Running mvn package in this directory will build all components.  You will
-find the API under core/target and the CLI under cmd/target
+Running `mvn package` in this directory will build all components.  You will
+find the API under `core/target` and the CLI under `cmd/target`
 
 The CLI builds as a shaded runnable JAR incorporating all dependencies so can
-be run directly per the instructions under cmd/README
+be run directly per the instructions under `cmd/README.md`
 
-Scripts
--------
+## Scripts
 
-makeSrcDistro will generate a tar ball of this folder and all subfolders that
+`makeSrcDistro` will generate a tar ball of this folder and all subfolders that
 excludes any built artifacts (the target directories) 
 
-License
-=======
+# License
 
 Copyright 2011-2014 Cray Inc. All Rights Reserved
 
@@ -47,8 +44,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-Acknowledgements
-=================
+# Acknowledgments
 
 SPARQL Query Benchmarker uses the the Apache Jena ARQ query engine for issuing queries 
 and parsing the results - http://jena.apache.org
