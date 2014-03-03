@@ -53,6 +53,7 @@ public class StreamProgressListener implements ProgressListener {
     private PrintStream output;
     private boolean closeOnFinish = true;
     private long lastThread = -1;
+    private ThreadGroup lastGroup;
 
     /**
      * Creates a Progress Listener without a stream
@@ -142,22 +143,48 @@ public class StreamProgressListener implements ProgressListener {
     @Override
     public <T extends Options> void progress(Runner<T> runner, T options, String message) {
         if (this.output != null) {
-            if (options.getParallelThreads() == 1)
-            {
+            if (options.getParallelThreads() == 1) {
                 this.output.print(message);
             } else {
                 synchronized (this.output) {
                     // If switching threads we need to insert a new line
-                    if (this.lastThread != Thread.currentThread().getId()) {
+                    if (this.hasSwitchedThreads()) {
                         System.out.println();
                     }
 
                     // Update thread
-                    this.lastThread = Thread.currentThread().getId();
+                    this.updateThread();
                     this.output.print(String.format("[Thread %d] %s", this.lastThread, message));
                 }
             }
         }
+    }
+
+    protected final boolean hasSwitchedThreads() {
+        if (this.lastThread == Thread.currentThread().getId())
+            return false;
+        return true;
+
+//        ThreadGroup currGroup = Thread.currentThread().getThreadGroup();
+//        if (currGroup != null && lastGroup != null) {
+//            return !lastGroup.parentOf(currGroup);
+//        } else {
+//            return false;
+//        }
+    }
+
+    protected synchronized void updateThread() {
+        this.lastThread = Thread.currentThread().getId();
+
+//        ThreadGroup currGroup = Thread.currentThread().getThreadGroup();
+//        if (currGroup != null) {
+//            if (lastGroup != null) {
+//                if (!lastGroup.parentOf(currGroup))
+//                    lastGroup = currGroup;
+//            } else {
+//                lastGroup = currGroup;
+//            }
+//        }
     }
 
     @Override
