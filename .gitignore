@@ -1,0 +1,10 @@
+# Eclipse Project
+.project
+.settings/
+.classpath
+
+# Build Artifacts
+target/
+
+# Misc
+ensure-licenses.bat
