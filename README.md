@@ -20,7 +20,13 @@ or running the various commands.
 
 See the BUILD.md document in this directory
 
+# Documentation
+
+Documentation for the project may be found at https://sourceforge.net/p/sparql-query-bm/wiki/
+
 # License
+
+SPARQL Query Benchmarker is licensed under a 3 Clause BSD License
 
 Copyright 2011-2014 Cray Inc. All Rights Reserved
 
