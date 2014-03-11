@@ -37,6 +37,7 @@ import com.hp.hpl.jena.update.UpdateRequest;
 
 import net.sf.sparql.benchmarking.operations.AbstractOperation;
 import net.sf.sparql.benchmarking.operations.OperationCallable;
+import net.sf.sparql.benchmarking.operations.update.callables.RemoteUpdateCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationRun;
@@ -78,7 +79,7 @@ public class FixedUpdateOperation extends AbstractOperation implements UpdateOpe
 
     @Override
     public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
-        return new UpdateCallable<T>(this.update, runner, options);
+        return new RemoteUpdateCallable<T>(this.update, runner, options);
     }
 
     @Override

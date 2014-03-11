@@ -30,43 +30,39 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.operations.query;
+package net.sf.sparql.benchmarking.operations.update.callables;
 
-import net.sf.sparql.benchmarking.operations.OperationCallable;
-import net.sf.sparql.benchmarking.operations.query.callables.RemoteQueryCallable;
+import com.hp.hpl.jena.update.UpdateExecutionFactory;
+import com.hp.hpl.jena.update.UpdateProcessor;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
 /**
- * Abstract implementation of a query operation that runs against a remote
- * service via HTTP
+ * Abstract callable for operations that run updates
  * 
  * @author rvesse
  * 
+ * @param <T>
+ *            Options type
  */
-public abstract class AbstractRemoteQueryOperation extends AbstractQueryOperation {
+public abstract class AbstractRemoteUpdateCallable<T extends Options> extends AbstractUpdateCallable<T> {
 
     /**
-     * Creates a new operation
+     * Creates a new callable
      * 
-     * @param name
-     *            Query name
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      */
-    public AbstractRemoteQueryOperation(String name) {
-        super(name);
+    public AbstractRemoteUpdateCallable(Runner<T> runner, T options) {
+        super(runner, options);
     }
 
     @Override
-    public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getQueryEndpoint() == null) {
-            runner.reportProgress(options, "Remote queries cannot run with no query endpoint specified");
-            return false;
-        }
-        return true;
+    protected UpdateProcessor createUpdateProcessor() {
+        return UpdateExecutionFactory.createRemote(this.getUpdate(), this.getOptions().getUpdateEndpoint(), this.getOptions()
+                .getAuthenticator());
     }
 
-    @Override
-    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
-        return new RemoteQueryCallable<T>(this.getQuery(), runner, options);
-    }
 }

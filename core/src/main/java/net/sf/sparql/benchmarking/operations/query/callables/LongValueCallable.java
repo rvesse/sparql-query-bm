@@ -51,7 +51,7 @@ import com.hp.hpl.jena.sparql.util.NodeFactoryExtra;
  * {@link DatasetSizeOperation} which calculate some aggregate on the data using
  * a {@code SELECT} query and want to return that aggregate value as the number
  * of results rather than the number of results rows as the basic
- * {@link QueryCallable} would return.
+ * {@link RemoteQueryCallable} would return.
  * </p>
  * 
  * @author rvesse
@@ -59,7 +59,7 @@ import com.hp.hpl.jena.sparql.util.NodeFactoryExtra;
  * @param <T>
  *            Options type
  */
-public class LongValueCallable<T extends Options> extends QueryCallable<T> {
+public class LongValueCallable<T extends Options> extends RemoteQueryCallable<T> {
 
     private String var;
 

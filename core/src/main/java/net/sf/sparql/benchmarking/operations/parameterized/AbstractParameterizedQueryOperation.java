@@ -38,7 +38,7 @@ import com.hp.hpl.jena.sparql.engine.binding.Binding;
 
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.operations.query.QueryOperation;
-import net.sf.sparql.benchmarking.operations.query.callables.QueryCallable;
+import net.sf.sparql.benchmarking.operations.query.callables.RemoteQueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.impl.QueryRun;
@@ -82,6 +82,6 @@ public abstract class AbstractParameterizedQueryOperation extends AbstractParame
 
     @Override
     public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
-        return new QueryCallable<T>(this.getQuery(), runner, options);
+        return new RemoteQueryCallable<T>(this.getQuery(), runner, options);
     }
 }

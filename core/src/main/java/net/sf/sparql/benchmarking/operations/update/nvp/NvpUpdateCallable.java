@@ -35,10 +35,13 @@ package net.sf.sparql.benchmarking.operations.update.nvp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import com.hp.hpl.jena.sparql.modify.UpdateProcessRemoteBase;
+import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
 
-import net.sf.sparql.benchmarking.operations.update.UpdateCallable;
+import net.sf.sparql.benchmarking.operations.update.callables.RemoteUpdateCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
@@ -50,7 +53,7 @@ import net.sf.sparql.benchmarking.runners.Runner;
  * @param <T>
  *            Options type
  */
-public class NvpUpdateCallable<T extends Options> extends UpdateCallable<T> {
+public class NvpUpdateCallable<T extends Options> extends RemoteUpdateCallable<T> {
 
     private Map<String, List<String>> nvps = new HashMap<String, List<String>>();
 
@@ -71,4 +74,17 @@ public class NvpUpdateCallable<T extends Options> extends UpdateCallable<T> {
         this.nvps.putAll(nvps);
     }
 
+    @Override
+    protected void customizeRequest(UpdateProcessor processor) {
+        super.customizeRequest(processor);
+        if (processor instanceof UpdateProcessRemoteBase)
+        {
+            UpdateProcessRemoteBase remote = (UpdateProcessRemoteBase)processor;
+            for (Entry<String, List<String>> nvp : this.nvps.entrySet()) {
+                for (String value : nvp.getValue()) {
+                    remote.addParam(nvp.getKey(), value);
+                }
+            }
+        }
+    }
 }

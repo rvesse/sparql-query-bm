@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.operations.query.nvp;
 
@@ -38,9 +38,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
-import net.sf.sparql.benchmarking.operations.query.callables.QueryCallable;
+import net.sf.sparql.benchmarking.operations.query.callables.RemoteQueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
@@ -52,7 +53,7 @@ import net.sf.sparql.benchmarking.runners.Runner;
  * @param <T>
  *            Options type
  */
-public class NvpQueryCallable<T extends Options> extends QueryCallable<T> {
+public class NvpQueryCallable<T extends Options> extends RemoteQueryCallable<T> {
 
     private Map<String, List<String>> nvps = new HashMap<String, List<String>>();
 
@@ -74,11 +75,14 @@ public class NvpQueryCallable<T extends Options> extends QueryCallable<T> {
     }
 
     @Override
-    protected void customizeRequest(QueryEngineHTTP qe) {
+    protected void customizeRequest(QueryExecution qe) {
         super.customizeRequest(qe);
-        for (Entry<String, List<String>> nvp : this.nvps.entrySet()) {
-            for (String value : nvp.getValue()) {
-                qe.addParam(nvp.getKey(), value);
+        if (qe instanceof QueryEngineHTTP) {
+            QueryEngineHTTP remote = (QueryEngineHTTP) qe;
+            for (Entry<String, List<String>> nvp : this.nvps.entrySet()) {
+                for (String value : nvp.getValue()) {
+                    remote.addParam(nvp.getKey(), value);
+                }
             }
         }
     }

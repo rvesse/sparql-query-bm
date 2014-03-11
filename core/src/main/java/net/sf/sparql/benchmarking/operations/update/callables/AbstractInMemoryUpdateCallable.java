@@ -30,25 +30,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.operations.update;
+package net.sf.sparql.benchmarking.operations.update.callables;
 
-import org.apache.jena.atlas.web.HttpException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
-import com.hp.hpl.jena.update.UpdateRequest;
 
 import net.sf.sparql.benchmarking.loader.InMemoryOperations;
-import net.sf.sparql.benchmarking.operations.AbstractOperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
-import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 /**
  * Abstract callable for operations that run updates against a local in-memory
@@ -59,9 +52,7 @@ import net.sf.sparql.benchmarking.util.ErrorCategories;
  * @param <T>
  *            Options type
  */
-public abstract class AbstractInMemoryUpdateCallable<T extends Options> extends AbstractOperationCallable<T> {
-
-    private static final Logger logger = LoggerFactory.getLogger(UpdateCallable.class);
+public abstract class AbstractInMemoryUpdateCallable<T extends Options> extends AbstractUpdateCallable<T> {
 
     /**
      * Creates a new callable
@@ -74,13 +65,6 @@ public abstract class AbstractInMemoryUpdateCallable<T extends Options> extends 
     public AbstractInMemoryUpdateCallable(Runner<T> runner, T options) {
         super(runner, options);
     }
-
-    /**
-     * Gets the update request
-     * 
-     * @return Update request
-     */
-    protected abstract UpdateRequest getUpdate();
 
     /**
      * Gets the graph store to run the query against
@@ -101,45 +85,10 @@ public abstract class AbstractInMemoryUpdateCallable<T extends Options> extends 
         throw new IllegalArgumentException("Expected an object of type Dataset but got an object of type "
                 + dsObj.getClass().getName());
     }
-
+    
     @Override
-    public UpdateRun call() throws Exception {
-        UpdateRequest update = this.getUpdate();
-        logger.debug("Running update:\n" + update.toString());
-
-        // Create a remote update processor and configure it appropriately
-        UpdateProcessor processor = UpdateExecutionFactory.create(this.getUpdate(), this.getGraphStore(this.getOptions()));
-        this.customizeRequest(processor);
-
-        long startTime = System.nanoTime();
-        try {
-            // Execute the update
-            processor.execute();
-        } catch (HttpException e) {
-            // Make sure to categorize HTTP errors appropriately
-            return new UpdateRun(e.getMessage(), ErrorCategories.categorizeHttpError(e), System.nanoTime() - startTime);
-        }
-
-        if (this.isCancelled())
-            return null;
-
-        long endTime = System.nanoTime();
-        return new UpdateRun(endTime - startTime);
-    }
-
-    /**
-     * Provides derived implementations the option to customize the update
-     * processor before actually executing the update e.g. to add custom
-     * parameters
-     * <p>
-     * The default implementation does nothing.
-     * </p>
-     * 
-     * @param processor
-     *            Update processor
-     */
-    protected void customizeRequest(UpdateProcessor processor) {
-        // Default implementation does nothing
+    protected UpdateProcessor createUpdateProcessor() {
+        return UpdateExecutionFactory.create(this.getUpdate(), this.getGraphStore(this.getOptions()));
     }
 
 }

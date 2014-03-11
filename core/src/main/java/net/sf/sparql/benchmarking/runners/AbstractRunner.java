@@ -49,7 +49,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
-import net.sf.sparql.benchmarking.operations.query.callables.QueryCallable;
+import net.sf.sparql.benchmarking.operations.query.callables.RemoteQueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
 import net.sf.sparql.benchmarking.runners.mix.InOrderOperationMixRunner;
@@ -227,7 +227,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
         int passed = 0;
         for (int i = 0; i < checks.length; i++) {
             Query q = QueryFactory.create(checks[i]);
-            FutureTask<OperationRun> task = new FutureTask<OperationRun>(new QueryCallable<T>(q, this, options));
+            FutureTask<OperationRun> task = new FutureTask<OperationRun>(new RemoteQueryCallable<T>(q, this, options));
             reportPartialProgress(options, "Sanity Check " + (i + 1) + " of " + checks.length + "...");
             try {
                 // Run the operation using a 30 second timeout

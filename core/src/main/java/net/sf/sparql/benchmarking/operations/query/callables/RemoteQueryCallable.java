@@ -46,7 +46,7 @@ import com.hp.hpl.jena.query.Query;
  *            Options type
  * 
  */
-public class QueryCallable<T extends Options> extends AbstractRemoteQueryCallable<T> {
+public class RemoteQueryCallable<T extends Options> extends AbstractRemoteQueryCallable<T> {
 
     private Query query;
 
@@ -60,7 +60,7 @@ public class QueryCallable<T extends Options> extends AbstractRemoteQueryCallabl
      * @param options
      *            Options
      */
-    public QueryCallable(Query q, Runner<T> runner, T options) {
+    public RemoteQueryCallable(Query q, Runner<T> runner, T options) {
         super(runner, options);
         this.query = q;
     }

@@ -32,22 +32,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations.query.callables;
 
-import org.apache.jena.atlas.web.HttpException;
-import org.apache.log4j.Logger;
-
 import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
-import net.sf.sparql.benchmarking.options.BenchmarkOptions;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.stats.OperationRun;
-import net.sf.sparql.benchmarking.stats.impl.QueryRun;
-import net.sf.sparql.benchmarking.util.ConvertUtils;
-import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 /**
  * Abstract callable for operations that run queries against a remote service
@@ -56,10 +47,9 @@ import net.sf.sparql.benchmarking.util.ErrorCategories;
  * @author rvesse
  * 
  * @param <T>
+ *            Options type
  */
 public abstract class AbstractRemoteQueryCallable<T extends Options> extends AbstractQueryCallable<T> {
-
-    private static final Logger logger = Logger.getLogger(QueryCallable.class);
 
     /**
      * Creates a new callable
@@ -73,113 +63,24 @@ public abstract class AbstractRemoteQueryCallable<T extends Options> extends Abs
         super(runner, options);
     }
 
-    /**
-     * Runs the Query counting the number of Results
-     */
     @Override
-    public QueryRun call() {
-        T options = this.getOptions();
-        BenchmarkOptions bOps = null;
-        if (options instanceof BenchmarkOptions) {
-            bOps = (BenchmarkOptions) options;
-        }
-
-        Query query = this.getQuery();
-
-        // Impose Limit if applicable
-        if (bOps != null) {
-            if (bOps.getLimit() > 0) {
-                if (!query.isAskType()) {
-                    if (query.getLimit() == Query.NOLIMIT || query.getLimit() > bOps.getLimit()) {
-                        query.setLimit(bOps.getLimit());
-                    }
-                }
-            }
-        }
-
-        logger.debug("Running query:\n" + query.toString());
-
-        // Create a QueryEngineHTTP directly as we want to set a bunch of
-        // parameters on it
-        QueryEngineHTTP exec = new QueryEngineHTTP(options.getQueryEndpoint(), query);
-        exec.setSelectContentType(options.getResultsSelectFormat());
-        exec.setAskContentType(options.getResultsAskFormat());
-        exec.setModelContentType(options.getResultsGraphFormat());
-        exec.setAllowDeflate(options.getAllowCompression());
-        exec.setAllowGZip(options.getAllowCompression());
-        if (options.getAuthenticator() != null) {
-            exec.setAuthenticator(options.getAuthenticator());
-        }
-        this.customizeRequest(exec);
-
-        long numResults = 0;
-        long responseTime = OperationRun.NOT_YET_RUN;
-        long startTime = System.nanoTime();
-        try {
-
-            // Make the query
-            if (query.isAskType()) {
-                boolean result = exec.execAsk();
-                numResults = countResults(options, result);
-            } else if (query.isConstructType()) {
-                Model m = exec.execConstruct();
-                numResults = countResults(options, m);
-            } else if (query.isDescribeType()) {
-                Model m = exec.execDescribe();
-                numResults = countResults(options, m);
-            } else if (query.isSelectType()) {
-                ResultSet rset = exec.execSelect();
-                responseTime = System.nanoTime() - startTime;
-
-                // Abort if we have been cancelled by the time the engine
-                // responds
-                if (isCancelled()) {
-                    return null;
-                }
-                this.getRunner().reportPartialProgress(options,
-                        "started responding in " + ConvertUtils.toSeconds(responseTime) + "s...");
-                numResults = countResults(options, rset);
-            } else {
-                logger.warn("Query is not of a recognised type and so was not run");
-                if (options.getHaltAny())
-                    this.getRunner().halt(options, "Unrecognized Query Type");
-            }
-
-            // Abort if we have been cancelled by the time the engine
-            // responds
-            if (isCancelled()) {
-                return null;
-            }
-
-            // Return results
-            long endTime = System.nanoTime();
-            return new QueryRun(endTime - startTime, responseTime, numResults);
-
-        } catch (HttpException e) {
-            // Make sure to categorize HTTP errors appropriately
-            return new QueryRun(e.getMessage(), ErrorCategories.categorizeHttpError(e), System.nanoTime() - startTime);
-        } catch (QueryExceptionHTTP e) {
-            return new QueryRun(e.getMessage(), ErrorCategories.categorizeHttpError(e), System.nanoTime() - startTime);
-        } finally {
-            // Clean up query execution
-            if (exec != null)
-                exec.close();
-        }
+    protected QueryExecution createQueryExecution(Query query) {
+        return QueryExecutionFactory.sparqlService(this.getOptions().getQueryEndpoint(), query, this.getOptions()
+                .getAuthenticator());
     }
 
-    /**
-     * Provides derived implementations the option to customize the query
-     * execution before actually executing the query e.g. to add custom
-     * parameters
-     * <p>
-     * The default implementation does nothing.
-     * </p>
-     * 
-     * @param qe
-     *            Query Execution
-     */
-    protected void customizeRequest(QueryEngineHTTP qe) {
-        // Default implementation does nothing
+    @Override
+    protected void customizeRequest(QueryExecution qe) {
+        super.customizeRequest(qe);
+        if (qe instanceof QueryEngineHTTP) {
+            QueryEngineHTTP remote = (QueryEngineHTTP) qe;
+            T options = this.getOptions();
+            remote.setSelectContentType(options.getResultsSelectFormat());
+            remote.setAskContentType(options.getResultsAskFormat());
+            remote.setModelContentType(options.getResultsGraphFormat());
+            remote.setAllowDeflate(options.getAllowCompression());
+            remote.setAllowGZip(options.getAllowCompression());
+        }
     }
 
 }

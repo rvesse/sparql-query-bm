@@ -38,7 +38,7 @@ import com.hp.hpl.jena.sparql.engine.binding.Binding;
 
 import net.sf.sparql.benchmarking.loader.InMemoryOperations;
 import net.sf.sparql.benchmarking.operations.OperationCallable;
-import net.sf.sparql.benchmarking.operations.query.InMemoryQueryCallable;
+import net.sf.sparql.benchmarking.operations.query.callables.InMemoryQueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 

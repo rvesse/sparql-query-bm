@@ -38,8 +38,8 @@ import com.hp.hpl.jena.sparql.engine.binding.Binding;
 import com.hp.hpl.jena.update.UpdateRequest;
 
 import net.sf.sparql.benchmarking.operations.OperationCallable;
-import net.sf.sparql.benchmarking.operations.update.UpdateCallable;
 import net.sf.sparql.benchmarking.operations.update.UpdateOperation;
+import net.sf.sparql.benchmarking.operations.update.callables.RemoteUpdateCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
@@ -69,7 +69,7 @@ public abstract class AbstractParameterizedUpdateOperation extends AbstractParam
 
     @Override
     public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
-        return new UpdateCallable<T>(this.getUpdate(), runner, options);
+        return new RemoteUpdateCallable<T>(this.getUpdate(), runner, options);
     }
 
     @Override

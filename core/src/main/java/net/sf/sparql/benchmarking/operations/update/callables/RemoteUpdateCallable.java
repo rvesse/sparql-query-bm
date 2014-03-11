@@ -30,8 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.operations.update;
-
+package net.sf.sparql.benchmarking.operations.update.callables;
 
 import com.hp.hpl.jena.update.UpdateRequest;
 
@@ -42,8 +41,9 @@ import net.sf.sparql.benchmarking.runners.Runner;
  * @author rvesse
  * 
  * @param <T>
+ *            Options type
  */
-public class UpdateCallable<T extends Options> extends AbstractUpdateCallable<T> {
+public class RemoteUpdateCallable<T extends Options> extends AbstractRemoteUpdateCallable<T> {
 
     private UpdateRequest update;
 
@@ -57,7 +57,7 @@ public class UpdateCallable<T extends Options> extends AbstractUpdateCallable<T>
      * @param options
      *            Options
      */
-    public UpdateCallable(UpdateRequest update, Runner<T> runner, T options) {
+    public RemoteUpdateCallable(UpdateRequest update, Runner<T> runner, T options) {
         super(runner, options);
         this.update = update;
     }

@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.operations.update;
+package net.sf.sparql.benchmarking.operations.update.callables;
 
 
 import com.hp.hpl.jena.update.UpdateRequest;
