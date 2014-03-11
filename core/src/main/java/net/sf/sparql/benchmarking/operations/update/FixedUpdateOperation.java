@@ -43,7 +43,7 @@ import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
 
 /**
- * An operation that makes a fixed SPARQL Update
+ * An operation that makes a fixed SPARQL Update against a remote SPARQL service via HTTP
  * 
  * @author rvesse
  * 
@@ -70,7 +70,7 @@ public class FixedUpdateOperation extends AbstractOperation implements UpdateOpe
     @Override
     public <T extends Options> boolean canRun(Runner<T> runner, T options) {
         if (options.getUpdateEndpoint() == null) {
-            runner.reportProgress(options, "Updates cannot run with no update endpoint specified");
+            runner.reportProgress(options, "Remote updates cannot run with no update endpoint specified");
             return false;
         }
         return true;
@@ -88,7 +88,7 @@ public class FixedUpdateOperation extends AbstractOperation implements UpdateOpe
 
     @Override
     public String getType() {
-        return "SPARQL Update";
+        return "Remote SPARQL Update";
     }
 
     @Override

@@ -30,57 +30,61 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 
-package net.sf.sparql.benchmarking.operations.query.nvp;
+package net.sf.sparql.benchmarking.operations.parameterized;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Collection;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import com.hp.hpl.jena.sparql.engine.binding.Binding;
+import com.hp.hpl.jena.update.UpdateRequest;
 
-import net.sf.sparql.benchmarking.operations.query.callables.QueryCallable;
+import net.sf.sparql.benchmarking.operations.OperationCallable;
+import net.sf.sparql.benchmarking.operations.update.UpdateCallable;
+import net.sf.sparql.benchmarking.operations.update.UpdateOperation;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
+import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
 
 /**
- * A query callable that adds custom NVPs to the request
+ * Abstract parameterized SPARQL update operation
  * 
  * @author rvesse
  * 
- * @param <T>
- *            Options type
  */
-public class NvpQueryCallable<T extends Options> extends QueryCallable<T> {
-
-    private Map<String, List<String>> nvps = new HashMap<String, List<String>>();
+public abstract class AbstractParameterizedUpdateOperation extends AbstractParameterizedSparqlOperation implements
+        UpdateOperation {
 
     /**
-     * Creates a new callable
+     * Creates a new parameterized update operation
      * 
-     * @param q
-     *            Query
-     * @param runner
-     *            Runner
-     * @param options
-     *            Options
-     * @param nvps
-     *            Name value pairs
+     * @param sparqlString
+     *            SPARQL String
+     * @param parameters
+     *            Parameters
+     * @param name
+     *            Name
      */
-    public NvpQueryCallable(Query q, Runner<T> runner, T options, Map<String, List<String>> nvps) {
-        super(q, runner, options);
-        this.nvps.putAll(nvps);
+    public AbstractParameterizedUpdateOperation(String sparqlString, Collection<Binding> parameters, String name) {
+        super(sparqlString, parameters, name);
     }
 
     @Override
-    protected void customizeRequest(QueryEngineHTTP qe) {
-        super.customizeRequest(qe);
-        for (Entry<String, List<String>> nvp : this.nvps.entrySet()) {
-            for (String value : nvp.getValue()) {
-                qe.addParam(nvp.getKey(), value);
-            }
-        }
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
+        return new UpdateCallable<T>(this.getUpdate(), runner, options);
+    }
+
+    @Override
+    public UpdateRun createErrorInformation(String message, int category, long runtime) {
+        return new UpdateRun(message, category, runtime);
+    }
+
+    @Override
+    public UpdateRequest getUpdate() {
+        return this.getParameterizedSparql().asUpdate();
+    }
+
+    @Override
+    public String getUpdateString() {
+        return this.getParameterizedSparql().getCommandText();
     }
 
 }

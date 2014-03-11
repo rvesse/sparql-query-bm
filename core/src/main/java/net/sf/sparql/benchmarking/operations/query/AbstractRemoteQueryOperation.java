@@ -30,35 +30,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.operations.parameterized;
+package net.sf.sparql.benchmarking.operations.query;
 
-import java.util.Collection;
-
-import com.hp.hpl.jena.sparql.engine.binding.Binding;
-
+import net.sf.sparql.benchmarking.operations.OperationCallable;
+import net.sf.sparql.benchmarking.operations.query.callables.QueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
 /**
- * A parameterized query operation that runs against a remote service via HTTP
+ * Abstract implementation of a query operation that runs against a remote
+ * service via HTTP
  * 
  * @author rvesse
  * 
  */
-public class ParameterizedQueryOperation extends AbstractParameterizedQueryOperation {
+public abstract class AbstractRemoteQueryOperation extends AbstractQueryOperation {
 
     /**
-     * Creates a new parameterized query operation
+     * Creates a new operation
      * 
-     * @param sparqlString
-     *            SPARQL String
-     * @param parameters
-     *            Parameters
      * @param name
-     *            Name
+     *            Query name
      */
-    public ParameterizedQueryOperation(String sparqlString, Collection<Binding> parameters, String name) {
-        super(sparqlString, parameters, name);
+    public AbstractRemoteQueryOperation(String name) {
+        super(name);
     }
 
     @Override
@@ -71,7 +66,7 @@ public class ParameterizedQueryOperation extends AbstractParameterizedQueryOpera
     }
 
     @Override
-    public String getType() {
-        return "Remote Parameterized SPARQL Query";
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
+        return new QueryCallable<T>(this.getQuery(), runner, options);
     }
 }

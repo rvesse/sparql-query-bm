@@ -36,16 +36,19 @@ import java.util.Collection;
 
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
 
+import net.sf.sparql.benchmarking.loader.InMemoryOperations;
+import net.sf.sparql.benchmarking.operations.OperationCallable;
+import net.sf.sparql.benchmarking.operations.query.InMemoryQueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
 /**
- * A parameterized query operation that runs against a remote service via HTTP
+ * A parameterized query operation that runs against a local in-memory dataset
  * 
  * @author rvesse
  * 
  */
-public class ParameterizedQueryOperation extends AbstractParameterizedQueryOperation {
+public class InMemoryParameterizedQueryOperation extends AbstractParameterizedQueryOperation {
 
     /**
      * Creates a new parameterized query operation
@@ -57,21 +60,24 @@ public class ParameterizedQueryOperation extends AbstractParameterizedQueryOpera
      * @param name
      *            Name
      */
-    public ParameterizedQueryOperation(String sparqlString, Collection<Binding> parameters, String name) {
+    public InMemoryParameterizedQueryOperation(String sparqlString, Collection<Binding> parameters, String name) {
         super(sparqlString, parameters, name);
     }
 
     @Override
     public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getQueryEndpoint() == null) {
-            runner.reportProgress(options, "Remote queries cannot run with no query endpoint specified");
+        if (!InMemoryOperations.hasDataset(runner, options, "parameterized queries"))
             return false;
-        }
         return true;
     }
 
     @Override
     public String getType() {
-        return "Remote Parameterized SPARQL Query";
+        return "In-Memory Parameterized SPARQL Query";
+    }
+
+    @Override
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
+        return new InMemoryQueryCallable<T>(this.getQuery(), runner, options);
     }
 }

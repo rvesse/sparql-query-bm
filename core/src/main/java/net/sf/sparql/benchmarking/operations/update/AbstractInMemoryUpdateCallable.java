@@ -36,10 +36,14 @@ import org.apache.jena.atlas.web.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.sparql.modify.UpdateProcessRemoteBase;
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.update.GraphStore;
+import com.hp.hpl.jena.update.GraphStoreFactory;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
+import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
 
+import net.sf.sparql.benchmarking.loader.InMemoryOperations;
 import net.sf.sparql.benchmarking.operations.AbstractOperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
@@ -47,14 +51,15 @@ import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
 import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 /**
- * Abstract callable for operations that run updates
+ * Abstract callable for operations that run updates against a local in-memory
+ * dataset
  * 
  * @author rvesse
  * 
  * @param <T>
  *            Options type
  */
-public abstract class AbstractUpdateCallable<T extends Options> extends AbstractOperationCallable<T> {
+public abstract class AbstractInMemoryUpdateCallable<T extends Options> extends AbstractOperationCallable<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateCallable.class);
 
@@ -66,16 +71,36 @@ public abstract class AbstractUpdateCallable<T extends Options> extends Abstract
      * @param options
      *            Options
      */
-    public AbstractUpdateCallable(Runner<T> runner, T options) {
+    public AbstractInMemoryUpdateCallable(Runner<T> runner, T options) {
         super(runner, options);
     }
 
     /**
-     * Gets the update request to be executed
+     * Gets the update request
      * 
      * @return Update request
      */
     protected abstract UpdateRequest getUpdate();
+
+    /**
+     * Gets the graph store to run the query against
+     * <p>
+     * By default all in-memory based operations expect to find a dataset in the
+     * custom setting {@code dataset} however derived implementations may choose
+     * to do this differently and provide the dataset in other ways. The
+     * {@link Dataset} instance is converted to a {@link GraphStore} by simply
+     * calling {@link GraphStoreFactory#create(Dataset)}.
+     * </p>
+     * 
+     * @return Graph store
+     */
+    protected GraphStore getGraphStore(T options) {
+        Object dsObj = options.getCustomSettings().get(InMemoryOperations.DATASET_SETTING_KEY);
+        if (dsObj instanceof Dataset)
+            return GraphStoreFactory.create((Dataset) dsObj);
+        throw new IllegalArgumentException("Expected an object of type Dataset but got an object of type "
+                + dsObj.getClass().getName());
+    }
 
     @Override
     public UpdateRun call() throws Exception {
@@ -83,11 +108,7 @@ public abstract class AbstractUpdateCallable<T extends Options> extends Abstract
         logger.debug("Running update:\n" + update.toString());
 
         // Create a remote update processor and configure it appropriately
-        UpdateProcessRemoteBase processor = (UpdateProcessRemoteBase) UpdateExecutionFactory.createRemote(update, this
-                .getOptions().getUpdateEndpoint());
-        if (this.getOptions().getAuthenticator() != null) {
-            processor.setAuthenticator(this.getOptions().getAuthenticator());
-        }
+        UpdateProcessor processor = UpdateExecutionFactory.create(this.getUpdate(), this.getGraphStore(this.getOptions()));
         this.customizeRequest(processor);
 
         long startTime = System.nanoTime();
@@ -114,10 +135,10 @@ public abstract class AbstractUpdateCallable<T extends Options> extends Abstract
      * The default implementation does nothing.
      * </p>
      * 
-     * @param up
+     * @param processor
      *            Update processor
      */
-    protected void customizeRequest(UpdateProcessRemoteBase up) {
+    protected void customizeRequest(UpdateProcessor processor) {
         // Default implementation does nothing
     }
 

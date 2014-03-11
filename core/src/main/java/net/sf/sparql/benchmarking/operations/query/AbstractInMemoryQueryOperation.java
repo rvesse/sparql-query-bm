@@ -30,48 +30,41 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.operations.parameterized;
+package net.sf.sparql.benchmarking.operations.query;
 
-import java.util.Collection;
-
-import com.hp.hpl.jena.sparql.engine.binding.Binding;
-
+import net.sf.sparql.benchmarking.loader.InMemoryOperations;
+import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
 /**
- * A parameterized query operation that runs against a remote service via HTTP
+ * Abstract implementation of a query operation that runs against a local
+ * in-memory dataset
  * 
  * @author rvesse
  * 
  */
-public class ParameterizedQueryOperation extends AbstractParameterizedQueryOperation {
+public abstract class AbstractInMemoryQueryOperation extends AbstractQueryOperation {
 
     /**
-     * Creates a new parameterized query operation
+     * Creates a new operation
      * 
-     * @param sparqlString
-     *            SPARQL String
-     * @param parameters
-     *            Parameters
      * @param name
-     *            Name
+     *            Query name
      */
-    public ParameterizedQueryOperation(String sparqlString, Collection<Binding> parameters, String name) {
-        super(sparqlString, parameters, name);
+    public AbstractInMemoryQueryOperation(String name) {
+        super(name);
     }
 
     @Override
     public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getQueryEndpoint() == null) {
-            runner.reportProgress(options, "Remote queries cannot run with no query endpoint specified");
+        if (!InMemoryOperations.hasDataset(runner, options, "queries"))
             return false;
-        }
         return true;
     }
 
     @Override
-    public String getType() {
-        return "Remote Parameterized SPARQL Query";
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
+        return new InMemoryQueryCallable<T>(this.getQuery(), runner, options);
     }
 }

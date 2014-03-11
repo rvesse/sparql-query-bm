@@ -30,57 +30,43 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 
-package net.sf.sparql.benchmarking.operations.query.nvp;
+package net.sf.sparql.benchmarking.operations.query.callables;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-
-import net.sf.sparql.benchmarking.operations.query.callables.QueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
+
+import com.hp.hpl.jena.query.Query;
+
 /**
- * A query callable that adds custom NVPs to the request
+ * A Callable for queries so we can execute them asynchronously with timeouts
  * 
  * @author rvesse
- * 
  * @param <T>
  *            Options type
+ * 
  */
-public class NvpQueryCallable<T extends Options> extends QueryCallable<T> {
+public class QueryCallable<T extends Options> extends AbstractRemoteQueryCallable<T> {
 
-    private Map<String, List<String>> nvps = new HashMap<String, List<String>>();
+    private Query query;
 
     /**
-     * Creates a new callable
+     * Creates a new Query Runner
      * 
      * @param q
-     *            Query
+     *            Query to run
      * @param runner
      *            Runner
      * @param options
      *            Options
-     * @param nvps
-     *            Name value pairs
      */
-    public NvpQueryCallable(Query q, Runner<T> runner, T options, Map<String, List<String>> nvps) {
-        super(q, runner, options);
-        this.nvps.putAll(nvps);
+    public QueryCallable(Query q, Runner<T> runner, T options) {
+        super(runner, options);
+        this.query = q;
     }
 
     @Override
-    protected void customizeRequest(QueryEngineHTTP qe) {
-        super.customizeRequest(qe);
-        for (Entry<String, List<String>> nvp : this.nvps.entrySet()) {
-            for (String value : nvp.getValue()) {
-                qe.addParam(nvp.getKey(), value);
-            }
-        }
+    protected Query getQuery() {
+        return this.query;
     }
-
 }

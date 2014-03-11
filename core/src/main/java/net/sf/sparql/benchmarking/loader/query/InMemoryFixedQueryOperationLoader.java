@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.loader.update;
+package net.sf.sparql.benchmarking.loader.query;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,47 +41,48 @@ import org.slf4j.LoggerFactory;
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
 import net.sf.sparql.benchmarking.loader.OperationLoaderArgument;
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.update.FixedUpdateOperation;
+import net.sf.sparql.benchmarking.operations.query.InMemoryFixedQueryOperation;
 
 /**
- * An operation loader for fixed update operations
+ * In-Memory Query operation loader
  * 
  * @author rvesse
  * 
  */
-public class FixedUpdateOperationLoader extends AbstractOperationLoader {
+public class InMemoryFixedQueryOperationLoader extends AbstractOperationLoader {
 
-    static final Logger logger = LoggerFactory.getLogger(FixedUpdateOperationLoader.class);
+    static final Logger logger = LoggerFactory.getLogger(InMemoryFixedQueryOperationLoader.class);
 
     @Override
     public Operation load(File baseDir, String[] args) throws IOException {
         if (args.length < 1)
-            throw new IOException("Insufficient arguments to load an update operation");
+            throw new IOException("Insufficient arguments to load a query operation");
 
-        String updateFile = args[0];
-        String name = updateFile;
+        String queryFile = args[0];
+        String name = queryFile;
         if (args.length > 1) {
             name = args[1];
         }
 
-        String update = readFile(baseDir, updateFile);
-        return new FixedUpdateOperation(name, update);
+        String query = readFile(baseDir, queryFile);
+        return new InMemoryFixedQueryOperation(name, query);
     }
 
     @Override
     public String getPreferredName() {
-        return "update";
+        return "mem-query";
     }
-    
+
     @Override
     public String getDescription() {
-        return "The update operation makes a fixed SPARQL update against a remote SPARQL service via HTTP.";
+        return "The mem-query operation makes a fixed SPARQL query against a local in-memory dataset";
     }
 
     @Override
     public OperationLoaderArgument[] getArguments() {
         OperationLoaderArgument[] args = new OperationLoaderArgument[2];
-        args[0] = new OperationLoaderArgument("Update File", "Provides a file that contains the SPARQL updates to be run.", OperationLoaderArgument.TYPE_FILE);
+        args[0] = new OperationLoaderArgument("Query File", "Provides a file that contains the SPARQL query to be run.",
+                OperationLoaderArgument.TYPE_FILE);
         args[1] = AbstractOperationLoader.getNameArgument(true);
         return args;
     }

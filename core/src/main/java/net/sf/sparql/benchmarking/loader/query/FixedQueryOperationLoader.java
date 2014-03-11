@@ -75,7 +75,7 @@ public class FixedQueryOperationLoader extends AbstractOperationLoader {
 
     @Override
     public String getDescription() {
-        return "The query operation makes a fixed SPARQL query";
+        return "The query operation makes a fixed SPARQL query against a remote SPARQL service via HTTP";
     }
 
     @Override

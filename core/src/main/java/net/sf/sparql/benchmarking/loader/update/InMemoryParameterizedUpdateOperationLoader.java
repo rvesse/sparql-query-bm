@@ -34,55 +34,73 @@ package net.sf.sparql.benchmarking.loader.update;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.sparql.engine.binding.Binding;
+
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
 import net.sf.sparql.benchmarking.loader.OperationLoaderArgument;
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.update.FixedUpdateOperation;
+import net.sf.sparql.benchmarking.operations.parameterized.ParameterizedUpdateOperation;
 
 /**
- * An operation loader for fixed update operations
+ * Parameterized update operation loader
  * 
  * @author rvesse
  * 
  */
-public class FixedUpdateOperationLoader extends AbstractOperationLoader {
+public class InMemoryParameterizedUpdateOperationLoader extends AbstractOperationLoader {
 
-    static final Logger logger = LoggerFactory.getLogger(FixedUpdateOperationLoader.class);
+    static final Logger logger = LoggerFactory.getLogger(InMemoryParameterizedUpdateOperationLoader.class);
 
     @Override
     public Operation load(File baseDir, String[] args) throws IOException {
-        if (args.length < 1)
-            throw new IOException("Insufficient arguments to load an update operation");
+        if (args.length < 2)
+            throw new IOException("Insufficient arguments to load a parameterized update operation");
 
-        String updateFile = args[0];
-        String name = updateFile;
-        if (args.length > 1) {
-            name = args[1];
+        String queryFile = args[0];
+        String name = queryFile;
+        String paramsFile = args[1];
+
+        if (args.length > 2) {
+            name = args[2];
         }
 
-        String update = readFile(baseDir, updateFile);
-        return new FixedUpdateOperation(name, update);
+        String update = readFile(baseDir, queryFile);
+        ResultSet rs = ResultSetFactory.fromTSV(getInputStream(baseDir, paramsFile));
+        List<Binding> params = new ArrayList<Binding>();
+        while (rs.hasNext()) {
+            params.add(rs.nextBinding());
+        }
+        return new ParameterizedUpdateOperation(update, params, name);
     }
 
     @Override
     public String getPreferredName() {
-        return "update";
+        return "mem-param-update";
     }
     
     @Override
     public String getDescription() {
-        return "The update operation makes a fixed SPARQL update against a remote SPARQL service via HTTP.";
+        return "The mem-param-update operation makes a fixed SPARQL update against a local in-memory dataset where parameters are drawn at random from a set of possible parameters.";
     }
 
     @Override
     public OperationLoaderArgument[] getArguments() {
-        OperationLoaderArgument[] args = new OperationLoaderArgument[2];
-        args[0] = new OperationLoaderArgument("Update File", "Provides a file that contains the SPARQL updates to be run.", OperationLoaderArgument.TYPE_FILE);
-        args[1] = AbstractOperationLoader.getNameArgument(true);
+        OperationLoaderArgument[] args = new OperationLoaderArgument[3];
+        args[0] = new OperationLoaderArgument("Update File", "Provides a file that contains the SPARQL updates to be run.",
+                OperationLoaderArgument.TYPE_FILE);
+        args[1] = new OperationLoaderArgument(
+                "Parameters File",
+                "Provides a file that contains the parameters to be used.  Parameters files are expected to be in SPARQL TSV results format where each result row represents a set of parameters.",
+                OperationLoaderArgument.TYPE_FILE);
+        args[2] = AbstractOperationLoader.getNameArgument(true);
         return args;
     }
 }

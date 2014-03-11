@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations.query;
 
+import net.sf.sparql.benchmarking.operations.query.callables.AbstractInMemoryQueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
@@ -46,7 +47,7 @@ import com.hp.hpl.jena.query.Query;
  *            Options type
  * 
  */
-public class QueryCallable<T extends Options> extends AbstractQueryCallable<T> {
+public class InMemoryQueryCallable<T extends Options> extends AbstractInMemoryQueryCallable<T> {
 
     private Query query;
 
@@ -60,7 +61,7 @@ public class QueryCallable<T extends Options> extends AbstractQueryCallable<T> {
      * @param options
      *            Options
      */
-    public QueryCallable(Query q, Runner<T> runner, T options) {
+    public InMemoryQueryCallable(Query q, Runner<T> runner, T options) {
         super(runner, options);
         this.query = q;
     }

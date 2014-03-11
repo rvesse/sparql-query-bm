@@ -30,48 +30,40 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.operations.parameterized;
+package net.sf.sparql.benchmarking.operations.update;
 
-import java.util.Collection;
 
-import com.hp.hpl.jena.sparql.engine.binding.Binding;
+import com.hp.hpl.jena.update.UpdateRequest;
 
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
 /**
- * A parameterized query operation that runs against a remote service via HTTP
- * 
  * @author rvesse
  * 
+ * @param <T>
  */
-public class ParameterizedQueryOperation extends AbstractParameterizedQueryOperation {
+public class InMemoryUpdateCallable<T extends Options> extends AbstractInMemoryUpdateCallable<T> {
+
+    private UpdateRequest update;
 
     /**
-     * Creates a new parameterized query operation
+     * Creates a new update runner
      * 
-     * @param sparqlString
-     *            SPARQL String
-     * @param parameters
-     *            Parameters
-     * @param name
-     *            Name
+     * @param update
+     *            Update to run
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
      */
-    public ParameterizedQueryOperation(String sparqlString, Collection<Binding> parameters, String name) {
-        super(sparqlString, parameters, name);
+    public InMemoryUpdateCallable(UpdateRequest update, Runner<T> runner, T options) {
+        super(runner, options);
+        this.update = update;
     }
 
     @Override
-    public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getQueryEndpoint() == null) {
-            runner.reportProgress(options, "Remote queries cannot run with no query endpoint specified");
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String getType() {
-        return "Remote Parameterized SPARQL Query";
+    protected UpdateRequest getUpdate() {
+        return this.update;
     }
 }

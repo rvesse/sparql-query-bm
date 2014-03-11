@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,14 +28,11 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.operations.query;
 
 import net.sf.sparql.benchmarking.operations.AbstractOperation;
-import net.sf.sparql.benchmarking.operations.OperationCallable;
-import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.impl.QueryRun;
 
 /**
@@ -57,20 +54,6 @@ public abstract class AbstractQueryOperation extends AbstractOperation implement
     }
 
     @Override
-    public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getQueryEndpoint() == null) {
-            runner.reportProgress(options, "Queries cannot run with no query endpoint specified");
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
-        return new QueryCallable<T>(this.getQuery(), runner, options);
-    }
-
-    @Override
     public QueryRun createErrorInformation(String message, int category, long runtime) {
         return new QueryRun(message, category, runtime);
     }
@@ -87,5 +70,4 @@ public abstract class AbstractQueryOperation extends AbstractOperation implement
     public String toString() {
         return this.getName();
     }
-
 }

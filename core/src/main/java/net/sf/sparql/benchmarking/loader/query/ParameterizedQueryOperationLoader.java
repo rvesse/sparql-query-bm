@@ -88,7 +88,7 @@ public class ParameterizedQueryOperationLoader extends AbstractOperationLoader {
     
     @Override
     public String getDescription() {
-        return "The param-query operation makes a parameterized SPARQL query where parameters are drawn at random from a set of possible parameters.";
+        return "The param-query operation makes a parameterized SPARQL query against a remote SPARQL service via HTTP where parameters are drawn at random from a set of possible parameters.";
     }
 
     @Override

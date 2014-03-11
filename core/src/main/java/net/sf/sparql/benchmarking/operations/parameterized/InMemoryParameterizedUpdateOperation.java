@@ -36,19 +36,22 @@ import java.util.Collection;
 
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
 
+import net.sf.sparql.benchmarking.loader.InMemoryOperations;
+import net.sf.sparql.benchmarking.operations.OperationCallable;
+import net.sf.sparql.benchmarking.operations.update.InMemoryUpdateCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
 /**
- * A parameterized query operation that runs against a remote service via HTTP
+ * A parameterized update operation that runs against a local in-memory dataset
  * 
  * @author rvesse
  * 
  */
-public class ParameterizedQueryOperation extends AbstractParameterizedQueryOperation {
+public class InMemoryParameterizedUpdateOperation extends AbstractParameterizedUpdateOperation {
 
     /**
-     * Creates a new parameterized query operation
+     * Creates a new parameterized update operation
      * 
      * @param sparqlString
      *            SPARQL String
@@ -57,21 +60,24 @@ public class ParameterizedQueryOperation extends AbstractParameterizedQueryOpera
      * @param name
      *            Name
      */
-    public ParameterizedQueryOperation(String sparqlString, Collection<Binding> parameters, String name) {
+    public InMemoryParameterizedUpdateOperation(String sparqlString, Collection<Binding> parameters, String name) {
         super(sparqlString, parameters, name);
     }
 
     @Override
     public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getQueryEndpoint() == null) {
-            runner.reportProgress(options, "Remote queries cannot run with no query endpoint specified");
+        if (!InMemoryOperations.hasDataset(runner, options, "parameterized updates"))
             return false;
-        }
         return true;
     }
 
     @Override
     public String getType() {
-        return "Remote Parameterized SPARQL Query";
+        return "In-Memory Parameterized SPARQL Update";
+    }
+
+    @Override
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
+        return new InMemoryUpdateCallable<T>(this.getUpdate(), runner, options);
     }
 }

@@ -36,6 +36,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 
 import net.sf.sparql.benchmarking.operations.OperationCallable;
+import net.sf.sparql.benchmarking.operations.query.callables.LongValueCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
@@ -45,7 +46,7 @@ import net.sf.sparql.benchmarking.runners.Runner;
  * @author rvesse
  * 
  */
-public class DatasetSizeOperation extends AbstractQueryOperation {
+public class DatasetSizeOperation extends AbstractRemoteQueryOperation {
 
     /**
      * Gets the variable name that the count will be in

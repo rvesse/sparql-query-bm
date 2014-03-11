@@ -67,6 +67,7 @@ public class OptionsImpl implements Options {
     private String updateEndpoint;
     private String graphStoreEndpoint;
     private Map<String, String> customEndpoints = new HashMap<String, String>();
+    private Map<String, Object> customSettings = new HashMap<String, Object>();
     private int timeout = DEFAULT_TIMEOUT;
     private String selectResultsFormat = DEFAULT_FORMAT_SELECT;
     private String askResultsFormat = DEFAULT_FORMAT_SELECT;
@@ -202,6 +203,11 @@ public class OptionsImpl implements Options {
     @Override
     public Map<String, String> getCustomEndpoints() {
         return Collections.unmodifiableMap(this.customEndpoints);
+    }
+    
+    @Override
+    public Map<String, Object> getCustomSettings() {
+        return this.customSettings;
     }
 
     @Override

@@ -30,8 +30,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 
-package net.sf.sparql.benchmarking.operations.query;
+package net.sf.sparql.benchmarking.operations.query.callables;
 
+import net.sf.sparql.benchmarking.operations.query.DatasetSizeOperation;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 

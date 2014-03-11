@@ -49,7 +49,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
-import net.sf.sparql.benchmarking.operations.query.QueryCallable;
+import net.sf.sparql.benchmarking.operations.query.callables.QueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
 import net.sf.sparql.benchmarking.runners.mix.InOrderOperationMixRunner;

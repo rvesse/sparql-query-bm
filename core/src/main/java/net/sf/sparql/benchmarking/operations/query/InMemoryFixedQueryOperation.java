@@ -30,48 +30,47 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.operations.parameterized;
+package net.sf.sparql.benchmarking.operations.query;
 
-import java.util.Collection;
-
-import com.hp.hpl.jena.sparql.engine.binding.Binding;
-
-import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.runners.Runner;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
 
 /**
- * A parameterized query operation that runs against a remote service via HTTP
+ * Represents a query operation that always uses the same fixed query
  * 
  * @author rvesse
- * 
  */
-public class ParameterizedQueryOperation extends AbstractParameterizedQueryOperation {
+public class InMemoryFixedQueryOperation extends AbstractInMemoryQueryOperation {
+
+    Query query;
+    private String origQueryStr;
 
     /**
-     * Creates a new parameterized query operation
+     * Creates a new Query
      * 
-     * @param sparqlString
-     *            SPARQL String
-     * @param parameters
-     *            Parameters
      * @param name
-     *            Name
+     *            Name of the query
+     * @param queryString
+     *            Query string
      */
-    public ParameterizedQueryOperation(String sparqlString, Collection<Binding> parameters, String name) {
-        super(sparqlString, parameters, name);
+    public InMemoryFixedQueryOperation(String name, String queryString) {
+        super(name);
+        this.origQueryStr = queryString;
+        this.query = QueryFactory.create(this.origQueryStr);
     }
 
     @Override
-    public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getQueryEndpoint() == null) {
-            runner.reportProgress(options, "Remote queries cannot run with no query endpoint specified");
-            return false;
-        }
-        return true;
+    public Query getQuery() {
+        return this.query;
+    }
+
+    @Override
+    public String getQueryString() {
+        return this.origQueryStr;
     }
 
     @Override
     public String getType() {
-        return "Remote Parameterized SPARQL Query";
+        return "In-Memory SPARQL Query";
     }
 }

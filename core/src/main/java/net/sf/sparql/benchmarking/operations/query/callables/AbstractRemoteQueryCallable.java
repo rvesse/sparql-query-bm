@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.operations.query;
+package net.sf.sparql.benchmarking.operations.query.callables;
 
 import org.apache.jena.atlas.web.HttpException;
 import org.apache.log4j.Logger;
@@ -41,7 +41,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
-import net.sf.sparql.benchmarking.operations.AbstractOperationCallable;
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
@@ -51,13 +50,14 @@ import net.sf.sparql.benchmarking.util.ConvertUtils;
 import net.sf.sparql.benchmarking.util.ErrorCategories;
 
 /**
- * Abstract callable for operations that run queries
+ * Abstract callable for operations that run queries against a remote service
+ * via HTTP
  * 
  * @author rvesse
  * 
  * @param <T>
  */
-public abstract class AbstractQueryCallable<T extends Options> extends AbstractOperationCallable<T> {
+public abstract class AbstractRemoteQueryCallable<T extends Options> extends AbstractQueryCallable<T> {
 
     private static final Logger logger = Logger.getLogger(QueryCallable.class);
 
@@ -69,16 +69,9 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
      * @param options
      *            Options
      */
-    public AbstractQueryCallable(Runner<T> runner, T options) {
+    public AbstractRemoteQueryCallable(Runner<T> runner, T options) {
         super(runner, options);
     }
-
-    /**
-     * Gets the query to be run
-     * 
-     * @return Query
-     */
-    protected abstract Query getQuery();
 
     /**
      * Runs the Query counting the number of Results
@@ -187,69 +180,6 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
      */
     protected void customizeRequest(QueryEngineHTTP qe) {
         // Default implementation does nothing
-    }
-
-    /**
-     * Counts the results for queries that return a boolean
-     * <p>
-     * The default implementation always returns {@code 1}
-     * </p>
-     * 
-     * @param options
-     *            Options
-     * @param result
-     *            Result
-     * @return Number of results
-     */
-    protected long countResults(T options, boolean result) {
-        return 1;
-    }
-
-    /**
-     * Counts results for queries that return a model.
-     * <p>
-     * The default implementation returns the size of the model
-     * </p>
-     * 
-     * @param options
-     *            Options
-     * @param m
-     *            Model
-     * @return Number of results
-     */
-    protected long countResults(T options, Model m) {
-        return m.size();
-    }
-
-    /**
-     * Counts results for queries that return a result set
-     * <p>
-     * The default implementation either returns {@link OperationRun#UNKNOWN} if
-     * the options indicate that counting is disabled or iterates over the
-     * results to count them.
-     * </p>
-     * 
-     * @param options
-     *            Options
-     * @param rset
-     *            Result Set
-     * @return Number of results
-     */
-    protected long countResults(T options, ResultSet rset) {
-        // Result Counting may be skipped depending on user options
-        if (options instanceof BenchmarkOptions) {
-            if (((BenchmarkOptions) options).getNoCount()) {
-                return OperationRun.UNKNOWN;
-            }
-        }
-
-        // Count Results
-        long numResults = 0;
-        while (rset.hasNext() && !isCancelled()) {
-            numResults++;
-            rset.next();
-        }
-        return numResults;
     }
 
 }

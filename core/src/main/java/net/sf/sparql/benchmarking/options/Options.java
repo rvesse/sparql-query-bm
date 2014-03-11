@@ -149,19 +149,42 @@ public interface Options {
 
     /**
      * Gets an unmodifiable copy of the defined custom endpoints
+     * <p>
+     * Custom endpoints are a more specific form of the
+     * {@link #getCustomSettings()} and provide a slightly more user friendly
+     * and type safe interface when the custom setting to be defined has a
+     * string value.
+     * </p>
      * 
      * @return Map of custom endpoints
      */
     public abstract Map<String, String> getCustomEndpoints();
 
     /**
-     * Gets a custom defined endpoint
+     * Gets a custom endpoint
      * 
      * @param name
      *            Endpoint name
      * @return Endpoint URI
      */
     public abstract String getCustomEndpoint(String name);
+
+    /**
+     * Gets a map that may be used to get/set custom settings
+     * <p>
+     * This is provided so custom operations may be created that can share state
+     * or that need custom settings to be provided and can't modify/extend the
+     * standard {@code Options} interface since they want to run with existing
+     * standard runners.
+     * </p>
+     * <p>
+     * In the API this mechanism is used to support the in-memory query
+     * operations.
+     * </p>
+     * 
+     * @return Map of custom settings
+     */
+    public abstract Map<String, Object> getCustomSettings();
 
     /**
      * Resets the global run order

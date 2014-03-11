@@ -40,7 +40,7 @@ import com.hp.hpl.jena.query.QueryFactory;
  * 
  * @author rvesse
  */
-public class FixedQueryOperation extends AbstractQueryOperation {
+public class FixedQueryOperation extends AbstractRemoteQueryOperation {
 
     Query query;
     private String origQueryStr;
@@ -71,6 +71,6 @@ public class FixedQueryOperation extends AbstractQueryOperation {
 
     @Override
     public String getType() {
-        return "SPARQL Query";
+        return "Remote SPARQL Query";
     }
 }

@@ -41,17 +41,17 @@ import org.slf4j.LoggerFactory;
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;
 import net.sf.sparql.benchmarking.loader.OperationLoaderArgument;
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.update.FixedUpdateOperation;
+import net.sf.sparql.benchmarking.operations.update.InMemoryFixedUpdateOperation;
 
 /**
- * An operation loader for fixed update operations
+ * An operation loader for in-memory fixed update operations
  * 
  * @author rvesse
  * 
  */
-public class FixedUpdateOperationLoader extends AbstractOperationLoader {
+public class InMemoryFixedUpdateOperationLoader extends AbstractOperationLoader {
 
-    static final Logger logger = LoggerFactory.getLogger(FixedUpdateOperationLoader.class);
+    static final Logger logger = LoggerFactory.getLogger(InMemoryFixedUpdateOperationLoader.class);
 
     @Override
     public Operation load(File baseDir, String[] args) throws IOException {
@@ -65,17 +65,17 @@ public class FixedUpdateOperationLoader extends AbstractOperationLoader {
         }
 
         String update = readFile(baseDir, updateFile);
-        return new FixedUpdateOperation(name, update);
+        return new InMemoryFixedUpdateOperation(name, update);
     }
 
     @Override
     public String getPreferredName() {
-        return "update";
+        return "mem-update";
     }
     
     @Override
     public String getDescription() {
-        return "The update operation makes a fixed SPARQL update against a remote SPARQL service via HTTP.";
+        return "The mem-update operation makes a fixed SPARQL update against a local in-memory dataset.";
     }
 
     @Override

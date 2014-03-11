@@ -33,19 +33,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package net.sf.sparql.benchmarking.operations.parameterized;
 
 import java.util.Collection;
-
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
 
+import net.sf.sparql.benchmarking.operations.OperationCallable;
+import net.sf.sparql.benchmarking.operations.query.QueryOperation;
+import net.sf.sparql.benchmarking.operations.query.callables.QueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
+import net.sf.sparql.benchmarking.stats.impl.QueryRun;
 
 /**
- * A parameterized query operation that runs against a remote service via HTTP
+ * Abstract parameterized SPARQL query operation
  * 
  * @author rvesse
  * 
  */
-public class ParameterizedQueryOperation extends AbstractParameterizedQueryOperation {
+public abstract class AbstractParameterizedQueryOperation extends AbstractParameterizedSparqlOperation implements QueryOperation {
 
     /**
      * Creates a new parameterized query operation
@@ -57,21 +61,27 @@ public class ParameterizedQueryOperation extends AbstractParameterizedQueryOpera
      * @param name
      *            Name
      */
-    public ParameterizedQueryOperation(String sparqlString, Collection<Binding> parameters, String name) {
+    public AbstractParameterizedQueryOperation(String sparqlString, Collection<Binding> parameters, String name) {
         super(sparqlString, parameters, name);
     }
 
     @Override
-    public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getQueryEndpoint() == null) {
-            runner.reportProgress(options, "Remote queries cannot run with no query endpoint specified");
-            return false;
-        }
-        return true;
+    public QueryRun createErrorInformation(String message, int category, long runtime) {
+        return new QueryRun(message, category, runtime);
     }
 
     @Override
-    public String getType() {
-        return "Remote Parameterized SPARQL Query";
+    public Query getQuery() {
+        return this.getParameterizedSparql().asQuery();
+    }
+
+    @Override
+    public String getQueryString() {
+        return this.getParameterizedSparql().getCommandText();
+    }
+
+    @Override
+    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
+        return new QueryCallable<T>(this.getQuery(), runner, options);
     }
 }

@@ -88,7 +88,7 @@ public class ParameterizedUpdateOperationLoader extends AbstractOperationLoader 
     
     @Override
     public String getDescription() {
-        return "The param-update operation makes a fixed SPARQL update where parameters are drawn at random from a set of possible parameters.";
+        return "The param-update operation makes a fixed SPARQL update against a remote SPARQL service via HTTP where parameters are drawn at random from a set of possible parameters.";
     }
 
     @Override
