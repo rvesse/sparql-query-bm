@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,12 +28,20 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.loader;
 
 import com.hp.hpl.jena.query.Dataset;
 
+import net.sf.sparql.benchmarking.loader.query.FixedQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.query.InMemoryFixedQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.query.InMemoryParameterizedQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.query.ParameterizedQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.update.FixedUpdateOperationLoader;
+import net.sf.sparql.benchmarking.loader.update.InMemoryFixedUpdateOperationLoader;
+import net.sf.sparql.benchmarking.loader.update.InMemoryParameterizedUpdateOperationLoader;
+import net.sf.sparql.benchmarking.loader.update.ParameterizedUpdateOperationLoader;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
@@ -69,9 +77,36 @@ public class InMemoryOperations {
      * prefix to the standard operation names e.g. {@code mem-query} instead of
      * {@code query}.
      * </p>
+     * <p>
+     * You can call {@link #restoreRemoteOperations()} to restore the normal
+     * operation mappings. This is usually preferable to calling
+     * {@link OperationLoaderRegistry#resetLoaders()} since it will only restore
+     * the built-in remote operations and not remove any custom operations you
+     * may have registered.
+     * </p>
      */
     public static void useInMemoryOperations() {
+        // Query Operations
+        OperationLoaderRegistry.addLoader("query", new InMemoryFixedQueryOperationLoader());
+        OperationLoaderRegistry.addLoader("param-query", new InMemoryParameterizedQueryOperationLoader());
 
+        // Update Operations
+        OperationLoaderRegistry.addLoader("update", new InMemoryFixedUpdateOperationLoader());
+        OperationLoaderRegistry.addLoader("param-update", new InMemoryParameterizedUpdateOperationLoader());
+    }
+
+    /**
+     * Restores the registration of the remote operations that may have been
+     * overridden by previous calls to {@link #useInMemoryOperations()}
+     */
+    public static void restoreRemoteOperations() {
+        // Query Operations
+        OperationLoaderRegistry.addLoader(new FixedQueryOperationLoader());
+        OperationLoaderRegistry.addLoader(new ParameterizedQueryOperationLoader());
+
+        // Update Operations
+        OperationLoaderRegistry.addLoader(new FixedUpdateOperationLoader());
+        OperationLoaderRegistry.addLoader(new ParameterizedUpdateOperationLoader());
     }
 
     /**
