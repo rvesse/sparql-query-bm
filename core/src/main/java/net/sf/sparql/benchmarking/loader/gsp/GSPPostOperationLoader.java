@@ -30,55 +30,38 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.benchmarking.operations.gsp;
+package net.sf.sparql.benchmarking.loader.gsp;
 
-import net.sf.sparql.benchmarking.operations.OperationCallable;
-import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.runners.Runner;
+import com.hp.hpl.jena.rdf.model.Model;
+
+import net.sf.sparql.benchmarking.operations.Operation;
+import net.sf.sparql.benchmarking.operations.gsp.GSPPostOperation;
 
 /**
- * An operation which runs a Graph Store Protocol HEAD operation
+ * An operation loader for GSP Post operations
  * 
  * @author rvesse
  * 
  */
-public class GSPHeadOperation extends AbstractGSPOperation {
+public class GSPPostOperationLoader extends AbstractGSPDataOperationLoader {
 
-    /**
-     * Creates an operation that operates on the default graph
-     * 
-     * @param name
-     *            Name
-     */
-    public GSPHeadOperation(String name) {
-        this(name, null);
-    }
-
-    /**
-     * Creates an operation that operates on a specific graph
-     * 
-     * @param name
-     *            Name
-     * @param uri
-     *            Graph URI
-     */
-    public GSPHeadOperation(String name, String uri) {
-        super(name, uri);
+    @Override
+    public String getPreferredName() {
+        return "post";
     }
 
     @Override
-    public String getType() {
-        return "SPARQL Graph Store Protocol HEAD";
+    public String getDescription() {
+        return "Adds new data to a store using a SPARQL Graph Store protocol POST request";
     }
 
     @Override
-    public String getContentString() {
-        return "HEAD " + (this.getGraphUri() != null ? this.getGraphUri() : "default graph");
+    protected Operation createOperation(String name, Model data) {
+        return new GSPPostOperation(name, data);
     }
 
     @Override
-    public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
-        return new GSPHeadCallable<T>(runner, options, this.getGraphUri());
+    protected Operation createOperation(String name, Model data, String graphUri) {
+        return new GSPPostOperation(name, data, graphUri);
     }
-
 }

@@ -73,7 +73,7 @@ public class GSPGetOperation extends AbstractGSPOperation {
 
     @Override
     public String getContentString() {
-        return "GET " + this.getGraphUri();
+        return "GET " + (this.getGraphUri() != null ? this.getGraphUri() : "default graph");
     }
 
     @Override

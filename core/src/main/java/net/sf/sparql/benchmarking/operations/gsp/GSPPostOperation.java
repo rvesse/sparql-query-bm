@@ -32,26 +32,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations.gsp;
 
+import com.hp.hpl.jena.rdf.model.Model;
+
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
 /**
- * An operation which runs a Graph Store Protocol HEAD operation
+ * An operation which runs a Graph Store Protocol POST operation
  * 
  * @author rvesse
  * 
  */
-public class GSPHeadOperation extends AbstractGSPOperation {
+public class GSPPostOperation extends AbstractGSPOperation {
+
+    private Model data;
 
     /**
      * Creates an operation that operates on the default graph
      * 
      * @param name
      *            Name
+     * @param data
+     *            Data to be added
      */
-    public GSPHeadOperation(String name) {
-        this(name, null);
+    public GSPPostOperation(String name, Model data) {
+        this(name, data, null);
     }
 
     /**
@@ -59,26 +65,30 @@ public class GSPHeadOperation extends AbstractGSPOperation {
      * 
      * @param name
      *            Name
+     * @param data
+     *            Data to be added
      * @param uri
      *            Graph URI
      */
-    public GSPHeadOperation(String name, String uri) {
+    public GSPPostOperation(String name, Model data, String uri) {
         super(name, uri);
+        this.data = data;
     }
 
     @Override
     public String getType() {
-        return "SPARQL Graph Store Protocol HEAD";
+        return "SPARQL Graph Store Protocol POST";
     }
 
     @Override
     public String getContentString() {
-        return "HEAD " + (this.getGraphUri() != null ? this.getGraphUri() : "default graph");
+        return "POST " + this.data.size() + " Triple(s) to "
+                + (this.getGraphUri() != null ? this.getGraphUri() : "default graph");
     }
 
     @Override
     public <T extends Options> OperationCallable<T> createCallable(Runner<T> runner, T options) {
-        return new GSPHeadCallable<T>(runner, options, this.getGraphUri());
+        return new GSPPostCallable<T>(runner, options, this.data, this.getGraphUri());
     }
 
 }

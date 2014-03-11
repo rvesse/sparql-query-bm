@@ -96,7 +96,12 @@ public abstract class AbstractParameterizedSparqlOperation extends AbstractOpera
     public String getContentString() {
         StringBuilder builder = new StringBuilder();
         builder.append(sparqlStr.getCommandText());
-        // TODO Display available parameters
+        builder.append('\n');
+        builder.append("Available Parameters (" + this.pool.size() + " sets):\n");
+        for (Binding b : this.pool)
+        {
+            builder.append(b.toString() + "\n");
+        }
         return builder.toString();
     }
 }

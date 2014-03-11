@@ -39,6 +39,8 @@ import java.util.Map;
 import net.sf.sparql.benchmarking.loader.gsp.GSPDeleteOperationLoader;
 import net.sf.sparql.benchmarking.loader.gsp.GSPGetOperationLoader;
 import net.sf.sparql.benchmarking.loader.gsp.GSPHeadOperationLoader;
+import net.sf.sparql.benchmarking.loader.gsp.GSPPostOperationLoader;
+import net.sf.sparql.benchmarking.loader.gsp.GSPPutOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.DatasetSizeOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.FixedNvpQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.InMemoryFixedQueryOperationLoader;
@@ -97,6 +99,8 @@ public class OperationLoaderRegistry {
         addLoader(new GSPGetOperationLoader());
         addLoader(new GSPHeadOperationLoader());
         addLoader(new GSPDeleteOperationLoader());
+        addLoader(new GSPPostOperationLoader());
+        addLoader(new GSPPutOperationLoader());
 
         // Utility operations
         addLoader(new SleepOperationLoader());

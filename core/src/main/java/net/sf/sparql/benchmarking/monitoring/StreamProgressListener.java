@@ -53,8 +53,6 @@ public class StreamProgressListener implements ProgressListener {
     private PrintStream output;
     private boolean closeOnFinish = true;
     private long lastThread = -1;
-    private ThreadGroup lastGroup;
-
     /**
      * Creates a Progress Listener without a stream
      * <p>
@@ -164,27 +162,10 @@ public class StreamProgressListener implements ProgressListener {
         if (this.lastThread == Thread.currentThread().getId())
             return false;
         return true;
-
-//        ThreadGroup currGroup = Thread.currentThread().getThreadGroup();
-//        if (currGroup != null && lastGroup != null) {
-//            return !lastGroup.parentOf(currGroup);
-//        } else {
-//            return false;
-//        }
     }
 
     protected synchronized void updateThread() {
         this.lastThread = Thread.currentThread().getId();
-
-//        ThreadGroup currGroup = Thread.currentThread().getThreadGroup();
-//        if (currGroup != null) {
-//            if (lastGroup != null) {
-//                if (!lastGroup.parentOf(currGroup))
-//                    lastGroup = currGroup;
-//            } else {
-//                lastGroup = currGroup;
-//            }
-//        }
     }
 
     @Override
