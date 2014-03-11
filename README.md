@@ -18,7 +18,11 @@ or running the various commands.
 
 # Build
 
-See the BUILD.md document in this directory
+See the BUILD.md document in this directory for building locally
+
+SPARQL Query Benchmarker uses continuous integration provided by [Travis CI](http://travis-ci.org)
+
+[![Build Status](https://travis-ci.org/rvesse/sparql-query-bm)](https://travis-ci.org/rvesse/sparql-query-bm)
 
 # Documentation
 
