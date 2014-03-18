@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.operations.query.callables;
 
@@ -37,10 +37,6 @@ import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.engine.binding.Binding;
 import com.hp.hpl.jena.sparql.util.NodeFactoryExtra;
 
 /**
@@ -58,39 +54,33 @@ import com.hp.hpl.jena.sparql.util.NodeFactoryExtra;
  * 
  * @param <T>
  *            Options type
+ * @param <TCallable>
+ *            Callable type
  */
-public class LongValueCallable<T extends Options> extends RemoteQueryCallable<T> {
-
-    private String var;
+public class LongValueCallable<T extends Options, TCallable extends AbstractQueryCallable<T>> extends
+        AbstractScalarValueCallable<T, TCallable> {
 
     /**
      * Creates a new callable
      * 
-     * @param q
-     *            Query
      * @param var
      *            Variable whose value is to be retrieved
      * @param runner
      *            Runner
      * @param options
      *            Options
+     * @param callable
+     *            Callable to decorate
      */
-    public LongValueCallable(Query q, String var, Runner<T> runner, T options) {
-        super(q, runner, options);
-        this.var = var;
+    public LongValueCallable(Runner<T> runner, T options, TCallable callable, String var) {
+        super(runner, options, callable, var);
     }
 
     @Override
-    protected long countResults(T options, ResultSet rset) {
-        if (rset.hasNext()) {
-            Binding b = rset.nextBinding();
-            Node n = b.get(Var.alloc(this.var));
-            if (n == null)
-                return 0;
-            return NodeFactoryExtra.nodeToLong(n);
-        } else {
+    protected long nodeToLong(Node n) {
+        if (n == null)
             return 0;
-        }
+        return NodeFactoryExtra.nodeToLong(n);
     }
 
 }

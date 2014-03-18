@@ -76,7 +76,7 @@ public class FixedNvpUpdateOperationLoader extends AbstractNvpOperationLoader {
 
     @Override
     public String getDescription() {
-        return "The nvp-update operation makes a fixed SPARQL update adding custom name value parameters to the HTTP request which can be used to test custom behaviour provided by a SPARQL endpoint";
+        return "The nvp-update operation makes a fixed SPARQL update against a remote SPARQL service via HTTP adding custom name value parameters to the HTTP request which can be used to test custom behaviour provided by a SPARQL endpoint";
     }
 
     @Override

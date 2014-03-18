@@ -38,6 +38,7 @@ import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
+import com.hp.hpl.jena.update.UpdateRequest;
 
 import net.sf.sparql.benchmarking.loader.InMemoryOperations;
 import net.sf.sparql.benchmarking.options.Options;
@@ -87,7 +88,7 @@ public abstract class AbstractInMemoryUpdateCallable<T extends Options> extends 
     }
     
     @Override
-    protected UpdateProcessor createUpdateProcessor() {
+    protected UpdateProcessor createUpdateProcessor(UpdateRequest update) {
         return UpdateExecutionFactory.create(this.getUpdate(), this.getGraphStore(this.getOptions()));
     }
 

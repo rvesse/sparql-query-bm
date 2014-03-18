@@ -64,7 +64,7 @@ public class DatasetSizeOperationLoader extends AbstractOperationLoader {
 
     @Override
     public String getDescription() {
-        return "The dataset-size operation makes a SPARQL query that counts all the quads in the dataset";
+        return "The dataset-size operation makes a SPARQL query that counts all the quads in the dataset.  This operation can be used on both remote SPARQL servers and on in-memory datasets.";
     }
 
     @Override

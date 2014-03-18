@@ -34,6 +34,8 @@ package net.sf.sparql.benchmarking.operations.update.callables;
 
 import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
+import com.hp.hpl.jena.update.UpdateRequest;
+
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
@@ -60,8 +62,8 @@ public abstract class AbstractRemoteUpdateCallable<T extends Options> extends Ab
     }
 
     @Override
-    protected UpdateProcessor createUpdateProcessor() {
-        return UpdateExecutionFactory.createRemote(this.getUpdate(), this.getOptions().getUpdateEndpoint(), this.getOptions()
+    protected UpdateProcessor createUpdateProcessor(UpdateRequest update) {
+        return UpdateExecutionFactory.createRemote(update, this.getOptions().getUpdateEndpoint(), this.getOptions()
                 .getAuthenticator());
     }
 

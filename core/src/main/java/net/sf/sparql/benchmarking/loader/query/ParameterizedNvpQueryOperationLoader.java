@@ -92,7 +92,7 @@ public class ParameterizedNvpQueryOperationLoader extends AbstractNvpOperationLo
 
     @Override
     public String getDescription() {
-        return "The param-nvp-query operation makes a parameterized SPARQL query where parameters are drawn at random from a set of possible parameters.  Additionally it adds custom name value parameters to the HTTP request which can be used to test custom behaviour provided by a SPARQL endpoint";
+        return "The param-nvp-query operation makes a parameterized SPARQL query against a remote SPARQL service via HTTP where parameters are drawn at random from a set of possible parameters.  Additionally it adds custom name value parameters to the HTTP request which can be used to test custom behaviour provided by a SPARQL endpoint";
     }
 
     @Override

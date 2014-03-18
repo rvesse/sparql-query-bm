@@ -66,9 +66,12 @@ public abstract class AbstractUpdateCallable<T extends Options> extends Abstract
     /**
      * Creates an update processor for running the update
      * 
+     * @param update
+     *            Update
+     * 
      * @return Update processor
      */
-    protected abstract UpdateProcessor createUpdateProcessor();
+    protected abstract UpdateProcessor createUpdateProcessor(UpdateRequest update);
 
     @Override
     public UpdateRun call() throws Exception {
@@ -76,7 +79,7 @@ public abstract class AbstractUpdateCallable<T extends Options> extends Abstract
         logger.debug("Running update:\n" + update.toString());
 
         // Create a remote update processor and configure it appropriately
-        UpdateProcessor processor = this.createUpdateProcessor();
+        UpdateProcessor processor = this.createUpdateProcessor(update);
         this.customizeRequest(processor);
 
         long startTime = System.nanoTime();
