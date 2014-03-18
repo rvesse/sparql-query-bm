@@ -5,6 +5,8 @@
 
 # Build Artifacts
 target/
+*.tar
+*.tar.*
 
 # Misc
 ensure-licenses.bat
