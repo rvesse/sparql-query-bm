@@ -42,7 +42,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 
 import net.sf.sparql.benchmarking.operations.AbstractOperationCallable;
-import net.sf.sparql.benchmarking.options.BenchmarkOptions;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationRun;
@@ -129,10 +128,8 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
      */
     protected long countResults(T options, ResultSet rset) {
         // Result Counting may be skipped depending on user options
-        if (options instanceof BenchmarkOptions) {
-            if (((BenchmarkOptions) options).getNoCount()) {
-                return OperationRun.UNKNOWN;
-            }
+        if (options.getNoCount()) {
+            return OperationRun.UNKNOWN;
         }
 
         // Count Results
@@ -165,24 +162,17 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
     @Override
     public QueryRun call() {
         T options = this.getOptions();
-        BenchmarkOptions bOps = null;
-        if (options instanceof BenchmarkOptions) {
-            bOps = (BenchmarkOptions) options;
-        }
 
         Query query = this.getQuery();
 
         // Impose Limit if applicable
-        if (bOps != null) {
-            if (bOps.getLimit() > 0) {
-                if (!query.isAskType()) {
-                    if (query.getLimit() == Query.NOLIMIT || query.getLimit() > bOps.getLimit()) {
-                        query.setLimit(bOps.getLimit());
-                    }
+        if (options.getLimit() > 0) {
+            if (!query.isAskType()) {
+                if (query.getLimit() == Query.NOLIMIT || query.getLimit() > options.getLimit()) {
+                    query.setLimit(options.getLimit());
                 }
             }
         }
-
         logger.debug("Running query:\n" + query.toString());
 
         // Create query execution

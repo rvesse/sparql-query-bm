@@ -196,10 +196,8 @@ public class XmlProgressListener implements ProgressListener {
             printProperty(ATTR_GRAPH_FORMAT, options.getResultsGraphFormat());
             printProperty(ATTR_SELECT_FORMAT, options.getResultsSelectFormat());
             printProperty(ATTR_THREADS, options.getParallelThreads());
-            if (bOps != null) {
-                printProperty(ATTR_COUNTING, !bOps.getNoCount());
-                printProperty(ATTR_LIMIT, bOps.getLimit());
-            }
+            printProperty(ATTR_COUNTING, !options.getNoCount());
+            printProperty(ATTR_LIMIT, options.getLimit());
             printProperty(ATTR_COMPRESSION, options.getAllowCompression());
 
             // Print Queries

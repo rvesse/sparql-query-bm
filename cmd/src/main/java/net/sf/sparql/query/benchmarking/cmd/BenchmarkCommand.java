@@ -76,18 +76,6 @@ public class BenchmarkCommand extends AbstractCommand {
     public int outliers = BenchmarkOptions.DEFAULT_OUTLIERS;
 
     /**
-     * Limit option
-     */
-    @Option(name = { "-l", "--limit" }, arity = 1, title = "Limit", description = "Sets a limit that will be added to queries without a LIMIT clause, those with a LIMIT clause will use the lesser of their declared limit and this limit.  Values <= 0 are interpreted as imposing no limit on queries")
-    public long limit = BenchmarkOptions.DEFAULT_LIMIT;
-
-    /**
-     * No count option
-     */
-    @Option(name = { "--nocount", "--no-count" }, description = "Disables result counting for SELECT queries, allows measuring just the time to respond to queries rather than the time to complete the entire query which may be useful when benchmarking against very large datasets or when the IO path between the benchmarker and the system being benchmarked is known to be a bottleneck.")
-    public boolean noCount = false;
-
-    /**
      * Allow overwrite option
      */
     @Option(name = { "--overwrite", "--allow-overwrite" }, description = "Enables overwriting of existing result files, off by default to make it difficult for you to accidentally overwrite the results of a previous run with those of a subsequent run")
@@ -115,7 +103,7 @@ public class BenchmarkCommand extends AbstractCommand {
         int exitCode = 0;
         try {
             // Parse options
-            BenchmarkCommand cmd = SingleCommand.singleCommand(BenchmarkCommand.class).parse(args);
+            AbstractCommand cmd = SingleCommand.singleCommand(BenchmarkCommand.class).parse(args);
 
             // Show help if requested
             if (cmd.helpOption.showHelpIfRequested()) {
@@ -191,7 +179,5 @@ public class BenchmarkCommand extends AbstractCommand {
         options.setRuns(this.runs);
         options.setWarmups(this.warmups);
         options.setOutliers(this.outliers);
-        options.setLimit(this.limit);
-        options.setNoCount(this.noCount);
     }
 }

@@ -259,6 +259,16 @@ public abstract class AbstractCommand {
      */
     @Option(name = { "--teardown" }, arity = 1, title = "Teardown Mix", description = "Sets a mix fix containing a mix that will be used as a tear down mix i.e. it will run the operations specified in it once in the exact order given after actual testing finished.")
     public String teardownMixFile;
+    /**
+     * Limit option
+     */
+    @Option(name = { "-l", "--limit" }, arity = 1, title = "Limit", description = "Sets a limit that will be added to queries without a LIMIT clause, those with a LIMIT clause will use the lesser of their declared limit and this limit.  Values <= 0 are interpreted as imposing no limit on queries")
+    public long limit = Options.DEFAULT_LIMIT;
+    /**
+     * No count option
+     */
+    @Option(name = { "--nocount", "--no-count" }, description = "Disables result counting for SELECT queries, allows measuring just the time to respond to queries rather than the time to complete the entire query which may be useful when benchmarking against very large datasets or when the IO path between the benchmarker and the system being benchmarked is known to be a bottleneck.")
+    public boolean noCount = false;
 
     /**
      * Method that should be implemented to run the actual command
@@ -358,7 +368,9 @@ public abstract class AbstractCommand {
         options.setHaltBehaviour(HaltBehaviour.EXIT);
         options.setHaltOnError(this.haltOnError);
         options.setHaltOnTimeout(this.haltOnTimeout);
+        options.setLimit(this.limit);
         options.setMaxDelay(this.maxDelay);
+        options.setNoCount(this.noCount);
         options.setParallelThreads(this.parallelThreads);
         options.setRandomizeOrder(!this.noRandom);
         options.setSanityCheckLevel(this.sanityCheckLevel);

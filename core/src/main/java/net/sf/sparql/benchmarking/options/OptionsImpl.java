@@ -83,285 +83,14 @@ public class OptionsImpl implements Options {
     private OperationMix teardownMix;
     private OperationMixRunner mixRunner;
     private OperationRunner opRunner;
-
-    @Override
-    public ExecutorService getExecutor() {
-        return executor;
-    }
-
-    @Override
-    public void setHaltOnTimeout(boolean halt) {
-        haltOnTimeout = halt;
-    }
-
-    @Override
-    public boolean getHaltOnTimeout() {
-        return haltOnTimeout;
-    }
-
-    @Override
-    public void setHaltOnError(boolean halt) {
-        haltOnError = halt;
-    }
-
-    @Override
-    public boolean getHaltOnError() {
-        return haltOnError;
-    }
-
-    @Override
-    public void setHaltAny(boolean halt) {
-        haltAny = halt;
-        if (halt) {
-            haltOnError = true;
-            haltOnTimeout = true;
-        }
-    }
-
-    @Override
-    public boolean getHaltAny() {
-        return haltAny;
-    }
-
-    @Override
-    public void setHaltBehaviour(HaltBehaviour behaviour) {
-        haltBehaviour = behaviour;
-    }
-
-    @Override
-    public HaltBehaviour getHaltBehaviour() {
-        return haltBehaviour;
-    }
-
-    @Override
-    public List<ProgressListener> getListeners() {
-        return this.listeners;
-    }
+    private long limit = DEFAULT_LIMIT;
+    private boolean noCount = false;
 
     @Override
     public void addListener(ProgressListener listener) {
         if (!this.listeners.contains(listener)) {
             this.listeners.add(listener);
         }
-    }
-
-    @Override
-    public void removeListener(ProgressListener listener) {
-        this.listeners.remove(listener);
-    }
-
-    @Override
-    public OperationMix getOperationMix() {
-        return operationMix;
-    }
-
-    @Override
-    public void setOperationMix(OperationMix queries) {
-        operationMix = queries;
-    }
-
-    @Override
-    public void setQueryEndpoint(String endpoint) {
-        this.queryEndpoint = endpoint;
-    }
-
-    @Override
-    public String getQueryEndpoint() {
-        return queryEndpoint;
-    }
-
-    @Override
-    public void setUpdateEndpoint(String endpoint) {
-        this.updateEndpoint = endpoint;
-    }
-
-    @Override
-    public String getUpdateEndpoint() {
-        return updateEndpoint;
-    }
-
-    @Override
-    public void setGraphStoreEndpoint(String endpoint) {
-        this.graphStoreEndpoint = endpoint;
-    }
-
-    @Override
-    public String getGraphStoreEndpoint() {
-        return graphStoreEndpoint;
-    }
-
-    @Override
-    public void setCustomEndpoint(String name, String endpoint) {
-        this.customEndpoints.put(name, endpoint);
-    }
-
-    @Override
-    public String getCustomEndpoint(String name) {
-        return customEndpoints.get(name);
-    }
-
-    @Override
-    public Map<String, String> getCustomEndpoints() {
-        return Collections.unmodifiableMap(this.customEndpoints);
-    }
-    
-    @Override
-    public Map<String, Object> getCustomSettings() {
-        return this.customSettings;
-    }
-
-    @Override
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-
-    @Override
-    public int getTimeout() {
-        return timeout;
-    }
-
-    @Override
-    public void setResultsAskFormat(String contentType) {
-        askResultsFormat = contentType;
-    }
-
-    @Override
-    public String getResultsAskFormat() {
-        return askResultsFormat;
-    }
-
-    @Override
-    public void setResultsSelectFormat(String contentType) {
-        selectResultsFormat = contentType;
-    }
-
-    @Override
-    public String getResultsSelectFormat() {
-        return selectResultsFormat;
-    }
-
-    @Override
-    public void setResultsGraphFormat(String contentType) {
-        graphResultsFormat = contentType;
-    }
-
-    @Override
-    public String getResultsGraphFormat() {
-        return graphResultsFormat;
-    }
-
-    @Override
-    public void setAllowCompression(boolean allowed) {
-        allowCompression = allowed;
-    }
-
-    @Override
-    public boolean getAllowCompression() {
-        return allowCompression;
-    }
-
-    @Override
-    public void setAuthenticator(HttpAuthenticator authenticator) {
-        this.authenticator = authenticator;
-    }
-
-    @Override
-    public HttpAuthenticator getAuthenticator() {
-        return this.authenticator;
-    }
-
-    @Override
-    public void setMaxDelay(int milliseconds) {
-        if (delay < 0)
-            delay = 0;
-        delay = milliseconds;
-    }
-
-    @Override
-    public int getMaxDelay() {
-        return delay;
-    }
-
-    @Override
-    public void setParallelThreads(int threads) {
-        if (threads < 1)
-            threads = 1;
-        parallelThreads = threads;
-    }
-
-    @Override
-    public int getParallelThreads() {
-        return parallelThreads;
-    }
-
-    @Override
-    public long getGlobalOrder() {
-        return globalOrder.incrementAndGet();
-    }
-
-    @Override
-    public void resetGlobalOrder() {
-        globalOrder.set(0);
-    }
-
-    @Override
-    public void setRandomizeOrder(boolean randomize) {
-        this.randomize = randomize;
-    }
-
-    @Override
-    public boolean getRandomizeOrder() {
-        return randomize;
-    }
-
-    @Override
-    public void setSanityCheckLevel(int level) {
-        sanity = level;
-    }
-
-    @Override
-    public int getSanityCheckLevel() {
-        return sanity;
-    }
-
-    @Override
-    public void setSetupMix(OperationMix mix) {
-        this.setupMix = mix;
-    }
-
-    @Override
-    public OperationMix getSetupMix() {
-        return this.setupMix;
-    }
-
-    @Override
-    public void setTeardownMix(OperationMix mix) {
-        this.teardownMix = mix;
-    }
-
-    @Override
-    public OperationMix getTeardownMix() {
-        return this.teardownMix;
-    }
-
-    @Override
-    public void setMixRunner(OperationMixRunner runner) {
-        this.mixRunner = runner;
-    }
-
-    @Override
-    public OperationMixRunner getMixRunner() {
-        return this.mixRunner;
-    }
-    
-    @Override
-    public void setOperationRunner(OperationRunner runner) {
-        this.opRunner = runner;
-    }
-    
-    @Override
-    public OperationRunner getOperationRunner() {
-        return this.opRunner;
     }
 
     @SuppressWarnings("unchecked")
@@ -393,8 +122,10 @@ public class OptionsImpl implements Options {
         copy.setHaltBehaviour(this.getHaltBehaviour());
         copy.setHaltOnError(this.getHaltOnError());
         copy.setHaltOnTimeout(this.getHaltOnTimeout());
+        copy.setLimit(this.getLimit());
         copy.setMaxDelay(this.getMaxDelay());
         copy.setMixRunner(this.getMixRunner());
+        copy.setNoCount(this.getNoCount());
         copy.setOperationMix(this.getOperationMix());
         copy.setOperationRunner(this.getOperationRunner());
         copy.setParallelThreads(this.getParallelThreads());
@@ -408,5 +139,298 @@ public class OptionsImpl implements Options {
         copy.setTeardownMix(this.getTeardownMix());
         copy.setTimeout(this.getTimeout());
         copy.globalOrder.set(this.globalOrder.get());
+    }
+
+    @Override
+    public boolean getAllowCompression() {
+        return allowCompression;
+    }
+
+    @Override
+    public HttpAuthenticator getAuthenticator() {
+        return this.authenticator;
+    }
+
+    @Override
+    public String getCustomEndpoint(String name) {
+        return customEndpoints.get(name);
+    }
+
+    @Override
+    public Map<String, String> getCustomEndpoints() {
+        return Collections.unmodifiableMap(this.customEndpoints);
+    }
+
+    @Override
+    public Map<String, Object> getCustomSettings() {
+        return this.customSettings;
+    }
+
+    @Override
+    public ExecutorService getExecutor() {
+        return executor;
+    }
+
+    @Override
+    public long getGlobalOrder() {
+        return globalOrder.incrementAndGet();
+    }
+
+    @Override
+    public String getGraphStoreEndpoint() {
+        return graphStoreEndpoint;
+    }
+
+    @Override
+    public boolean getHaltAny() {
+        return haltAny;
+    }
+
+    @Override
+    public HaltBehaviour getHaltBehaviour() {
+        return haltBehaviour;
+    }
+
+    @Override
+    public boolean getHaltOnError() {
+        return haltOnError;
+    }
+
+    @Override
+    public boolean getHaltOnTimeout() {
+        return haltOnTimeout;
+    }
+
+    @Override
+    public long getLimit() {
+        return limit;
+    }
+
+    @Override
+    public List<ProgressListener> getListeners() {
+        return this.listeners;
+    }
+
+    @Override
+    public int getMaxDelay() {
+        return delay;
+    }
+
+    @Override
+    public OperationMixRunner getMixRunner() {
+        return this.mixRunner;
+    }
+
+    @Override
+    public boolean getNoCount() {
+        return noCount;
+    }
+
+    @Override
+    public OperationMix getOperationMix() {
+        return operationMix;
+    }
+
+    @Override
+    public OperationRunner getOperationRunner() {
+        return this.opRunner;
+    }
+
+    @Override
+    public int getParallelThreads() {
+        return parallelThreads;
+    }
+
+    @Override
+    public String getQueryEndpoint() {
+        return queryEndpoint;
+    }
+
+    @Override
+    public boolean getRandomizeOrder() {
+        return randomize;
+    }
+
+    @Override
+    public String getResultsAskFormat() {
+        return askResultsFormat;
+    }
+
+    @Override
+    public String getResultsGraphFormat() {
+        return graphResultsFormat;
+    }
+
+    @Override
+    public String getResultsSelectFormat() {
+        return selectResultsFormat;
+    }
+
+    @Override
+    public int getSanityCheckLevel() {
+        return sanity;
+    }
+
+    @Override
+    public OperationMix getSetupMix() {
+        return this.setupMix;
+    }
+
+    @Override
+    public OperationMix getTeardownMix() {
+        return this.teardownMix;
+    }
+
+    @Override
+    public int getTimeout() {
+        return timeout;
+    }
+
+    @Override
+    public String getUpdateEndpoint() {
+        return updateEndpoint;
+    }
+
+    @Override
+    public void removeListener(ProgressListener listener) {
+        this.listeners.remove(listener);
+    }
+
+    @Override
+    public void resetGlobalOrder() {
+        globalOrder.set(0);
+    }
+
+    @Override
+    public void setAllowCompression(boolean allowed) {
+        allowCompression = allowed;
+    }
+
+    @Override
+    public void setAuthenticator(HttpAuthenticator authenticator) {
+        this.authenticator = authenticator;
+    }
+
+    @Override
+    public void setCustomEndpoint(String name, String endpoint) {
+        this.customEndpoints.put(name, endpoint);
+    }
+
+    @Override
+    public void setGraphStoreEndpoint(String endpoint) {
+        this.graphStoreEndpoint = endpoint;
+    }
+
+    @Override
+    public void setHaltAny(boolean halt) {
+        haltAny = halt;
+        if (halt) {
+            haltOnError = true;
+            haltOnTimeout = true;
+        }
+    }
+
+    @Override
+    public void setHaltBehaviour(HaltBehaviour behaviour) {
+        haltBehaviour = behaviour;
+    }
+
+    @Override
+    public void setHaltOnError(boolean halt) {
+        haltOnError = halt;
+    }
+
+    @Override
+    public void setHaltOnTimeout(boolean halt) {
+        haltOnTimeout = halt;
+    }
+
+    @Override
+    public void setLimit(long limit) {
+        this.limit = limit;
+    }
+
+    @Override
+    public void setMaxDelay(int milliseconds) {
+        if (delay < 0)
+            delay = 0;
+        delay = milliseconds;
+    }
+
+    @Override
+    public void setMixRunner(OperationMixRunner runner) {
+        this.mixRunner = runner;
+    }
+
+    @Override
+    public void setNoCount(boolean noCount) {
+        this.noCount = noCount;
+    }
+
+    @Override
+    public void setOperationMix(OperationMix queries) {
+        operationMix = queries;
+    }
+
+    @Override
+    public void setOperationRunner(OperationRunner runner) {
+        this.opRunner = runner;
+    }
+
+    @Override
+    public void setParallelThreads(int threads) {
+        if (threads < 1)
+            threads = 1;
+        parallelThreads = threads;
+    }
+
+    @Override
+    public void setQueryEndpoint(String endpoint) {
+        this.queryEndpoint = endpoint;
+    }
+
+    @Override
+    public void setRandomizeOrder(boolean randomize) {
+        this.randomize = randomize;
+    }
+
+    @Override
+    public void setResultsAskFormat(String contentType) {
+        askResultsFormat = contentType;
+    }
+
+    @Override
+    public void setResultsGraphFormat(String contentType) {
+        graphResultsFormat = contentType;
+    }
+
+    @Override
+    public void setResultsSelectFormat(String contentType) {
+        selectResultsFormat = contentType;
+    }
+
+    @Override
+    public void setSanityCheckLevel(int level) {
+        sanity = level;
+    }
+
+    @Override
+    public void setSetupMix(OperationMix mix) {
+        this.setupMix = mix;
+    }
+
+    @Override
+    public void setTeardownMix(OperationMix mix) {
+        this.teardownMix = mix;
+    }
+
+    @Override
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
+    @Override
+    public void setUpdateEndpoint(String endpoint) {
+        this.updateEndpoint = endpoint;
     }
 }

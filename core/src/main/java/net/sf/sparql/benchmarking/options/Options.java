@@ -87,6 +87,11 @@ public interface Options {
      * Default Sanity Checks
      */
     public static final int DEFAULT_SANITY_CHECKS = 2;
+    /**
+     * Default Limit, values <= 0 are considered to mean leave existing LIMIT
+     * as-is and don't impose a limit on unlimited queries
+     */
+    public static final long DEFAULT_LIMIT = 0;
 
     /**
      * Gets the in-use executor for running queries and query mixes in threads
@@ -559,4 +564,44 @@ public interface Options {
      * @return Operation runner
      */
     public abstract OperationRunner getOperationRunner();
+
+    /**
+     * Gets whether query results are counted or just thrown away
+     * 
+     * @return True if results will not be counted
+     */
+    public abstract boolean getNoCount();
+
+    /**
+     * Sets whether query results are counted or just thrown away
+     * <p>
+     * Currently enabling this only applies to SELECT queries as only SELECT
+     * queries stream the results currently, future versions of this tool will
+     * also stream CONSTRUCT/DESCRIBE results but this is yet to be implemented
+     * </p>
+     * 
+     * @param noCount
+     *            Whether query results are counted
+     */
+    public abstract void setNoCount(boolean noCount);
+
+    /**
+     * Gets the LIMIT to impose on queries
+     * 
+     * @return Limit to impose
+     */
+    public abstract long getLimit();
+
+    /**
+     * Sets the LIMIT to impose on queries
+     * <p>
+     * Values less than or equal to zero mean existing limits are left
+     * unchanged, non-zero values will be imposed iff existing limit is greater
+     * than the set limit
+     * </p>
+     * 
+     * @param limit
+     *            Limit to impose
+     */
+    public abstract void setLimit(long limit);
 }

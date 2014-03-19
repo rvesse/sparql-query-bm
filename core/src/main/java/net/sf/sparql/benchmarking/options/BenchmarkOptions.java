@@ -58,17 +58,9 @@ public class BenchmarkOptions extends OptionsImpl {
      * Default Outliers
      */
     public static final int DEFAULT_OUTLIERS = 1;
-    /**
-     * Default Limit, values <= 0 are considered to mean leave existing LIMIT
-     * as-is and don't impose a limit on unlimited queries
-     */
-    public static final long DEFAULT_LIMIT = 0;
-
     private String csvResultsFile = null;
     private String xmlResultsFile = null;
     private int outliers = DEFAULT_OUTLIERS;
-    private long limit = DEFAULT_LIMIT;
-    private boolean noCount = false;
     private boolean allowOverwite = false;
     private ProgressListener csvListener = null;
     private ProgressListener xmlListener = null;
@@ -175,54 +167,6 @@ public class BenchmarkOptions extends OptionsImpl {
     }
 
     /**
-     * Sets the LIMIT to impose on queries
-     * <p>
-     * Values less than or equal to zero mean existing limits are left
-     * unchanged, non-zero values will be imposed iff existing limit is greater
-     * than the set limit
-     * </p>
-     * 
-     * @param limit
-     *            Limit to impose
-     */
-    public void setLimit(long limit) {
-        this.limit = limit;
-    }
-
-    /**
-     * Gets the LIMIT to impose on queries
-     * 
-     * @return Limit to impose
-     */
-    public long getLimit() {
-        return limit;
-    }
-
-    /**
-     * Sets whether query results are counted or just thrown away
-     * <p>
-     * Currently enabling this only applies to SELECT queries as only SELECT
-     * queries stream the results currently, future versions of this tool will
-     * also stream CONSTRUCT/DESCRIBE results but this is yet to be implemented
-     * </p>
-     * 
-     * @param noCount
-     *            Whether query results are counted
-     */
-    public void setNoCount(boolean noCount) {
-        this.noCount = noCount;
-    }
-
-    /**
-     * Gets whether query results are counted or just thrown away
-     * 
-     * @return True if results will not be counted
-     */
-    public boolean getNoCount() {
-        return noCount;
-    }
-
-    /**
      * Sets whether {@link ProgressListener} which write to files are allowed to
      * overwrite existing files (default false)
      * 
@@ -293,8 +237,6 @@ public class BenchmarkOptions extends OptionsImpl {
         this.copyStandardOptions(copy);
         copy.setAllowOverwrite(this.getAllowOverwrite());
         copy.setCsvResultsFile(this.getCsvResultsFile());
-        copy.setLimit(this.getLimit());
-        copy.setNoCount(this.getNoCount());
         copy.setOutliers(this.getOutliers());
         copy.setRuns(this.getRuns());
         copy.setWarmups(this.getWarmups());

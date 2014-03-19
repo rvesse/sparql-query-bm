@@ -275,7 +275,6 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options, "Warmups = " + options.getWarmups());
         reportProgress(options, "Runs = " + options.getRuns());
         reportProgress(options, "Outliers = " + options.getOutliers());
-        reportProgress(options, "Result Limit = " + (options.getLimit() <= 0 ? "Query Specified" : options.getLimit()));
         reportProgress(options,
                 "CSV Results File = " + (options.getCsvResultsFile() == null ? "disabled" : options.getCsvResultsFile()));
         reportProgress(options,

@@ -436,6 +436,8 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
         reportProgress(options, "Halt on Timeout = " + options.getHaltOnTimeout());
         reportProgress(options, "Halt on Error = " + options.getHaltOnError());
         reportProgress(options, "Halt Any = " + options.getHaltAny());
+        reportProgress(options, "Result Limit = " + (options.getLimit() <= 0 ? "Query Specified" : options.getLimit()));
+        reportProgress(options, "Result Counting = " + (options.getNoCount() ? "Disabled" : "Enabled"));
         reportProgress(options, "ASK Results Format = " + options.getResultsAskFormat());
         reportProgress(options, "Graph Results Format = " + options.getResultsGraphFormat());
         reportProgress(options, "SELECT Results Format = " + options.getResultsSelectFormat());
