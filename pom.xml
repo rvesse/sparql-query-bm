@@ -16,7 +16,10 @@
 	</parent>
 
 	<properties>
-		<!-- dependency versions -->
+		<!-- Build properties -->
+		<jdk.target>1.6</jdk.target>
+
+		<!-- Dependency versions -->
 		<log4j.version>1.2.16</log4j.version>
 		<junit.version>4.8.1</junit.version>
 		<commons-lang.version>2.4</commons-lang.version>
@@ -91,6 +94,36 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<!-- Compiler Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>${jdk.target}</source>
+					<target>${jdk.target}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.8.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>2.2</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 	<profiles>
 		<profile>
