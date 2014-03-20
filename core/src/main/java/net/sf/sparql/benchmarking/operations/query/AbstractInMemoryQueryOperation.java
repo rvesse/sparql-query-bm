@@ -32,7 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations.query;
 
-import net.sf.sparql.benchmarking.loader.InMemoryOperations;
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.operations.query.callables.InMemoryQueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
@@ -59,8 +58,10 @@ public abstract class AbstractInMemoryQueryOperation extends AbstractQueryOperat
 
     @Override
     public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (!InMemoryOperations.hasDataset(runner, options, "queries"))
+        if (options.getDataset() == null) {
+            runner.reportProgress(options, "In-memory queries require a Dataset to be provided");
             return false;
+        }
         return true;
     }
 

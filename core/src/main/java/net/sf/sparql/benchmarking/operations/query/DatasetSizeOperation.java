@@ -35,7 +35,6 @@ package net.sf.sparql.benchmarking.operations.query;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 
-import net.sf.sparql.benchmarking.loader.InMemoryOperations;
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.operations.query.callables.InMemoryQueryCallable;
 import net.sf.sparql.benchmarking.operations.query.callables.LongValueCallable;
@@ -96,15 +95,17 @@ public class DatasetSizeOperation extends AbstractQueryOperation {
         if (options.getQueryEndpoint() != null) {
             return new LongValueCallable<T, RemoteQueryCallable<T>>(runner, options, new RemoteQueryCallable<T>(this.getQuery(),
                     runner, options), COUNT_VARIABLE);
-        } else {
+        } else if (options.getDataset() != null) {
             return new LongValueCallable<T, InMemoryQueryCallable<T>>(runner, options, new InMemoryQueryCallable<T>(
                     this.getQuery(), runner, options), COUNT_VARIABLE);
+        } else {
+            throw new RuntimeException("Neither a remote query endpoint or an in-memory query dataset was provided");
         }
     }
 
     @Override
     public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (options.getQueryEndpoint() == null && !InMemoryOperations.hasDataset(runner, options, "queries")) {
+        if (options.getQueryEndpoint() == null && options.getDataset() == null) {
             runner.reportProgress(options,
                     "Dataset size queries cannot run with no remote query endpoint/in-memory dataset specified");
             return false;

@@ -43,6 +43,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.jena.atlas.web.auth.HttpAuthenticator;
 
+import com.hp.hpl.jena.query.Dataset;
+
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.runners.mix.OperationMixRunner;
@@ -66,6 +68,7 @@ public class OptionsImpl implements Options {
     private String queryEndpoint;
     private String updateEndpoint;
     private String graphStoreEndpoint;
+    private Dataset dataset;
     private Map<String, String> customEndpoints = new HashMap<String, String>();
     private Map<String, Object> customSettings = new HashMap<String, Object>();
     private int timeout = DEFAULT_TIMEOUT;
@@ -117,6 +120,7 @@ public class OptionsImpl implements Options {
         for (String key : this.customEndpoints.keySet()) {
             copy.setCustomEndpoint(key, this.getCustomEndpoint(key));
         }
+        copy.setDataset(this.getDataset());
         copy.setGraphStoreEndpoint(this.getGraphStoreEndpoint());
         copy.setHaltAny(this.getHaltAny());
         copy.setHaltBehaviour(this.getHaltBehaviour());
@@ -164,6 +168,11 @@ public class OptionsImpl implements Options {
     @Override
     public Map<String, Object> getCustomSettings() {
         return this.customSettings;
+    }
+    
+    @Override
+    public Dataset getDataset() {
+        return dataset;
     }
 
     @Override
@@ -314,6 +323,11 @@ public class OptionsImpl implements Options {
     @Override
     public void setCustomEndpoint(String name, String endpoint) {
         this.customEndpoints.put(name, endpoint);
+    }
+    
+    @Override
+    public void setDataset(Dataset dataset) {
+        this.dataset = dataset;
     }
 
     @Override

@@ -109,12 +109,11 @@ public abstract class AbstractParallelClientManager<T extends Options> implement
     @Override
     public Object call() throws Exception {
         this.getRunner().reportProgress(this.getOptions(), "Parallel Client manager starting...");
-    
+
         // Start the required number of clients, they won't start doing any work
-        // until we finish this as they
-        // rely on the isReady() method to determine when to start work and it
-        // will return false until
-        // after this loop
+        // until we finish this as they rely on the isReady() method to
+        // determine when to start work and it will return false until after
+        // this loop
         List<ParallelClientTask<T>> tasks = new ArrayList<ParallelClientTask<T>>();
         for (int i = 1; i <= this.getOptions().getParallelThreads(); i++) {
             ParallelClientTask<T> task = new ParallelClientTask<T>(this, i);
@@ -124,15 +123,15 @@ public abstract class AbstractParallelClientManager<T extends Options> implement
         }
         this.getRunner().reportProgress(this.getOptions(), "Parallel Client manager is starting clients...");
         this.setReady();
-            
+
         // And then wait until all runs have finished
         while (!this.hasFinished() && !this.halt) {
             Thread.sleep(100);
         }
-    
+
         return null;
     }
-    
+
     @Override
     public ParallelClient<T> createClient(int id) {
         return new DefaultParallelClient<T>(this, id);

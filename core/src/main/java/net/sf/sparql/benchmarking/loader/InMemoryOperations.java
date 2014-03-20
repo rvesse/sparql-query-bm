@@ -32,8 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.loader;
 
-import com.hp.hpl.jena.query.Dataset;
-
 import net.sf.sparql.benchmarking.loader.query.FixedQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.InMemoryFixedQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.InMemoryParameterizedQueryOperationLoader;
@@ -42,8 +40,6 @@ import net.sf.sparql.benchmarking.loader.update.FixedUpdateOperationLoader;
 import net.sf.sparql.benchmarking.loader.update.InMemoryFixedUpdateOperationLoader;
 import net.sf.sparql.benchmarking.loader.update.InMemoryParameterizedUpdateOperationLoader;
 import net.sf.sparql.benchmarking.loader.update.ParameterizedUpdateOperationLoader;
-import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.runners.Runner;
 
 /**
  * Static helper class for registering the in-memory operations in place of the
@@ -60,11 +56,6 @@ public class InMemoryOperations {
     private InMemoryOperations() {
 
     }
-
-    /**
-     * Key used to retrieve the in-memory dataset for in-memory operations
-     */
-    public static final String DATASET_SETTING_KEY = "dataset";
 
     /**
      * Registers the in-memory versions of various operations in place of the
@@ -107,32 +98,5 @@ public class InMemoryOperations {
         // Update Operations
         OperationLoaderRegistry.addLoader(new FixedUpdateOperationLoader());
         OperationLoaderRegistry.addLoader(new ParameterizedUpdateOperationLoader());
-    }
-
-    /**
-     * Helper method for determining whether in-memory operations can be run
-     * 
-     * @param runner
-     *            Runner
-     * @param options
-     *            Options
-     * @param operation
-     *            Operation descriptor used in reporting the missing settings if
-     *            the operation cannot run
-     * @return True if the operation can run, false otherwise
-     */
-    public static <T extends Options> boolean hasDataset(Runner<T> runner, T options, String operation) {
-        if (options.getCustomSettings().get(InMemoryOperations.DATASET_SETTING_KEY) == null) {
-            runner.reportProgress(options, "In-Memory " + operation + " cannot run with no dataset specified");
-            return false;
-        }
-        Object dsObj = options.getCustomSettings().get(InMemoryOperations.DATASET_SETTING_KEY);
-        if (!(dsObj instanceof Dataset)) {
-            runner.reportProgress(options, "In-Memory " + operation
-                    + " require an object of type Dataset to be associated with the custom setting "
-                    + InMemoryOperations.DATASET_SETTING_KEY + " but got an object of type " + dsObj.getClass().getName());
-            return false;
-        }
-        return true;
     }
 }

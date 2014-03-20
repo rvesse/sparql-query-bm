@@ -36,7 +36,6 @@ import java.util.Collection;
 
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
 
-import net.sf.sparql.benchmarking.loader.InMemoryOperations;
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.operations.update.callables.InMemoryUpdateCallable;
 import net.sf.sparql.benchmarking.options.Options;
@@ -66,8 +65,10 @@ public class InMemoryParameterizedUpdateOperation extends AbstractParameterizedU
 
     @Override
     public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (!InMemoryOperations.hasDataset(runner, options, "parameterized updates"))
+        if (options.getDataset() == null) {
+            runner.reportProgress(options, "In-memory parameterized updates require a Dataset to be provided");
             return false;
+        }
         return true;
     }
 

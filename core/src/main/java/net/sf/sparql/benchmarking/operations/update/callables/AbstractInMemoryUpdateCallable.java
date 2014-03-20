@@ -32,7 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations.update.callables;
 
-
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.update.GraphStore;
 import com.hp.hpl.jena.update.GraphStoreFactory;
@@ -40,7 +39,6 @@ import com.hp.hpl.jena.update.UpdateExecutionFactory;
 import com.hp.hpl.jena.update.UpdateProcessor;
 import com.hp.hpl.jena.update.UpdateRequest;
 
-import net.sf.sparql.benchmarking.loader.InMemoryOperations;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
@@ -70,23 +68,21 @@ public abstract class AbstractInMemoryUpdateCallable<T extends Options> extends 
     /**
      * Gets the graph store to run the query against
      * <p>
-     * By default all in-memory based operations expect to find a dataset in the
-     * custom setting {@code dataset} however derived implementations may choose
-     * to do this differently and provide the dataset in other ways. The
-     * {@link Dataset} instance is converted to a {@link GraphStore} by simply
-     * calling {@link GraphStoreFactory#create(Dataset)}.
+     * By default all in-memory based operations simply expect a non-null
+     * dataset to be available via the {@link Options#getDataset()} method. This
+     * is converted to a {@link GraphStore} by calling the standard ARQ
+     * {@link GraphStoreFactory#create(Dataset)} method.
      * </p>
      * 
      * @return Graph store
      */
     protected GraphStore getGraphStore(T options) {
-        Object dsObj = options.getCustomSettings().get(InMemoryOperations.DATASET_SETTING_KEY);
-        if (dsObj instanceof Dataset)
-            return GraphStoreFactory.create((Dataset) dsObj);
-        throw new IllegalArgumentException("Expected an object of type Dataset but got an object of type "
-                + dsObj.getClass().getName());
+        Dataset ds = options.getDataset();
+        if (ds == null)
+            throw new RuntimeException("No in-memory dataset available");
+        return GraphStoreFactory.create(ds);
     }
-    
+
     @Override
     protected UpdateProcessor createUpdateProcessor(UpdateRequest update) {
         return UpdateExecutionFactory.create(this.getUpdate(), this.getGraphStore(this.getOptions()));

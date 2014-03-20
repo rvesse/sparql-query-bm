@@ -39,6 +39,8 @@ import java.util.concurrent.ExecutorService;
 import org.apache.jena.atlas.web.auth.HttpAuthenticator;
 import org.apache.jena.riot.WebContent;
 
+import com.hp.hpl.jena.query.Dataset;
+
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
@@ -94,6 +96,86 @@ public interface Options {
     public static final long DEFAULT_LIMIT = 0;
 
     /**
+     * Adds a Progress Listener if it is not already registered
+     * 
+     * @param listener
+     *            Progress Listener
+     */
+    public abstract void addListener(ProgressListener listener);
+
+    /**
+     * Makes a copy of the options
+     * <p>
+     * While this is guaranteed to take a copy of primitive typed properties
+     * there is no guarantee that it takes a copy of reference types so changing
+     * some properties will still affect the original options. This method is
+     * primarily intended for use in cases where you need to tweak an option
+     * without interfering with other consumers of the options which is
+     * particularly relevant when running multi-threaded testing.
+     * </p>
+     * 
+     * @return Copied options
+     */
+    public abstract <T extends Options> T copy();
+
+    /**
+     * Gets whether the client will allow the server to return Deflate/GZip
+     * compressed responses
+     * 
+     * @return Whether Deflate/GZip compression is allowed
+     */
+    public abstract boolean getAllowCompression();
+
+    /**
+     * Gets the HTTP authenticator in use
+     * 
+     * @return HTTP authenticator
+     */
+    public abstract HttpAuthenticator getAuthenticator();
+
+    /**
+     * Gets a custom endpoint
+     * 
+     * @param name
+     *            Endpoint name
+     * @return Endpoint URI
+     */
+    public abstract String getCustomEndpoint(String name);
+
+    /**
+     * Gets an unmodifiable copy of the defined custom endpoints
+     * <p>
+     * Custom endpoints are a more specific form of the
+     * {@link #getCustomSettings()} and provide a slightly more user friendly
+     * and type safe interface when the custom setting to be defined has a
+     * string value.
+     * </p>
+     * 
+     * @return Map of custom endpoints
+     */
+    public abstract Map<String, String> getCustomEndpoints();
+
+    /**
+     * Gets a map that may be used to get/set custom settings
+     * <p>
+     * This is provided so custom operations may be created that can share state
+     * or that need custom settings to be provided and can't modify/extend the
+     * standard {@code Options} interface since they want to run with existing
+     * standard runners.
+     * </p>
+     * 
+     * @return Map of custom settings
+     */
+    public abstract Map<String, Object> getCustomSettings();
+
+    /**
+     * Gets a dataset that is used for in-memory queries and updates
+     * 
+     * @return Dataset
+     */
+    public abstract Dataset getDataset();
+
+    /**
      * Gets the in-use executor for running queries and query mixes in threads
      * using the Java concurrent framework
      * 
@@ -102,18 +184,22 @@ public interface Options {
     public abstract ExecutorService getExecutor();
 
     /**
-     * Gets the Halt on Timeout behavior
+     * Gets the Global Run Order
+     * <p>
+     * Called elsewhere so that mix runs and operation runs record what order
+     * they were run in
+     * </p>
      * 
-     * @return Whether a timeout causes benchmarking to abort
+     * @return Global Run Order
      */
-    public abstract boolean getHaltOnTimeout();
+    public abstract long getGlobalOrder();
 
     /**
-     * Gets the Halt on Error behavior
+     * Gets the SPARQL graph store protocol endpoint that is in use
      * 
-     * @return Whether an error causes benchmarking to abort
+     * @return SPARQL graph store endpoint URI
      */
-    public abstract boolean getHaltOnError();
+    public abstract String getGraphStoreEndpoint();
 
     /**
      * Gets Halt on Any behavior
@@ -130,6 +216,27 @@ public interface Options {
     public abstract HaltBehaviour getHaltBehaviour();
 
     /**
+     * Gets the Halt on Error behavior
+     * 
+     * @return Whether an error causes benchmarking to abort
+     */
+    public abstract boolean getHaltOnError();
+
+    /**
+     * Gets the Halt on Timeout behavior
+     * 
+     * @return Whether a timeout causes benchmarking to abort
+     */
+    public abstract boolean getHaltOnTimeout();
+
+    /**
+     * Gets the LIMIT to impose on queries
+     * 
+     * @return Limit to impose
+     */
+    public abstract long getLimit();
+
+    /**
      * Gets the Progress Listeners registered
      * 
      * @return Progress Listeners
@@ -137,12 +244,129 @@ public interface Options {
     public abstract List<ProgressListener> getListeners();
 
     /**
-     * Adds a Progress Listener if it is not already registered
+     * Gets the maximum delay between operations
      * 
-     * @param listener
-     *            Progress Listener
+     * @return Maximum Delay in milliseconds
      */
-    public abstract void addListener(ProgressListener listener);
+    public abstract int getMaxDelay();
+
+    /**
+     * Gets the operation mix runner to use, if {@code null} is returned then
+     * the default {@link DefaultOperationMixRunner} should be used
+     * 
+     * @return Operation mix runner
+     */
+    public abstract OperationMixRunner getMixRunner();
+
+    /**
+     * Gets whether query results are counted or just thrown away
+     * 
+     * @return True if results will not be counted
+     */
+    public abstract boolean getNoCount();
+
+    /**
+     * Gets the Query Mix that is used
+     * 
+     * @return Query Mix
+     */
+    public abstract OperationMix getOperationMix();
+
+    /**
+     * Gets the operation runner to use, if {@code null} is returned then the
+     * default {@link OperationRunner} should be used
+     * 
+     * @return Operation runner
+     */
+    public abstract OperationRunner getOperationRunner();
+
+    /**
+     * Gets the number of parallel threads used for testing
+     * 
+     * @return Number of parallel threads
+     */
+    public abstract int getParallelThreads();
+
+    /**
+     * Gets the SPARQL query endpoint that is in use
+     * 
+     * @return SPARQL query endpoint URI
+     */
+    public abstract String getQueryEndpoint();
+
+    /**
+     * Gets whether operation order should be randomized
+     * 
+     * @return Whether operation order is random
+     */
+    public abstract boolean getRandomizeOrder();
+
+    /**
+     * Gets the Results format used for operations that make ASK queries
+     * 
+     * @return MIME Type for ASK results
+     */
+    public abstract String getResultsAskFormat();
+
+    /**
+     * Gets the Results format used for operations that make CONSTRUCT/DESCRIBE
+     * queries or that retrieve RDF graphs
+     * 
+     * @return MIME Type for CONSTRUCT/DESCRUBE results and RDF graphs
+     */
+    public abstract String getResultsGraphFormat();
+
+    /**
+     * Gets the Results format used for operations that make SELECT queries
+     * 
+     * @return MIME Type for SELECT results
+     */
+    public abstract String getResultsSelectFormat();
+
+    /**
+     * Gets the Sanity Checking Level
+     * 
+     * @return Sanity Check Level
+     */
+    public abstract int getSanityCheckLevel();
+
+    /**
+     * Gets the setup mix to be run, {@code null} indicates no setup mix is
+     * requested.
+     * <p>
+     * Operations in a setup mix are guaranteed to be run exactly in the order
+     * given. </>
+     * 
+     * @return Setup mix or null
+     */
+    public abstract OperationMix getSetupMix();
+
+    /**
+     * Gets the tear down mix to be run, {@code null} indicates no tear down mix
+     * is requested.
+     * <p>
+     * Operations in a tear down mix are guaranteed to be run exactly in the
+     * order given.
+     * </p>
+     * 
+     * @return Tear down mix or null
+     */
+    public abstract OperationMix getTeardownMix();
+
+    /**
+     * Gets the timeout for operations, a zero/negative value indicates no
+     * timeout
+     * 
+     * @return Timeout in seconds
+     */
+    public abstract int getTimeout();
+
+    /**
+     * Gets the SPARQL Update endpoint that is in use
+     * 
+     * @return SPARQL update endpoint URI
+     */
+    public abstract String getUpdateEndpoint();
 
     /**
      * Removes a Progress Listener if it is registered
@@ -153,115 +377,12 @@ public interface Options {
     public abstract void removeListener(ProgressListener listener);
 
     /**
-     * Gets an unmodifiable copy of the defined custom endpoints
-     * <p>
-     * Custom endpoints are a more specific form of the
-     * {@link #getCustomSettings()} and provide a slightly more user friendly
-     * and type safe interface when the custom setting to be defined has a
-     * string value.
-     * </p>
-     * 
-     * @return Map of custom endpoints
-     */
-    public abstract Map<String, String> getCustomEndpoints();
-
-    /**
-     * Gets a custom endpoint
-     * 
-     * @param name
-     *            Endpoint name
-     * @return Endpoint URI
-     */
-    public abstract String getCustomEndpoint(String name);
-
-    /**
-     * Gets a map that may be used to get/set custom settings
-     * <p>
-     * This is provided so custom operations may be created that can share state
-     * or that need custom settings to be provided and can't modify/extend the
-     * standard {@code Options} interface since they want to run with existing
-     * standard runners.
-     * </p>
-     * <p>
-     * In the API this mechanism is used to support the in-memory query
-     * operations.
-     * </p>
-     * 
-     * @return Map of custom settings
-     */
-    public abstract Map<String, Object> getCustomSettings();
-
-    /**
      * Resets the global run order
      * <p>
      * Useful for runners that incorporate warmups into their runs
      * </p>
      */
     public abstract void resetGlobalOrder();
-
-    /**
-     * Gets the Global Run Order
-     * <p>
-     * Called elsewhere so that mix runs and operation runs record what order
-     * they were run in
-     * </p>
-     * 
-     * @return Global Run Order
-     */
-    public abstract long getGlobalOrder();
-
-    /**
-     * Gets the number of parallel threads used for testing
-     * 
-     * @return Number of parallel threads
-     */
-    public abstract int getParallelThreads();
-
-    /**
-     * Sets the number of parallel threads used for testing
-     * 
-     * @param threads
-     *            Number of Parallel Threads
-     */
-    public abstract void setParallelThreads(int threads);
-
-    /**
-     * Gets the maximum delay between operations
-     * 
-     * @return Maximum Delay in milliseconds
-     */
-    public abstract int getMaxDelay();
-
-    /**
-     * Sets the maximum delay between operations
-     * 
-     * @param milliseconds
-     *            Maximum Delay in milliseconds
-     */
-    public abstract void setMaxDelay(int milliseconds);
-
-    /**
-     * Gets the HTTP authenticator in use
-     * 
-     * @return HTTP authenticator
-     */
-    public abstract HttpAuthenticator getAuthenticator();
-
-    /**
-     * Sets the HTTP authenticator used
-     * 
-     * @param authenticator
-     *            HTTP authenticator
-     */
-    public abstract void setAuthenticator(HttpAuthenticator authenticator);
-
-    /**
-     * Gets whether the client will allow the server to return Deflate/GZip
-     * compressed responses
-     * 
-     * @return Whether Deflate/GZip compression is allowed
-     */
-    public abstract boolean getAllowCompression();
 
     /**
      * Sets whether the client will allow the server to return Deflate/GZip
@@ -273,69 +394,12 @@ public interface Options {
     public abstract void setAllowCompression(boolean allowed);
 
     /**
-     * Gets the Results format used for operations that make CONSTRUCT/DESCRIBE
-     * queries or that retrieve RDF graphs
+     * Sets the HTTP authenticator used
      * 
-     * @return MIME Type for CONSTRUCT/DESCRUBE results and RDF graphs
+     * @param authenticator
+     *            HTTP authenticator
      */
-    public abstract String getResultsGraphFormat();
-
-    /**
-     * Sets the Results format used for operations that CONSTRUCT/DESCRIBE
-     * queries or that retrieve RDF graphs
-     * 
-     * @param contentType
-     *            MIME Type for CONSTRUCT/DESCRIBE results and RDF graphs
-     */
-    public abstract void setResultsGraphFormat(String contentType);
-
-    /**
-     * Gets the Results format used for operations that make SELECT queries
-     * 
-     * @return MIME Type for SELECT results
-     */
-    public abstract String getResultsSelectFormat();
-
-    /**
-     * Sets the Results format to be used for operations that make SELECT
-     * queries
-     * 
-     * @param contentType
-     *            MIME Type for SELECT results
-     */
-    public abstract void setResultsSelectFormat(String contentType);
-
-    /**
-     * Gets the Results format used for operations that make ASK queries
-     * 
-     * @return MIME Type for ASK results
-     */
-    public abstract String getResultsAskFormat();
-
-    /**
-     * Sets the Results format to be used for operations that make ASK queries
-     * 
-     * @param contentType
-     *            MIME Type for ASK results
-     */
-    public abstract void setResultsAskFormat(String contentType);
-
-    /**
-     * Gets the timeout for operations, a zero/negative value indicates no
-     * timeout
-     * 
-     * @return Timeout in seconds
-     */
-    public abstract int getTimeout();
-
-    /**
-     * Sets the timeout for operations, a zero/negative value indicates no
-     * timeout
-     * 
-     * @param timeout
-     *            Timeout in seconds
-     */
-    public abstract void setTimeout(int timeout);
+    public abstract void setAuthenticator(HttpAuthenticator authenticator);
 
     /**
      * Sets a custom defined endpoint
@@ -348,11 +412,12 @@ public interface Options {
     public abstract void setCustomEndpoint(String name, String endpoint);
 
     /**
-     * Gets the SPARQL graph store protocol endpoint that is in use
+     * Sets a dataset to be used for in-memory queries and updates
      * 
-     * @return SPARQL graph store endpoint URI
+     * @param dataset
+     *            Dataset
      */
-    public abstract String getGraphStoreEndpoint();
+    public abstract void setDataset(Dataset dataset);
 
     /**
      * Gets the SPARQL graph store protocol endpoint that is in use
@@ -362,64 +427,13 @@ public interface Options {
     public abstract void setGraphStoreEndpoint(String endpoint);
 
     /**
-     * Gets the SPARQL Update endpoint that is in use
+     * Sets Halt on Any behavior, if set to true sets Halt on Error and Halt on
+     * Timeout to true as well
      * 
-     * @return SPARQL update endpoint URI
+     * @param halt
+     *            Whether any issue should cause benchmarking to abort
      */
-    public abstract String getUpdateEndpoint();
-
-    /**
-     * Sets the SPARQL update endpoint that is in use
-     * 
-     * @param endpoint
-     *            SPARQL update endpoint URI
-     */
-    public abstract void setUpdateEndpoint(String endpoint);
-
-    /**
-     * Gets the SPARQL query endpoint that is in use
-     * 
-     * @return SPARQL query endpoint URI
-     */
-    public abstract String getQueryEndpoint();
-
-    /**
-     * Sets the SPARQL query endpoint to be used
-     * 
-     * @param endpoint
-     *            SPARQL query endpoint URI
-     */
-    public abstract void setQueryEndpoint(String endpoint);
-
-    /**
-     * Sets the Query Mix to use
-     * 
-     * @param queries
-     *            Query Mix
-     */
-    public abstract void setOperationMix(OperationMix queries);
-
-    /**
-     * Gets the Query Mix that is used
-     * 
-     * @return Query Mix
-     */
-    public abstract OperationMix getOperationMix();
-
-    /**
-     * Gets whether operation order should be randomized
-     * 
-     * @return Whether operation order is random
-     */
-    public abstract boolean getRandomizeOrder();
-
-    /**
-     * Sets whether operation order should be randomized
-     * 
-     * @param randomize
-     *            Whether operation order should be random
-     */
-    public abstract void setRandomizeOrder(boolean randomize);
+    public abstract void setHaltAny(boolean halt);
 
     /**
      * Sets the Halting Behaviour
@@ -428,15 +442,6 @@ public interface Options {
      *            Halting Behaviour
      */
     public abstract void setHaltBehaviour(HaltBehaviour behaviour);
-
-    /**
-     * Sets Halt on Any behavior, if set to true sets Halt on Error and Halt on
-     * Timeout to true as well
-     * 
-     * @param halt
-     *            Whether any issue should cause benchmarking to abort
-     */
-    public abstract void setHaltAny(boolean halt);
 
     /**
      * Sets the Halt on Error behavior
@@ -455,89 +460,25 @@ public interface Options {
     public abstract void setHaltOnTimeout(boolean halt);
 
     /**
-     * Gets the Sanity Checking Level
-     * 
-     * @return Sanity Check Level
-     */
-    public abstract int getSanityCheckLevel();
-
-    /**
-     * Sets the Sanity Checking level
-     * 
-     * @param level
-     *            Sanity Check Level
-     */
-    public abstract void setSanityCheckLevel(int level);
-
-    /**
-     * Gets the tear down mix to be run, {@code null} indicates no tear down mix
-     * is requested.
+     * Sets the LIMIT to impose on queries
      * <p>
-     * Operations in a tear down mix are guaranteed to be run exactly in the
-     * order given.
+     * Values less than or equal to zero mean existing limits are left
+     * unchanged, non-zero values will be imposed iff existing limit is greater
+     * than the set limit
      * </p>
      * 
-     * @return Tear down mix or null
+     * @param limit
+     *            Limit to impose
      */
-    public abstract OperationMix getTeardownMix();
+    public abstract void setLimit(long limit);
 
     /**
-     * Sets the tear down mix that will be run once after testing completes
-     * successfully.
-     * <p>
-     * Operations in a tear down mix are guaranteed to be run exactly in the
-     * order given.
-     * </p>
+     * Sets the maximum delay between operations
      * 
-     * @param mix
-     *            Tear down mix
+     * @param milliseconds
+     *            Maximum Delay in milliseconds
      */
-    public abstract void setTeardownMix(OperationMix mix);
-
-    /**
-     * Gets the setup mix to be run, {@code null} indicates no setup mix is
-     * requested.
-     * <p>
-     * Operations in a setup mix are guaranteed to be run exactly in the order
-     * given. </>
-     * 
-     * @return Setup mix or null
-     */
-    public abstract OperationMix getSetupMix();
-
-    /**
-     * Sets the setup mix that will be run once before testing starts.
-     * <p>
-     * Operations in a setup mix are guaranteed to be run exactly in the order
-     * given. </>
-     * 
-     * @param mix
-     *            Setup mix
-     */
-    public abstract void setSetupMix(OperationMix mix);
-
-    /**
-     * Makes a copy of the options
-     * <p>
-     * While this is guaranteed to take a copy of primitive typed properties
-     * there is no guarantee that it takes a copy of reference types so changing
-     * some properties will still affect the original options. This method is
-     * primarily intended for use in cases where you need to tweak an option
-     * without interfering with other consumers of the options which is
-     * particularly relevant when running multi-threaded testing.
-     * </p>
-     * 
-     * @return Copied options
-     */
-    public abstract <T extends Options> T copy();
-
-    /**
-     * Gets the operation mix runner to use, if {@code null} is returned then
-     * the default {@link DefaultOperationMixRunner} should be used
-     * 
-     * @return Operation mix runner
-     */
-    public abstract OperationMixRunner getMixRunner();
+    public abstract void setMaxDelay(int milliseconds);
 
     /**
      * Sets the operation mix runner to use, if set to {@code null} then the
@@ -547,30 +488,6 @@ public interface Options {
      *            Operation mix runner
      */
     public abstract void setMixRunner(OperationMixRunner runner);
-
-    /**
-     * Sets the operation runner to use, if set to {@code null} then the default
-     * {@link DefaultOperationRunner} should be used
-     * 
-     * @param runner
-     *            Operation runner
-     */
-    public abstract void setOperationRunner(OperationRunner runner);
-
-    /**
-     * Gets the operation runner to use, if {@code null} is returned then the
-     * default {@link OperationRunner} should be used
-     * 
-     * @return Operation runner
-     */
-    public abstract OperationRunner getOperationRunner();
-
-    /**
-     * Gets whether query results are counted or just thrown away
-     * 
-     * @return True if results will not be counted
-     */
-    public abstract boolean getNoCount();
 
     /**
      * Sets whether query results are counted or just thrown away
@@ -586,22 +503,118 @@ public interface Options {
     public abstract void setNoCount(boolean noCount);
 
     /**
-     * Gets the LIMIT to impose on queries
+     * Sets the Query Mix to use
      * 
-     * @return Limit to impose
+     * @param queries
+     *            Query Mix
      */
-    public abstract long getLimit();
+    public abstract void setOperationMix(OperationMix queries);
 
     /**
-     * Sets the LIMIT to impose on queries
+     * Sets the operation runner to use, if set to {@code null} then the default
+     * {@link DefaultOperationRunner} should be used
+     * 
+     * @param runner
+     *            Operation runner
+     */
+    public abstract void setOperationRunner(OperationRunner runner);
+
+    /**
+     * Sets the number of parallel threads used for testing
+     * 
+     * @param threads
+     *            Number of Parallel Threads
+     */
+    public abstract void setParallelThreads(int threads);
+
+    /**
+     * Sets the SPARQL query endpoint to be used
+     * 
+     * @param endpoint
+     *            SPARQL query endpoint URI
+     */
+    public abstract void setQueryEndpoint(String endpoint);
+
+    /**
+     * Sets whether operation order should be randomized
+     * 
+     * @param randomize
+     *            Whether operation order should be random
+     */
+    public abstract void setRandomizeOrder(boolean randomize);
+
+    /**
+     * Sets the Results format to be used for operations that make ASK queries
+     * 
+     * @param contentType
+     *            MIME Type for ASK results
+     */
+    public abstract void setResultsAskFormat(String contentType);
+
+    /**
+     * Sets the Results format used for operations that CONSTRUCT/DESCRIBE
+     * queries or that retrieve RDF graphs
+     * 
+     * @param contentType
+     *            MIME Type for CONSTRUCT/DESCRIBE results and RDF graphs
+     */
+    public abstract void setResultsGraphFormat(String contentType);
+
+    /**
+     * Sets the Results format to be used for operations that make SELECT
+     * queries
+     * 
+     * @param contentType
+     *            MIME Type for SELECT results
+     */
+    public abstract void setResultsSelectFormat(String contentType);
+
+    /**
+     * Sets the Sanity Checking level
+     * 
+     * @param level
+     *            Sanity Check Level
+     */
+    public abstract void setSanityCheckLevel(int level);
+
+    /**
+     * Sets the setup mix that will be run once before testing starts.
      * <p>
-     * Values less than or equal to zero mean existing limits are left
-     * unchanged, non-zero values will be imposed iff existing limit is greater
-     * than the set limit
+     * Operations in a setup mix are guaranteed to be run exactly in the order
+     * given. </>
+     * 
+     * @param mix
+     *            Setup mix
+     */
+    public abstract void setSetupMix(OperationMix mix);
+
+    /**
+     * Sets the tear down mix that will be run once after testing completes
+     * successfully.
+     * <p>
+     * Operations in a tear down mix are guaranteed to be run exactly in the
+     * order given.
      * </p>
      * 
-     * @param limit
-     *            Limit to impose
+     * @param mix
+     *            Tear down mix
      */
-    public abstract void setLimit(long limit);
+    public abstract void setTeardownMix(OperationMix mix);
+
+    /**
+     * Sets the timeout for operations, a zero/negative value indicates no
+     * timeout
+     * 
+     * @param timeout
+     *            Timeout in seconds
+     */
+    public abstract void setTimeout(int timeout);
+
+    /**
+     * Sets the SPARQL update endpoint that is in use
+     * 
+     * @param endpoint
+     *            SPARQL update endpoint URI
+     */
+    public abstract void setUpdateEndpoint(String endpoint);
 }

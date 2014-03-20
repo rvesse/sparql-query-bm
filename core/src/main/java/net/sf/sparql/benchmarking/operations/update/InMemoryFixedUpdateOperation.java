@@ -35,7 +35,6 @@ package net.sf.sparql.benchmarking.operations.update;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
 
-import net.sf.sparql.benchmarking.loader.InMemoryOperations;
 import net.sf.sparql.benchmarking.operations.AbstractOperation;
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.operations.update.callables.InMemoryUpdateCallable;
@@ -72,8 +71,10 @@ public class InMemoryFixedUpdateOperation extends AbstractOperation implements U
 
     @Override
     public <T extends Options> boolean canRun(Runner<T> runner, T options) {
-        if (!InMemoryOperations.hasDataset(runner, options, "updates"))
+        if (options.getDataset() == null) {
+            runner.reportProgress(options, "In-memory updates cannot run without an in-memory dataset");
             return false;
+        }
         return true;
     }
 

@@ -36,7 +36,6 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
-import net.sf.sparql.benchmarking.loader.InMemoryOperations;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
@@ -66,19 +65,17 @@ public abstract class AbstractInMemoryQueryCallable<T extends Options> extends A
     /**
      * Gets the dataset to run the query against
      * <p>
-     * By default all in-memory based operations expect to find a dataset in the
-     * custom setting {@code dataset} however derived implementations may choose
-     * to do this differently and provide the dataset in other ways.
+     * By default all in-memory based operations simply expect a non-null
+     * dataset to be available via the {@link Options#getDataset()} method
      * </p>
      * 
      * @return Dataset
      */
     protected Dataset getDataset(T options) {
-        Object dsObj = options.getCustomSettings().get(InMemoryOperations.DATASET_SETTING_KEY);
-        if (dsObj instanceof Dataset)
-            return (Dataset) dsObj;
-        throw new IllegalArgumentException("Expected an object of type Dataset but got an object of type "
-                + dsObj.getClass().getName());
+        Dataset ds = options.getDataset();
+        if (ds == null)
+            throw new RuntimeException("No in-memory dataset available");
+        return ds;
     }
 
     @Override
