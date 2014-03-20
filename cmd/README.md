@@ -9,7 +9,9 @@ All scripts will respect a `JAVA_OPTIONS` environment variable if set which can 
 used to pass custom options to the JVM.
 
 The \*nix scripts will automatically attempt to locate the JAR file relative to where
-they are run, the Windows scripts currently do not have this behaviour.
+they are run and will respect the `CLASSPATH` environment variable if present.  Note that
+the Windows scripts currently does not have the former behaviour but it will honour the `CLASSPATH`
+environment variable.
 
 ## Benchmarking
 

@@ -1,0 +1,22 @@
+# Licensed under the terms of http://www.apache.org/licenses/LICENSE-2.0
+
+## Example of using a TDB dataset
+##
+## Note that as we have no dependency on TDB you will need to add TDB to the classpath yourself
+
+@prefix :        <#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix tdb:     <http://jena.hpl.hp.com/2008/tdb#> .
+@prefix ja:      <http://jena.hpl.hp.com/2005/11/Assembler#> .
+
+# TDB
+[] ja:loadClass "com.hp.hpl.jena.tdb.TDB" .
+tdb:DatasetTDB  rdfs:subClassOf  ja:RDFDataset .
+tdb:GraphTDB    rdfs:subClassOf  ja:Model .
+
+<#tdb_dataset> rdf:type      tdb:DatasetTDB ;
+    tdb:location "DB" ;
+    tdb:unionDefaultGraph true ;
+    .
+

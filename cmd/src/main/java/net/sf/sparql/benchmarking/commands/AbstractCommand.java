@@ -43,6 +43,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.sparql.core.assembler.AssemblerUtils;
+import com.hp.hpl.jena.sparql.core.assembler.DatasetAssemblerVocab;
+
+import net.sf.sparql.benchmarking.loader.InMemoryOperations;
 import net.sf.sparql.benchmarking.loader.OperationMixLoader;
 import net.sf.sparql.benchmarking.loader.OperationMixLoaderRegistry;
 import net.sf.sparql.benchmarking.monitoring.ConsoleProgressListener;
@@ -269,12 +274,18 @@ public abstract class AbstractCommand {
      */
     @Option(name = { "--nocount", "--no-count" }, description = "Disables result counting for SELECT queries, allows measuring just the time to respond to queries rather than the time to complete the entire query which may be useful when benchmarking against very large datasets or when the IO path between the benchmarker and the system being benchmarked is known to be a bottleneck.")
     public boolean noCount = false;
-    
+
     /**
      * Dataset assembler file option
      */
-    @Option(name = { "--dataset", "--dataset-assembler" }, arity = 1, title = "Dataset Assembler File", description = "Provides an assembler file that describes an dataset that can be loaded and used for in-memory testing.")
+    @Option(name = { "--dataset", "--dataset-assembler" }, arity = 1, title = "Dataset Assembler File", description = "Provides an assembler file that describes an dataset that can be loaded and used for in-memory testing.  This uses the standard Jena assembler vocabulary and mechanisms.")
     public String dsAssemblerFile;
+
+    /**
+     * In-memory operations mode option
+     */
+    @Option(name = { "--in-memory" }, description = "Disables remote query and update operations by redirecting the loaders to the in-memory variants of these operations.  Allows you to easily use a mix originally designed for remote services to also be run against in-memory datasets.")
+    public boolean inMemoryOperations = false;
 
     /**
      * Method that should be implemented to run the actual command
@@ -341,7 +352,25 @@ public abstract class AbstractCommand {
             throw new RuntimeException("No mix loader is associated with files with the extension "
                     + FileUtils.getExtension(this.mixFile, true, true));
 
+        // Remote operation support
+        options.setQueryEndpoint(this.queryEndpoint);
+        options.setUpdateEndpoint(this.updateEndpoint);
+        options.setGraphStoreEndpoint(this.gspEndpoint);
+
+        // In-Memory operation support
+        if (this.dsAssemblerFile != null) {
+            Dataset ds = (Dataset) AssemblerUtils.build(this.dsAssemblerFile, DatasetAssemblerVocab.tDataset);
+            if (ds == null)
+                throw new RuntimeException("Failed to find a dataset in the provided assembler file");
+            options.setDataset(ds);
+        }
+        if (this.inMemoryOperations)
+            InMemoryOperations.useInMemoryOperations();
+
         // Set operation mixes
+        // Has to happen after in-memory operation support setup in case the
+        // user has requested to re-map the remote operations to their in-memory
+        // equivalents
         options.setOperationMix(mixLoader.load(new File(this.mixFile)));
         if (this.setupMixFile != null) {
             mixLoader = OperationMixLoaderRegistry.getLoader(FileUtils.getExtension(this.setupMixFile, true, false));
@@ -357,14 +386,6 @@ public abstract class AbstractCommand {
                         + FileUtils.getExtension(this.teardownMixFile, true, true));
             options.setTeardownMix(mixLoader.load(new File(this.teardownMixFile)));
         }
-
-        // Endpoints
-        options.setQueryEndpoint(this.queryEndpoint);
-        options.setUpdateEndpoint(this.updateEndpoint);
-        options.setGraphStoreEndpoint(this.gspEndpoint);
-        
-        // Dataset
-        
 
         // Results Formats
         options.setResultsAskFormat(this.askFormat);

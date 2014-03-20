@@ -49,6 +49,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
+import net.sf.sparql.benchmarking.operations.query.callables.InMemoryQueryCallable;
 import net.sf.sparql.benchmarking.operations.query.callables.RemoteQueryCallable;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.mix.DefaultOperationMixRunner;
@@ -208,8 +209,8 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
     }
 
     /**
-     * Checks that the query endpoint being used passes some basic queries to
-     * see if it is up and running
+     * Checks that the query endpoint/in-memory dataset being used passes some
+     * basic queries to see if it is up and running
      * <p>
      * May be overridden by runner implementations to change the sanity checking
      * constraints
@@ -218,16 +219,23 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
      * @param options
      *            Options
      * 
-     * @return Whether the endpoint passed some basic sanity checks
+     * @return Whether the endpoint/in-memory dataset passed some basic sanity
+     *         checks
      */
     protected boolean checkSanity(T options) {
-        reportProgress(options, "Sanity checking the user specified endpoint...");
+        reportProgress(options, "Sanity checking the user specified remote endpoint/in-memory dataset...");
         String[] checks = this.getSanityCheckQueries();
 
         int passed = 0;
         for (int i = 0; i < checks.length; i++) {
             Query q = QueryFactory.create(checks[i]);
-            FutureTask<OperationRun> task = new FutureTask<OperationRun>(new RemoteQueryCallable<T>(q, this, options));
+
+            // Remember to account for whether we are running against a remote
+            // service or an in-memory dataset
+            // Favours testing the remote service even if both are defined
+            FutureTask<OperationRun> task = new FutureTask<OperationRun>(
+                    options.getQueryEndpoint() != null ? new RemoteQueryCallable<T>(q, this, options)
+                            : new InMemoryQueryCallable<T>(q, this, options));
             reportPartialProgress(options, "Sanity Check " + (i + 1) + " of " + checks.length + "...");
             try {
                 // Run the operation using a 30 second timeout

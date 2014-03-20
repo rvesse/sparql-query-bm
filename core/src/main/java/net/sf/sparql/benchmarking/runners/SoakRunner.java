@@ -70,8 +70,8 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
 
         // Validate Options
         if (options.getQueryEndpoint() == null && options.getUpdateEndpoint() == null && options.getGraphStoreEndpoint() == null
-                && options.getCustomEndpoints().size() == 0) {
-            System.err.println("At least one endpoint must be set");
+                && options.getCustomEndpoints().size() == 0  && options.getDataset() == null) {
+            System.err.println("At least one remote endpoint or an in-memory dataset must be set");
             halt(options, "No endpoint was set");
         }
         if (options.getMaxRuns() <= 0 && options.getMaxRuntime() <= 0) {
