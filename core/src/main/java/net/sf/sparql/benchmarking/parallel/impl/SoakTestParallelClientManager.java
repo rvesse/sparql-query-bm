@@ -113,7 +113,7 @@ public class SoakTestParallelClientManager extends AbstractParallelClientManager
     
     @Override
     public synchronized boolean hasFinished() {
-        return this.completedRuns == this.startedRuns;
+        return !this.shouldRun() && this.completedRuns == this.startedRuns;
     }
 
 }
