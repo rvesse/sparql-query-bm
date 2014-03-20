@@ -5,7 +5,10 @@ Over time it has evolved into a general purpose API that while designed primaril
 testing SPARQL servers (including queries, updates and GSP requests) can in principal
 be extended to test much more than that.
 
-The API is described by javadoc available at TBD and in the documentation at TBD
+It supports the testing of both remote SPARQL services and of ARQ in-memory datasets.
+
+The API is described by javadoc available at http://sparql-query-bm.sourceforge.net/javadoc/
+and in the documentation at https://sourceforge.net/p/sparql-query-bm/wiki/
 
 The command line currently comprises three main tools:
 

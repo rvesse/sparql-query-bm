@@ -5,8 +5,17 @@ SPARQL Query Benchmarker uses a multi-module maven build.
 Running `mvn package` in this directory will build all components.  You will
 find the API under `core/target` and the CLI under `cmd/target`
 
-The CLI builds as a shaded runnable JAR incorporating all dependencies so can
-be run directly per the instructions under `cmd/README.md`
+The CLI builds as a shaded JAR incorporating all dependencies so can
+be run directly without needing to provide the dependencies directly.  See the
+various scripts for different ways of invoking this.
+
+## Building for an alternate Java Version
+
+By default the project is set up to build for Java 6 for backwards compatibility purposes.  
+You can change what version it is built for by setting the `jdk.target` property, for example
+to build for Java 7:
+
+    mvn package -Djdk.target=1.7 
 
 ## Scripts
 

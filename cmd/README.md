@@ -1,7 +1,8 @@
 # Introduction
 
 SPARQL Benchmarker is a set of simple command line tools that can be used to test
-SPARQL systems accessible via HTTP
+SPARQL systems.  This includes both remote services accessed via HTTP and those
+accessed via an ARQ in-memory dataset.
 
 # General Script Options
 
@@ -25,10 +26,6 @@ On Windows systems you can invoke the benchmarker like so:
 
     benchmark.bat [options]
 
-Or you can invoke the jar directly using Java as follows:
-
-    java -cp sparql-query-bm-cli.jar net.sf.sparql.query.benchmarking.cmd.BenchmarkCommand [options]
-
 To see full usage summary run with the `-h` or `--help` option
 
 ## Soak Testing
@@ -44,10 +41,20 @@ On Windows systems you can invoke the soak tester like so:
 
     soak.bat [options]
   
-Or you can invoke the jar directly using Java as follows:
+To see full usage summary run with the `-h` or `--help` option
 
-    java -cp sparql-query-bm-cli.jar net.sf.sparql.query.benchmarking.cmd.SoakCommand [options]
-  
+## Operations
+
+The `operations` command provides information about the supported operations.
+
+On \*nix systems you can invoke the command like so:
+
+    ./operations [options]
+    
+On Windows system you can invoke the command like so:
+
+    operations.bat [options]
+    
 To see full usage summary run with the `-h` or `--help` option
 
 # Documentation
