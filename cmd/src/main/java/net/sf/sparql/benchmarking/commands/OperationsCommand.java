@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.query.benchmarking.cmd;
+package net.sf.sparql.benchmarking.commands;
 
 import java.util.List;
 import java.util.Map;
@@ -38,10 +38,10 @@ import java.util.TreeMap;
 
 import javax.inject.Inject;
 
+import net.sf.sparql.benchmarking.commands.util.PrintHelper;
 import net.sf.sparql.benchmarking.loader.OperationLoader;
 import net.sf.sparql.benchmarking.loader.OperationLoaderArgument;
 import net.sf.sparql.benchmarking.loader.OperationLoaderRegistry;
-import net.sf.sparql.query.benchmarking.cmd.util.PrintHelper;
 
 import org.apache.commons.lang.ArrayUtils;
 

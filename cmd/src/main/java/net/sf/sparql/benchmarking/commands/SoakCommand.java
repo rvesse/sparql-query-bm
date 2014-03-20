@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.query.benchmarking.cmd;
+package net.sf.sparql.benchmarking.commands;
 
 import io.airlift.command.Command;
 import io.airlift.command.Option;

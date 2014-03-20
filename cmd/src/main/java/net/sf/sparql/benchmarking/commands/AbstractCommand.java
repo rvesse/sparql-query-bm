@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  */
 
-package net.sf.sparql.query.benchmarking.cmd;
+package net.sf.sparql.benchmarking.commands;
 
 import java.io.File;
 import java.io.IOException;
@@ -269,6 +269,12 @@ public abstract class AbstractCommand {
      */
     @Option(name = { "--nocount", "--no-count" }, description = "Disables result counting for SELECT queries, allows measuring just the time to respond to queries rather than the time to complete the entire query which may be useful when benchmarking against very large datasets or when the IO path between the benchmarker and the system being benchmarked is known to be a bottleneck.")
     public boolean noCount = false;
+    
+    /**
+     * Dataset assembler file option
+     */
+    @Option(name = { "--dataset", "--dataset-assembler" }, arity = 1, title = "Dataset Assembler File", description = "Provides an assembler file that describes an dataset that can be loaded and used for in-memory testing.")
+    public String dsAssemblerFile;
 
     /**
      * Method that should be implemented to run the actual command
@@ -356,6 +362,9 @@ public abstract class AbstractCommand {
         options.setQueryEndpoint(this.queryEndpoint);
         options.setUpdateEndpoint(this.updateEndpoint);
         options.setGraphStoreEndpoint(this.gspEndpoint);
+        
+        // Dataset
+        
 
         // Results Formats
         options.setResultsAskFormat(this.askFormat);

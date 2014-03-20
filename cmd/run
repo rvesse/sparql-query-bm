@@ -40,4 +40,4 @@ shift 1
 if [ ! -z "${CLASSPATH}" ]; then
 	ACTUAL_JAR="${ACTUAL_JAR}:${CLASSPATH}"
 fi
-java ${JAVA_OPTIONS} -cp "${ACTUAL_JAR}" net.sf.sparql.query.benchmarking.cmd.$CMD $*
+java ${JAVA_OPTIONS} -cp "${ACTUAL_JAR}" net.sf.sparql.benchmarking.commands.$CMD $*

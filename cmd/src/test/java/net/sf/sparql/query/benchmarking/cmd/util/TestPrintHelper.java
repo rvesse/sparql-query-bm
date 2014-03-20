@@ -35,6 +35,7 @@ package net.sf.sparql.query.benchmarking.cmd.util;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import net.sf.sparql.benchmarking.commands.util.PrintHelper;
 import net.sf.sparql.benchmarking.loader.AbstractNvpOperationLoader;
 
 import org.junit.Assert;

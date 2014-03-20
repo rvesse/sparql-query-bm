@@ -3,11 +3,19 @@
 SPARQL Benchmarker is a set of simple command line tools that can be used to test
 SPARQL systems accessible via HTTP
 
+# General Script Options
+
+All scripts will respect a `JAVA_OPTIONS` environment variable if set which can be 
+used to pass custom options to the JVM.
+
+The \*nix scripts will automatically attempt to locate the JAR file relative to where
+they are run, the Windows scripts currently do not have this behaviour.
+
 ## Benchmarking
 
 The `benchmark` command is used to benchmark the performance of a SPARQL system.
 
-On *nix systems you can invoke the benchmarker like so:
+On \*nix systems you can invoke the benchmarker like so:
 
     ./benchmark [options]
 
@@ -26,7 +34,7 @@ To see full usage summary run with the `-h` or `--help` option
 The `soak` command is used to stress test a SPARQL system by continually running tests against it
 for some user defined period of time.
 
-On *nix systems you can invoke the soak tester like so:
+On \*nix systems you can invoke the soak tester like so:
 
     ./soak [options]
   
