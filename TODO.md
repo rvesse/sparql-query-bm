@@ -13,5 +13,4 @@ The following are a list of planned enhancements for this project:
     - Adjust all values for the endpoint by this delay
 - XSLT Stylesheets for rendering XML results in usable form in browsers
 - In-memory operation support
-    - i.e. allow for benchmarking without using HTTP
     - Some basic operations have been added but more could be supported
