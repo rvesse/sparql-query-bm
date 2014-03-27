@@ -102,11 +102,15 @@ public abstract class AbstractOperationLoader implements OperationLoader {
     protected File resolveFile(File baseDir, String filename) throws FileNotFoundException {
         File f = new File(filename);
         if (!f.isAbsolute()) {
-            File base = new File(baseDir.getAbsolutePath());
-            if (!base.isDirectory())
-                base = base.getParentFile();
-            f = new File(base.getAbsolutePath() + File.separatorChar + filename);
-            logger.info("Made relative path '" + filename + "' into absolute path '" + f.getAbsolutePath() + "'");
+            if (baseDir != null) {
+                File base = new File(baseDir.getAbsolutePath());
+                if (!base.isDirectory())
+                    base = base.getParentFile();
+                f = new File(base.getAbsolutePath() + File.separatorChar + filename);
+                logger.info("Made relative path '" + filename + "' into absolute path '" + f.getAbsolutePath() + "'");
+            } else {
+                logger.warn("Can't make relative path '" + filename + "' into absolute path as base directory is null");
+            }
         }
         if (!f.exists()) {
             // Try and see if this is actually a resource
