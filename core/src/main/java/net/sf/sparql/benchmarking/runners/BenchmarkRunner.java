@@ -102,7 +102,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
                 reportProgress(options);
             } else {
                 halt(options,
-                        "Sanity Checks failed to meet required sanity level, please ensure that the endpoint specified is actually available and working.  If this is the case try calling setSanityCheckLevel(0) and retrying");
+                        "Sanity Checks failed to meet required sanity level, please ensure that the endpoint specified is actually available and working.  If this is the case try setting the sanity checking level to zero and retrying");
             }
         } else {
             reportProgress(options, "Sanity Check skipped by user...");
