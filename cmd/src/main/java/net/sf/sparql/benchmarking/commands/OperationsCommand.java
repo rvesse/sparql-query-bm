@@ -101,7 +101,7 @@ public class OperationsCommand {
      *            Arguments
      */
     public static void main(String[] args) {
-        int exitCode = 0;
+        int exitCode = ExitCodes.SUCCESS;
         try {
             // Parse options
             OperationsCommand cmd = SingleCommand.singleCommand(OperationsCommand.class).parse(args);
@@ -116,29 +116,29 @@ public class OperationsCommand {
             cmd.run();
 
             // Successful exit
-            exitCode = 0;
+            exitCode = ExitCodes.SUCCESS;
         } catch (ParseOptionMissingException e) {
             if (!ArrayUtils.contains(args, "--help")) {
                 System.err.println(AbstractCommand.ANSI_RED + e.getMessage());
                 System.err.println();
             }
             AbstractCommand.showUsage(OperationsCommand.class);
-            exitCode = 1;
+            exitCode = ExitCodes.REQUIRED_OPTION_MISSING;
         } catch (ParseOptionMissingValueException e) {
             AbstractCommand.showUsage(OperationsCommand.class);
-            exitCode = 2;
+            exitCode = ExitCodes.REQUIRED_OPTION_VALUE_MISSING;
         } catch (ParseArgumentsMissingException e) {
             System.err.println(AbstractCommand.ANSI_RED + e.getMessage());
             System.err.println();
-            exitCode = 3;
+            exitCode = ExitCodes.REQUIRED_ARGUMENTS_MISSING;
         } catch (ParseArgumentsUnexpectedException e) {
             System.err.println(AbstractCommand.ANSI_RED + e.getMessage());
             System.err.println();
-            exitCode = 4;
+            exitCode = ExitCodes.UNEXPECTED_ARGUMENT;
         } catch (Throwable e) {
             System.err.println(AbstractCommand.ANSI_RED + e.getMessage());
             e.printStackTrace(System.err);
-            exitCode = 10;
+            exitCode = ExitCodes.UNEXPECTED_ERROR;
         } finally {
             System.err.println(AbstractCommand.ANSI_RESET);
             System.exit(exitCode);

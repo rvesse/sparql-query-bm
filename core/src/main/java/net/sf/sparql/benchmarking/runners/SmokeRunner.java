@@ -8,7 +8,6 @@ import org.joda.time.Instant;
 
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.options.Options;
-import net.sf.sparql.benchmarking.options.SoakOptions;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.util.ConvertUtils;

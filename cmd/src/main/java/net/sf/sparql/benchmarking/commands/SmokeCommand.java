@@ -28,6 +28,8 @@ import io.airlift.command.SingleCommand;
 @Command(name = "smoke", description = "Runs a smoke test which consists of running the configured operation mix once to see whether all operations pass successfully.")
 public class SmokeCommand extends AbstractCommand {
 
+	public static final int SMOKE_TESTS_FAILED = 15;
+
 	/**
 	 * Enable random order option
 	 */
@@ -41,7 +43,7 @@ public class SmokeCommand extends AbstractCommand {
 	 *            Arguments
 	 */
 	public static void main(String[] args) {
-		int exitCode = 0;
+		int exitCode = ExitCodes.SUCCESS;
 		try {
 			// Parse options
 			SmokeCommand cmd = SingleCommand.singleCommand(SmokeCommand.class)
@@ -53,40 +55,37 @@ public class SmokeCommand extends AbstractCommand {
 			}
 
 			// Run testing
-			cmd.run();
-
-			// Successful exit
-			exitCode = 0;
+			exitCode = cmd.run();
 		} catch (ParseOptionMissingException e) {
 			if (!ArrayUtils.contains(args, "--help")) {
 				System.err.println(ANSI_RED + e.getMessage());
 				System.err.println();
 			}
 			showUsage(SmokeCommand.class);
-			exitCode = 1;
+			exitCode = ExitCodes.REQUIRED_OPTION_MISSING;
 		} catch (ParseOptionMissingValueException e) {
 			if (!ArrayUtils.contains(args, "--help")) {
 				System.err.println(ANSI_RED + e.getMessage());
 				System.err.println();
 			}
 			showUsage(SmokeCommand.class);
-			exitCode = 2;
+			exitCode = ExitCodes.REQUIRED_OPTION_VALUE_MISSING;
 		} catch (ParseArgumentsMissingException e) {
 			System.err.println(ANSI_RED + e.getMessage());
 			System.err.println();
-			exitCode = 3;
+			exitCode = ExitCodes.REQUIRED_ARGUMENTS_MISSING;
 		} catch (ParseArgumentsUnexpectedException e) {
 			System.err.println(ANSI_RED + e.getMessage());
 			System.err.println();
-			exitCode = 4;
+			exitCode = ExitCodes.UNEXPECTED_ARGUMENT;
 		} catch (IOException e) {
 			System.err.println(ANSI_RED + e.getMessage());
 			System.err.println();
-			exitCode = 5;
+			exitCode = ExitCodes.IO_ERROR;
 		} catch (Throwable e) {
 			System.err.println(ANSI_RED + e.getMessage());
 			e.printStackTrace(System.err);
-			exitCode = 10;
+			exitCode = ExitCodes.UNEXPECTED_ERROR;
 		} finally {
 			System.err.println(ANSI_RESET);
 			System.exit(exitCode);
@@ -94,7 +93,7 @@ public class SmokeCommand extends AbstractCommand {
 	}
 
 	@Override
-	protected void run() throws IOException {
+	protected int run() throws IOException {
 		// Prepare options
 		Options options = new OptionsImpl();
 		this.noRandom = true;
@@ -103,6 +102,11 @@ public class SmokeCommand extends AbstractCommand {
 		// Run soak tests
 		AbstractRunner<Options> runner = new SmokeRunner();
 		runner.run(options);
+
+		// Return appropriate error code depending on whether there were any
+		// errors
+		return options.getOperationMix().getStats().getTotalErrors() == 0 ? ExitCodes.SUCCESS
+				: ExitCodes.FAILURE;
 	}
 
 	/**

@@ -43,6 +43,22 @@ On Windows systems you can invoke the soak tester like so:
   
 To see full usage summary run with the `-h` or `--help` option
 
+## Smoke Testing
+
+The `smoke` command is used to run a set of tests once against a SPARQL system to see whether they
+pass or fail
+
+On \*nix systems you can invoke the smoke tester like so:
+
+    ./smoke [options]
+  
+On Windows systems you can invoke the smoke tester like so:
+
+    smoke.bat [options]
+  
+To see full usage summary run with the `-h` or `--help` option
+
+
 ## Operations
 
 The `operations` command provides information about the supported operations.

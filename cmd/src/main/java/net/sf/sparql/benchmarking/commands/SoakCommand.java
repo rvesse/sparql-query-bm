@@ -77,7 +77,7 @@ public class SoakCommand extends AbstractCommand {
      *            Arguments
      */
     public static void main(String[] args) {
-        int exitCode = 0;
+        int exitCode = ExitCodes.SUCCESS;
         try {
             // Parse options
             SoakCommand cmd = SingleCommand.singleCommand(SoakCommand.class).parse(args);
@@ -88,40 +88,37 @@ public class SoakCommand extends AbstractCommand {
             }
 
             // Run testing
-            cmd.run();
-
-            // Successful exit
-            exitCode = 0;
+            exitCode = cmd.run();
         } catch (ParseOptionMissingException e) {
             if (!ArrayUtils.contains(args, "--help")) {
                 System.err.println(ANSI_RED + e.getMessage());
                 System.err.println();
             }
             showUsage(SoakCommand.class);
-            exitCode = 1;
+            exitCode = ExitCodes.REQUIRED_OPTION_MISSING;
         } catch (ParseOptionMissingValueException e) {
             if (!ArrayUtils.contains(args, "--help")) {
                 System.err.println(ANSI_RED + e.getMessage());
                 System.err.println();
             }
             showUsage(SoakCommand.class);
-            exitCode = 2;
+            exitCode = ExitCodes.REQUIRED_OPTION_VALUE_MISSING;
         } catch (ParseArgumentsMissingException e) {
             System.err.println(ANSI_RED + e.getMessage());
             System.err.println();
-            exitCode = 3;
+            exitCode = ExitCodes.REQUIRED_ARGUMENTS_MISSING;
         } catch (ParseArgumentsUnexpectedException e) {
             System.err.println(ANSI_RED + e.getMessage());
             System.err.println();
-            exitCode = 4;
+            exitCode = ExitCodes.UNEXPECTED_ARGUMENT;
         } catch (IOException e) {
             System.err.println(ANSI_RED + e.getMessage());
             System.err.println();
-            exitCode = 5;
+            exitCode = ExitCodes.IO_ERROR;
         } catch (Throwable e) {
             System.err.println(ANSI_RED + e.getMessage());
             e.printStackTrace(System.err);
-            exitCode = 10;
+            exitCode = ExitCodes.UNEXPECTED_ERROR;
         } finally {
             System.err.println(ANSI_RESET);
             System.exit(exitCode);
@@ -129,7 +126,7 @@ public class SoakCommand extends AbstractCommand {
     }
 
     @Override
-    protected void run() throws IOException {
+    protected int run() throws IOException {
         // Prepare options
         SoakOptions options = new SoakOptions();
         this.applyStandardOptions(options);
@@ -138,6 +135,9 @@ public class SoakCommand extends AbstractCommand {
         // Run soak tests
         AbstractRunner<SoakOptions> runner = new SoakRunner();
         runner.run(options);
+        
+        // Soak tests always return SUCCESS
+        return ExitCodes.SUCCESS;
     }
 
     /**

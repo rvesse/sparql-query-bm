@@ -57,127 +57,129 @@ import net.sf.sparql.benchmarking.runners.BenchmarkRunner;
 @Command(name = "benchmark", description = "Runs a benchmark which consists of running the configured operation mix a set number of times and calculating statistics over those runs.  Benchmarking behaviour can be configured in various ways to cope with different desired benchmark characteristics and systems to be benchmarked.")
 public class BenchmarkCommand extends AbstractCommand {
 
-    /**
-     * Runs option
-     */
-    @Option(name = { "-r", "--runs" }, arity = 1, required = true, title = "Runs", description = "Sets the number of timed runs used for the benchmark statistics")
-    public int runs = BenchmarkOptions.DEFAULT_RUNS;
+	/**
+	 * Runs option
+	 */
+	@Option(name = { "-r", "--runs" }, arity = 1, required = true, title = "Runs", description = "Sets the number of timed runs used for the benchmark statistics")
+	public int runs = BenchmarkOptions.DEFAULT_RUNS;
 
-    /**
-     * Warm ups option
-     */
-    @Option(name = { "-w", "--warmups" }, arity = 1, title = "Warmups", description = "Sets the number of warmup runs which are run to warm up the system before performing timed runs")
-    public int warmups = BenchmarkOptions.DEFAULT_WARMUPS;
+	/**
+	 * Warm ups option
+	 */
+	@Option(name = { "-w", "--warmups" }, arity = 1, title = "Warmups", description = "Sets the number of warmup runs which are run to warm up the system before performing timed runs")
+	public int warmups = BenchmarkOptions.DEFAULT_WARMUPS;
 
-    /**
-     * Outliers option
-     */
-    @Option(name = { "-o", "--outliers" }, arity = 1, title = "Outliers", description = "Sets the number of outliers which will be discarded from the timed runs, the set number of best and worst runs will be discarded in order to reduce skew in the calculated statistics that may be introduced by an outlying run")
-    public int outliers = BenchmarkOptions.DEFAULT_OUTLIERS;
+	/**
+	 * Outliers option
+	 */
+	@Option(name = { "-o", "--outliers" }, arity = 1, title = "Outliers", description = "Sets the number of outliers which will be discarded from the timed runs, the set number of best and worst runs will be discarded in order to reduce skew in the calculated statistics that may be introduced by an outlying run")
+	public int outliers = BenchmarkOptions.DEFAULT_OUTLIERS;
 
-    /**
-     * Allow overwrite option
-     */
-    @Option(name = { "--overwrite", "--allow-overwrite" }, description = "Enables overwriting of existing result files, off by default to make it difficult for you to accidentally overwrite the results of a previous run with those of a subsequent run")
-    public boolean allowOverwrite = false;
+	/**
+	 * Allow overwrite option
+	 */
+	@Option(name = { "--overwrite", "--allow-overwrite" }, description = "Enables overwriting of existing result files, off by default to make it difficult for you to accidentally overwrite the results of a previous run with those of a subsequent run")
+	public boolean allowOverwrite = false;
 
-    /**
-     * CSV result file option
-     */
-    @Option(name = { "-c", "--csv" }, arity = 1, title = "CSV Filename", description = "Sets the name of the CSV results file to be used, if not set then no CSV results will be produced")
-    public String csvResultsFile;
+	/**
+	 * CSV result file option
+	 */
+	@Option(name = { "-c", "--csv" }, arity = 1, title = "CSV Filename", description = "Sets the name of the CSV results file to be used, if not set then no CSV results will be produced")
+	public String csvResultsFile;
 
-    /**
-     * XML result file option
-     */
-    @Option(name = { "-x", "--xml" }, arity = 1, title = "XML Filename", description = "Sets the name of the XML results file to be used, if not set then no XML results will be produced")
-    public String xmlResultsFile;
+	/**
+	 * XML result file option
+	 */
+	@Option(name = { "-x", "--xml" }, arity = 1, title = "XML Filename", description = "Sets the name of the XML results file to be used, if not set then no XML results will be produced")
+	public String xmlResultsFile;
 
-    /**
-     * Runs the command line benchmarking process
-     * 
-     * @param args
-     *            Arguments
-     */
-    public static void main(String[] args) {
-        int exitCode = 0;
-        try {
-            // Parse options
-            AbstractCommand cmd = SingleCommand.singleCommand(BenchmarkCommand.class).parse(args);
+	/**
+	 * Runs the command line benchmarking process
+	 * 
+	 * @param args
+	 *            Arguments
+	 */
+	public static void main(String[] args) {
+		int exitCode = 0;
+		try {
+			// Parse options
+			AbstractCommand cmd = SingleCommand.singleCommand(
+					BenchmarkCommand.class).parse(args);
 
-            // Show help if requested
-            if (cmd.helpOption.showHelpIfRequested()) {
-                return;
-            }
+			// Show help if requested
+			if (cmd.helpOption.showHelpIfRequested()) {
+				return;
+			}
 
-            // Run testing
-            cmd.run();
+			// Run testing
+			exitCode = cmd.run();
+		} catch (ParseOptionMissingException e) {
+			if (!ArrayUtils.contains(args, "--help")) {
+				System.err.println(ANSI_RED + e.getMessage());
+				System.err.println();
+			}
+			showUsage(BenchmarkCommand.class);
+			exitCode = ExitCodes.REQUIRED_OPTION_MISSING;
+		} catch (ParseOptionMissingValueException e) {
+			if (!ArrayUtils.contains(args, "--help")) {
+				System.err.println(ANSI_RED + e.getMessage());
+				System.err.println();
+			}
+			showUsage(BenchmarkCommand.class);
+			exitCode = ExitCodes.REQUIRED_OPTION_VALUE_MISSING;
+		} catch (ParseArgumentsMissingException e) {
+			System.err.println(ANSI_RED + e.getMessage());
+			System.err.println();
+			exitCode = ExitCodes.REQUIRED_ARGUMENTS_MISSING;
+		} catch (ParseArgumentsUnexpectedException e) {
+			System.err.println(ANSI_RED + e.getMessage());
+			System.err.println();
+			exitCode = ExitCodes.UNEXPECTED_ARGUMENT;
+		} catch (IOException e) {
+			System.err.println(ANSI_RED + e.getMessage());
+			System.err.println();
+			exitCode = ExitCodes.IO_ERROR;
+		} catch (Throwable e) {
+			System.err.println(ANSI_RED + e.getMessage());
+			e.printStackTrace(System.err);
+			exitCode = ExitCodes.UNEXPECTED_ERROR;
+		} finally {
+			System.err.println(ANSI_RESET);
+			System.exit(exitCode);
+		}
+	}
 
-            // Successful exit
-            exitCode = 0;
-        } catch (ParseOptionMissingException e) {
-            if (!ArrayUtils.contains(args, "--help")) {
-                System.err.println(ANSI_RED + e.getMessage());
-                System.err.println();
-            }
-            showUsage(BenchmarkCommand.class);
-            exitCode = 1;
-        } catch (ParseOptionMissingValueException e) {
-            if (!ArrayUtils.contains(args, "--help")) {
-                System.err.println(ANSI_RED + e.getMessage());
-                System.err.println();
-            }
-            showUsage(BenchmarkCommand.class);
-            exitCode = 2;
-        } catch (ParseArgumentsMissingException e) {
-            System.err.println(ANSI_RED + e.getMessage());
-            System.err.println();
-            exitCode = 3;
-        } catch (ParseArgumentsUnexpectedException e) {
-            System.err.println(ANSI_RED + e.getMessage());
-            System.err.println();
-            exitCode = 4;
-        } catch (IOException e) {
-            System.err.println(ANSI_RED + e.getMessage());
-            System.err.println();
-            exitCode = 5;
-        } catch (Throwable e) {
-            System.err.println(ANSI_RED + e.getMessage());
-            e.printStackTrace(System.err);
-            exitCode = 10;
-        } finally {
-            System.err.println(ANSI_RESET);
-            System.exit(exitCode);
-        }
-    }
+	@Override
+	protected int run() throws IOException {
+		// Prepare options
+		BenchmarkOptions options = new BenchmarkOptions();
+		this.applyStandardOptions(options);
+		this.applyBenchmarkOptions(options);
 
-    @Override
-    protected void run() throws IOException {
-        // Prepare options
-        BenchmarkOptions options = new BenchmarkOptions();
-        this.applyStandardOptions(options);
-        this.applyBenchmarkOptions(options);
+		// Run benchmark
+		AbstractRunner<BenchmarkOptions> runner = new BenchmarkRunner();
+		runner.run(options);
 
-        // Run benchmark
-        AbstractRunner<BenchmarkOptions> runner = new BenchmarkRunner();
-        runner.run(options);
-    }
+		// Benchmarks always return success even if errors occurred as part of
+		// the benchmarking
+		return ExitCodes.SUCCESS;
+	}
 
-    /**
-     * Applies benchmarking options provided by this command
-     * 
-     * @param options
-     *            Benchmark options to populate
-     */
-    protected <T extends BenchmarkOptions> void applyBenchmarkOptions(T options) {
-        // Results options
-        options.setAllowOverwrite(this.allowOverwrite);
-        options.setCsvResultsFile(this.csvResultsFile);
-        options.setXmlResultsFile(this.xmlResultsFile);
+	/**
+	 * Applies benchmarking options provided by this command
+	 * 
+	 * @param options
+	 *            Benchmark options to populate
+	 */
+	protected <T extends BenchmarkOptions> void applyBenchmarkOptions(T options) {
+		// Results options
+		options.setAllowOverwrite(this.allowOverwrite);
+		options.setCsvResultsFile(this.csvResultsFile);
+		options.setXmlResultsFile(this.xmlResultsFile);
 
-        // Benchmarking options
-        options.setRuns(this.runs);
-        options.setWarmups(this.warmups);
-        options.setOutliers(this.outliers);
-    }
+		// Benchmarking options
+		options.setRuns(this.runs);
+		options.setWarmups(this.warmups);
+		options.setOutliers(this.outliers);
+	}
 }
