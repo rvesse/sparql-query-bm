@@ -5,15 +5,16 @@ Over time it has evolved into a general purpose API that while designed primaril
 testing SPARQL servers (including queries, updates and GSP requests) can in principal
 be extended to test much more than that.
 
-It supports the testing of both remote SPARQL services and of ARQ in-memory datasets.
+It supports the testing of both remote SPARQL services and of any database than can be exposed via ARQs query API.
 
 The API is described by javadoc available at http://sparql-query-bm.sourceforge.net/javadoc/
 and in the documentation at https://sourceforge.net/p/sparql-query-bm/wiki/
 
-The command line currently comprises three main tools:
+The command line currently comprises the following tools:
 
-- `benchmark` - Runs a benchmark of operations against a SPARQL server.
-- `soak` - Runs a soak test of operations against a SPARQL server.
+- `benchmark` - Runs a benchmark i.e. a performance test
+- `soak` - Runs a soak test i.e. a prolonged load test
+- `smoke` - Runs a smoke test i.e. a single run of the operation mix to see if anything produces an error
 - `operations` - Provides command line help with available operations
 
 See the [CLI documentation](https://sourceforge.net/p/sparql-query-bm/wiki/CLI) for examples
