@@ -264,9 +264,13 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
 			try {
 				// Run the operation using a 30 second timeout
 				options.getExecutor().submit(task);
-				task.get(30, TimeUnit.SECONDS);
-				reportProgress(options, "OK");
-				passed++;
+				OperationRun run = task.get(30, TimeUnit.SECONDS);
+				if (run.wasSuccessful()) {
+					reportProgress(options, "OK");
+					passed++;
+				} else {
+					reportProgress(options, "Failed with error - " + run.getErrorMessage());
+				}
 			} catch (TimeoutException tEx) {
 				logger.error("Sanity Check execeeded 30 Second Timeout - "
 						+ tEx.getMessage());
