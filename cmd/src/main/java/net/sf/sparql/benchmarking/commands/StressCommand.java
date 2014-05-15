@@ -134,7 +134,7 @@ public class StressCommand extends AbstractCommand {
         StressOptions options = new StressOptions();
         this.applyStandardOptions(options);
         this.applyStressOptions(options);
-
+        
         // Run soak tests
         AbstractRunner<StressOptions> runner = new StressRunner();
         runner.run(options);

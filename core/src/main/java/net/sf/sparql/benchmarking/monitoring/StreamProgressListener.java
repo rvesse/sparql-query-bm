@@ -39,7 +39,6 @@ import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
-import net.sf.sparql.benchmarking.runners.StressRunner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.stats.OperationRun;
 
@@ -132,11 +131,12 @@ public class StreamProgressListener implements ProgressListener {
 	}
 
 	/**
-	 * Sets whether to force threaded output, normally output is only threaded
-	 * when the options explicitly declare a number of parallel threads > 1.
-	 * However some runners like the {@link StressRunner} may introduce
-	 * additional threads as part of their testing process so being able to
-	 * disambiguate the output from different threads becomes important
+	 * Sets whether to force threaded output i.e. output is prefixed with thread
+	 * information to disambiguate output from different threads. The normal
+	 * behaviour is that output is only threaded when the options explicitly
+	 * declare a number of parallel threads > 1 but sometimes there may be many
+	 * threads in use even when parallel threads is set to 1 due to the
+	 * interaction of different components within the system.
 	 * 
 	 * @param force
 	 *            True if thread disambiguated output should be forced

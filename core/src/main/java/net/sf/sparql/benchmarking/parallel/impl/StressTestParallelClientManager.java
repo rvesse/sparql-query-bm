@@ -99,6 +99,7 @@ public class StressTestParallelClientManager implements
 							"Starting a run with "
 									+ Math.min(this.currentThreads, maxThreads)
 									+ " clients...");
+			this.options.setParallelThreads(this.currentThreads);
 
 			// Start the required number of clients, they won't start doing any
 			// work until we finish this as they rely on the isReady() method to
