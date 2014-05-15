@@ -107,20 +107,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
 		reportSoakOptions(options);
 
 		// Sanity Checking
-		if (options.getSanityCheckLevel() > 0) {
-			if (checkSanity(options)) {
-				reportProgress(options,
-						"Sanity Checks passed required sanity level...");
-				reportProgress(options);
-			} else {
-				reportProgress(
-						options,
-						"Sanity Checks failed to meet required sanity level, please ensure that the endpoint specified is actually available and working.  If this is the case try setting the sanity checking level to zero and retrying");
-				System.exit(1);
-			}
-		} else {
-			reportProgress(options, "Sanity Check skipped by user...");
-		}
+		runSanityChecks(options);
 
 		// Summarize operations to be used
 		reportProgress(options, "Starting soak testing...");
