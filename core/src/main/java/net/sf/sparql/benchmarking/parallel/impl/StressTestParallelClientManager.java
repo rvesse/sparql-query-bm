@@ -32,8 +32,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.parallel.impl;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import net.sf.sparql.benchmarking.options.StressOptions;
-import net.sf.sparql.benchmarking.parallel.AbstractParallelClientManager;
+import net.sf.sparql.benchmarking.parallel.ParallelClient;
+import net.sf.sparql.benchmarking.parallel.ParallelClientManager;
 import net.sf.sparql.benchmarking.parallel.ParallelClientTask;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.util.ConvertUtils;
@@ -44,12 +48,17 @@ import net.sf.sparql.benchmarking.util.ConvertUtils;
  * @author rvesse
  * 
  */
-public class StressTestParallelClientManager extends
-		AbstractParallelClientManager<StressOptions> {
+public class StressTestParallelClientManager implements
+		ParallelClientManager<StressOptions> {
 
-	private int startedRuns = 0, completedRuns = 0;
+	private Runner<StressOptions> runner;
+	private StressOptions options;
 	private long startTime = System.nanoTime();
-	private long currentThreads = 0, currentTargetRuns = 0;
+	private int currentThreads = 0;
+	private volatile boolean ready = false;
+	private boolean halt = false;
+	private Set<Long> runningClients = new HashSet<Long>();
+	private int completedRuns = 0;
 
 	/**
 	 * Creates a new Parallel Client Manager
@@ -61,7 +70,8 @@ public class StressTestParallelClientManager extends
 	 */
 	public StressTestParallelClientManager(Runner<StressOptions> runner,
 			StressOptions options) {
-		super(runner, options);
+		this.runner = runner;
+		this.options = options;
 	}
 
 	/**
@@ -75,125 +85,120 @@ public class StressTestParallelClientManager extends
 
 	@Override
 	public Object call() throws Exception {
-		this.currentThreads = this.getOptions().getParallelThreads();
-		this.currentTargetRuns = this.currentThreads;
+		this.runner.reportProgress(this.options,
+				"Parallel Client manager starting...");
 
-		this.getRunner().reportProgress(
-				this.getOptions(),
-				"Spawned intial " + this.currentThreads
-						+ " threads for stress testing");
-		return super.call();
-	}
+		this.currentThreads = this.options.getParallelThreads();
+		int maxThreads = this.options.getMaxThreads() > 0 ? this.options
+				.getMaxThreads() : Integer.MAX_VALUE;
 
-	@Override
-	public synchronized boolean shouldRun() {
-		if (this.shouldHalt())
-			return false;
+		while (this.currentThreads <= maxThreads && !this.exceededMaxRuntime()) {
+			this.runner
+					.reportProgress(
+							this.options,
+							"Starting a run with "
+									+ Math.min(this.currentThreads, maxThreads)
+									+ " clients...");
 
-		// Check max runtime first
-		if (this.getOptions().getMaxRuntime() > 0) {
-			double runtime = ConvertUtils.toMinutes(System.nanoTime()
-					- this.startTime);
-			if (runtime >= this.getOptions().getMaxRuntime())
-				return false;
+			// Start the required number of clients, they won't start doing any
+			// work until we finish this as they rely on the isReady() method to
+			// determine when to start work and it will return false until after
+			// this loop
+			for (int i = 1; i <= Math.min(this.currentThreads, maxThreads); i++) {
+				ParallelClientTask<StressOptions> task = new ParallelClientTask<StressOptions>(
+						this, i);
+				this.options.getExecutor().submit(task);
+				this.runner.reportProgress(this.options,
+						"Created Parallel Client ID " + i);
+			}
+			this.runner.reportProgress(this.options,
+					"Parallel Client manager is starting clients...");
+			this.ready = true;
+
+			// And then wait until all runs have finished
+			while (!this.hasFinished() && !this.halt) {
+				Thread.sleep(100);
+			}
+			this.runner.reportProgress(this.options, "Completed a run with "
+					+ this.currentThreads + " clients...");
+
+			// Now increase the amount of threads appropriately
+			this.currentThreads *= this.options.getRampUpFactor();
+			synchronized (this.runningClients) {
+				this.runningClients.clear();
+			}
 		}
 
-		// Check if we need to spawn additional threads at this point
-		// This includes the check for having reached the maximum number of
-		// threads
-		if (!spawnThreads())
-			return false;
-
-		// Otherwise good to go
-		return true;
-	}
-
-	@Override
-	public synchronized boolean startRun() {
-		if (this.shouldHalt())
-			return false;
-
-		// Check max runtime first
-		if (this.getOptions().getMaxRuntime() > 0) {
-			double runtime = ConvertUtils.toMinutes(System.nanoTime()
-					- this.startTime);
-			if (runtime >= this.getOptions().getMaxRuntime())
-				return false;
-		}
-
-		// Check if we need to spawn additional threads at this point
-		// This includes the check for having reached the maximum number of
-		// threads
-		if (!spawnThreads())
-			return false;
-
-		// Otherwise good to go
-		startedRuns++;
-		return true;
+		return null;
 	}
 
 	/**
-	 * Tries to spawn additional threads when necessary
+	 * Gets whether the maximum run time has been exceeded
 	 * 
-	 * @return True if no additional threads were necessary or they were
-	 *         necessary and were spawned successfully, false if no additional
-	 *         threads are necessary
+	 * @return True if maximum runtime has been exceeded
 	 */
-	protected synchronized boolean spawnThreads() {
-		// Check if we should halt
-		if (this.shouldHalt())
+	protected boolean exceededMaxRuntime() {
+		double runtime = ConvertUtils.toMinutes(System.nanoTime()
+				- this.startTime);
+		return runtime >= this.getOptions().getMaxRuntime();
+	}
+
+	@Override
+	public boolean shouldRun() {
+		if (this.halt)
 			return false;
-
-		// Not necessary to spawn additional threads at this time since we've
-		// started fewer runs than our current target
-		if (this.startedRuns < this.currentTargetRuns)
-			return true;
-
-		// Handle the case where max threads is set to unlimited appropriately
-		long maxThreads = this.getOptions().getMaxThreads() > 0 ? this
-				.getOptions().getMaxThreads() : Long.MAX_VALUE;
-		if (this.currentThreads < maxThreads) {
-			// Additional threads are needed
-			long additionalThreads = Math.min(this.currentThreads
-					* this.getOptions().getRampUpFactor(), maxThreads);
-			additionalThreads = additionalThreads - this.currentThreads;
-
-			int baseId = (int) this.currentThreads;
-			this.currentThreads += additionalThreads;
-			this.currentTargetRuns = this.currentTargetRuns
-					+ this.currentThreads;
-
-			// Spawn threads
-			this.getRunner().reportProgress(
-					this.getOptions(),
-					"Spawning additional " + additionalThreads
-							+ " to ramp up stress testing to a total of "
-							+ this.currentThreads + " threads");
-			for (int i = 1; i <= additionalThreads; i++) {
-				ParallelClientTask<StressOptions> task = new ParallelClientTask<StressOptions>(
-						this, baseId + i);
-				this.getOptions().getExecutor().submit(task);
-				this.getRunner().reportProgress(this.getOptions(),
-						"Spawned additional Parallel Client ID " + i);
-			}
-
-			return true;
+		if (this.exceededMaxRuntime())
+			return false;
+		synchronized (this.runningClients) {
+			if (this.runningClients.contains(Thread.currentThread().getId()))
+				return false;
 		}
-
-		// Already at maximum threads
-		return false;
+		return true;
 	}
 
 	@Override
-	public synchronized int completeRun() {
-		completedRuns++;
-		int x = completedRuns;
-		return x;
+	public boolean startRun() {
+		return shouldRun();
 	}
 
 	@Override
-	public synchronized boolean hasFinished() {
-		return !this.shouldRun() && this.completedRuns == this.startedRuns;
+	public int completeRun() {
+		synchronized (this.runningClients) {
+			int completionId = ++this.completedRuns;
+			this.runningClients.add(Thread.currentThread().getId());
+			return completionId;
+		}
+	}
+
+	@Override
+	public boolean hasFinished() {
+		return this.exceededMaxRuntime()
+				|| this.runningClients.size() == this.currentThreads;
+	}
+
+	@Override
+	public void halt() {
+		this.halt = true;
+	}
+
+	@Override
+	public boolean isReady() {
+		return this.ready;
+	}
+
+	@Override
+	public Runner<StressOptions> getRunner() {
+		return this.runner;
+	}
+
+	@Override
+	public StressOptions getOptions() {
+		return this.options;
+	}
+
+	@Override
+	public ParallelClient<StressOptions> createClient(int id) {
+		return new DefaultParallelClient<StressOptions>(this, id);
 	}
 
 }

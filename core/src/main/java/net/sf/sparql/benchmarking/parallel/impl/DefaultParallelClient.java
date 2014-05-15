@@ -68,6 +68,8 @@ public class DefaultParallelClient<T extends Options> extends AbstractParallelCl
 
     @Override
     public Object call() throws Exception {
+    	Thread.currentThread().setName("Parallel Client " + this.getID());
+    	
         ParallelClientManager<T> manager = this.getManager();
         T options = manager.getOptions();
         Runner<T> runner = manager.getRunner();
@@ -110,12 +112,12 @@ public class DefaultParallelClient<T extends Options> extends AbstractParallelCl
                         + " (Operation " + operationMix.getOperation(maxOperationId).getName() + ")");
                 runner.reportProgress(options);
             } catch (Exception e) {
-                // Inform manager it needs to halt other clients
-                manager.halt();
-
                 // Log Error
                 logger.error(e.getMessage());
                 if (options.getHaltOnError() || options.getHaltAny()) {
+                    // Inform manager it needs to halt other clients
+                    manager.halt();
+                	
                     runner.halt(options, "Operation Mix run failed in Client " + this.getID() + " - " + e.getMessage());
                 }
             }
