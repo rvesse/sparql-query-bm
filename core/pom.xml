@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>core</artifactId>
-	<name>SPARQL Query Benchmarking Core</name>
+	<name>SPARQL Query Benchmarker - Core API</name>
 	<description>An API for benchmarking the performance of queries against arbitrary SPARQL endpoint</description>
 	<url>http://sourceforge.net/projects/sparql-query-bm</url>
 

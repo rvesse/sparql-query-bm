@@ -5,7 +5,7 @@
 	<artifactId>parent</artifactId>
 	<version>2.0.0-SNAPSHOT</version>
 	<name>SPARQL Query Benchmarker</name>
-	<description>Parent project for the Benchmarker Core (API) and the CLI</description>
+	<description>Parent for the SPARQL Query Benchmarker</description>
 	<url>http://sourceforge.net/projects/sparql-query-bm</url>
 	<packaging>pom</packaging>
 
@@ -52,6 +52,7 @@
 	<modules>
 		<module>core</module>
 		<module>cmd</module>
+		<module>distribution</module>
 	</modules>
 
 	<dependencyManagement>

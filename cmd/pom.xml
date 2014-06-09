@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cmd</artifactId>
-	<name>SPARQL Query Benchmarking CLI</name>
+	<name>SPARQL Query Benchmarker - CLI</name>
 	<description>A command line interface to the benchmarking core</description>
 	<url>http://sourceforge.net/projects/sparql-query-bm</url>
 
