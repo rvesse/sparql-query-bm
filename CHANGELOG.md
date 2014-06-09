@@ -1,13 +1,13 @@
 # Change Log
 
-## Version 2.0.0 (Not yet released)
+## Version 2.0.0 (June 9th 2014)
 - Support arbitrary operations e.g. updates, sleeps, parameterized queries etc.
 - Support running more than just benchmarks e.g. soak testing
 - Support for plugging in arbitrary custom operations
 - Refactor CLI to use Airline to make it much more user friendly and easy to extend
-- Add operations and soak commands to CLI
+- Add operations, soak, smoke and stress commands to CLI
 - Support for testing against in-memory datasets
-- Bumped dependencies to latest Jena and ARQ (Jena 2.11.2-SNAPSHOT and ARQ 2.11.2-SNAPSHOT)
+- Bumped dependencies to latest Jena and ARQ (Jena 2.11.2 and ARQ 2.11.2)
 
 ## Version 1.1.0 (October 8th 2013)
 - Bumped dependencies to latest Jena and ARQ (Jena 2.11.0 and ARQ 2.11.0)

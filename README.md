@@ -15,6 +15,7 @@ The command line currently comprises the following tools:
 - `benchmark` - Runs a benchmark i.e. a performance test
 - `soak` - Runs a soak test i.e. a prolonged load test
 - `smoke` - Runs a smoke test i.e. a single run of the operation mix to see if anything produces an error
+- `stress` - Runs a stress test i.e. repeatedly runs an operation mix under progressively higher load (parallel clients) to see if a system exhibits issues under high load
 - `operations` - Provides command line help with available operations
 
 See the [CLI documentation](https://sourceforge.net/p/sparql-query-bm/wiki/CLI) for examples

@@ -58,6 +58,20 @@ On Windows systems you can invoke the smoke tester like so:
   
 To see full usage summary run with the `-h` or `--help` option
 
+## Smoke Testing
+
+The `stress` command is used to run a set of tests repeatedly against a SPARQL system under progressively
+increasing load to determine how a system responds under high load.
+
+On \*nix systems you can invoke the stress tester like so:
+
+    ./stress [options]
+  
+On Windows systems you can invoke the stress tester like so:
+
+    stress.bat [options]
+  
+To see full usage summary run with the `-h` or `--help` option
 
 ## Operations
 
