@@ -244,6 +244,14 @@ public interface Options {
     public abstract List<ProgressListener> getListeners();
 
     /**
+     * Gets whether the API should ensure that relative URIs are presented as
+     * absolute URIs to services the harness interacts with
+     * 
+     * @return True if absolute URIs will be ensured, false otherwise
+     */
+    public abstract boolean getEnsureAbsoluteURIs();
+
+    /**
      * Gets the maximum delay between operations
      * 
      * @return Maximum Delay in milliseconds
@@ -418,6 +426,14 @@ public interface Options {
      *            Dataset
      */
     public abstract void setDataset(Dataset dataset);
+
+    /**
+     * Sets whether the API should ensure that relative URIs are presented as
+     * absolute URIs to services the harness interacts with
+     * 
+     * @return True if absolute URIs should be ensured, false otherwise
+     */
+    public abstract void setEnsureAbsoluteURIs(boolean ensureAbsolute);
 
     /**
      * Gets the SPARQL graph store protocol endpoint that is in use

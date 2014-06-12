@@ -88,6 +88,7 @@ public class OptionsImpl implements Options {
     private OperationRunner opRunner;
     private long limit = DEFAULT_LIMIT;
     private boolean noCount = false;
+    private boolean ensureAbsoluteURIs = false;
 
     @Override
     public void addListener(ProgressListener listener) {
@@ -121,6 +122,7 @@ public class OptionsImpl implements Options {
             copy.setCustomEndpoint(key, this.getCustomEndpoint(key));
         }
         copy.setDataset(this.getDataset());
+        copy.setEnsureAbsoluteURIs(this.getEnsureAbsoluteURIs());
         copy.setGraphStoreEndpoint(this.getGraphStoreEndpoint());
         copy.setHaltAny(this.getHaltAny());
         copy.setHaltBehaviour(this.getHaltBehaviour());
@@ -173,6 +175,11 @@ public class OptionsImpl implements Options {
     @Override
     public Dataset getDataset() {
         return dataset;
+    }
+    
+    @Override
+    public boolean getEnsureAbsoluteURIs() {
+        return ensureAbsoluteURIs;
     }
 
     @Override
@@ -328,6 +335,11 @@ public class OptionsImpl implements Options {
     @Override
     public void setDataset(Dataset dataset) {
         this.dataset = dataset;
+    }
+    
+    @Override
+    public void setEnsureAbsoluteURIs(boolean ensureAbsolute) {
+        this.ensureAbsoluteURIs = ensureAbsolute;
     }
 
     @Override

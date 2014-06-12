@@ -65,6 +65,9 @@ public abstract class AbstractRemoteQueryCallable<T extends Options> extends Abs
 
     @Override
     protected QueryExecution createQueryExecution(Query query) {
+        if (this.getOptions().getEnsureAbsoluteURIs()) {
+            if (!query.explicitlySetBaseURI()) query.setBaseURI((String)null);
+        }
         return QueryExecutionFactory.sparqlService(this.getOptions().getQueryEndpoint(), query, this.getOptions()
                 .getAuthenticator());
     }

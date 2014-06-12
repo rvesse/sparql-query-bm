@@ -85,7 +85,10 @@ public abstract class AbstractInMemoryUpdateCallable<T extends Options> extends 
 
     @Override
     protected UpdateProcessor createUpdateProcessor(UpdateRequest update) {
-        return UpdateExecutionFactory.create(this.getUpdate(), this.getGraphStore(this.getOptions()));
+        if (this.getOptions().getEnsureAbsoluteURIs()) {
+            if (!update.explicitlySetBaseURI()) update.setBaseURI((String)null);
+        }
+        return UpdateExecutionFactory.create(update, this.getGraphStore(this.getOptions()));
     }
 
 }

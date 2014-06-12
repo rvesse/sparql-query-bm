@@ -80,6 +80,10 @@ public abstract class AbstractInMemoryQueryCallable<T extends Options> extends A
 
     @Override
     protected QueryExecution createQueryExecution(Query query) {
-        return QueryExecutionFactory.create(this.getQuery(), this.getDataset(this.getOptions()));
+        if (this.getOptions().getEnsureAbsoluteURIs()) {
+            if (!query.explicitlySetBaseURI())
+                query.setBaseURI((String) null);
+        }
+        return QueryExecutionFactory.create(query, this.getDataset(this.getOptions()));
     }
 }

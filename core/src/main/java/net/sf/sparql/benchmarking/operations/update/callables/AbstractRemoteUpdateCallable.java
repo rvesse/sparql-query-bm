@@ -63,6 +63,9 @@ public abstract class AbstractRemoteUpdateCallable<T extends Options> extends Ab
 
     @Override
     protected UpdateProcessor createUpdateProcessor(UpdateRequest update) {
+        if (this.getOptions().getEnsureAbsoluteURIs()) {
+            if (!update.explicitlySetBaseURI()) update.setBaseURI((String)null);
+        }
         return UpdateExecutionFactory.createRemote(update, this.getOptions().getUpdateEndpoint(), this.getOptions()
                 .getAuthenticator());
     }
