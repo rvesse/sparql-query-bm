@@ -78,8 +78,24 @@ public class RetryingOperationRunner extends DefaultOperationRunner {
                 // If not successful and we still have retries available to us
                 // report that we are retrying
                 if (attempt < this.maxRetries) {
-                    runner.reportProgress(options, String.format("Operation %s errored on attempt %d of %d, retrying...",
-                            op.getName(), attempt, this.maxRetries + 1));
+                    // See whether we should retry
+                    // By default this is always true if we haven't exhausted
+                    // our retries but derived implementations may choose to
+                    // override the shouldRetry() method to indicate that only
+                    // certain kinds of errors result in a retry
+                    if (shouldRetry(runner, options, op, r)) {
+                        runner.reportProgress(options, String.format(
+                                "Operation %s errored on attempt %d of %d, retrying...", op.getName(), attempt,
+                                this.maxRetries + 1));
+                    } else {
+                        // We are not retrying further even though we have
+                        // retries available
+                        runner.reportProgress(
+                                options,
+                                String.format(
+                                        "Operation %s errored on attempt %d of %d and runner indicated it did not want to make further retries",
+                                        op.getName(), attempt, this.maxRetries + 1));
+                    }
                 } else {
                     runner.reportProgress(options,
                             String.format("Operation %s errored on all %d attempts", op.getName(), this.maxRetries + 1));
@@ -87,5 +103,27 @@ public class RetryingOperationRunner extends DefaultOperationRunner {
             }
             return r;
         }
+    }
+
+    /**
+     * Decides whether the runner should continue retrying
+     * <p>
+     * The default implementation always returns {@code true} but derived
+     * implementations may want to override this if they only wish to carry out
+     * retries under certain circumstances.
+     * </p>
+     * 
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
+     * @param op
+     *            Operation
+     * @param run
+     *            Results of the most recent failed run
+     * @return True if the runner should retry, false otherwise
+     */
+    protected <T extends Options> boolean shouldRetry(Runner<T> runner, T options, Operation op, OperationRun run) {
+        return true;
     }
 }
