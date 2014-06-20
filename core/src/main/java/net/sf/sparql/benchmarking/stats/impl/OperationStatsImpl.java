@@ -181,7 +181,7 @@ public class OperationStatsImpl implements OperationStats {
         double[] values = new double[this.runs.size()];
         int i = 0;
         for (OperationRun r : this.runs) {
-            values[i] = ConvertUtils.toSeconds(r.getRuntime());
+            values[i] = (double) r.getRuntime();
             i++;
         }
         return OperationStatsImpl.var.evaluate(values);
