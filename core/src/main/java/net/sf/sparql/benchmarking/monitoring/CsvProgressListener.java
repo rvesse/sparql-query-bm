@@ -38,6 +38,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
@@ -49,8 +52,6 @@ import net.sf.sparql.benchmarking.util.ConvertUtils;
 import net.sf.sparql.benchmarking.util.FileUtils;
 import net.sf.sparql.benchmarking.util.FormatUtils;
 
-import org.apache.log4j.Logger;
-
 /**
  * A Progress Listener that generates a CSV output file
  * 
@@ -58,7 +59,7 @@ import org.apache.log4j.Logger;
  * 
  */
 public class CsvProgressListener implements ProgressListener {
-    private static final Logger logger = Logger.getLogger(CsvProgressListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(CsvProgressListener.class);
 
     private File f;
     private boolean allowOverwrite = false;

@@ -33,7 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package net.sf.sparql.benchmarking.operations.query.callables;
 
 import org.apache.jena.atlas.web.HttpException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -48,6 +49,7 @@ import net.sf.sparql.benchmarking.stats.OperationRun;
 import net.sf.sparql.benchmarking.stats.impl.QueryRun;
 import net.sf.sparql.benchmarking.util.ConvertUtils;
 import net.sf.sparql.benchmarking.util.ErrorCategories;
+import net.sf.sparql.benchmarking.util.FormatUtils;
 
 /**
  * Abstract callable for queries
@@ -59,7 +61,7 @@ import net.sf.sparql.benchmarking.util.ErrorCategories;
  */
 public abstract class AbstractQueryCallable<T extends Options> extends AbstractOperationCallable<T> {
 
-    private static final Logger logger = Logger.getLogger(RemoteQueryCallable.class);
+    private static final Logger logger = LoggerFactory.getLogger(RemoteQueryCallable.class);
 
     /**
      * Creates a new callable
@@ -224,8 +226,10 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
 
         } catch (HttpException e) {
             // Make sure to categorize HTTP errors appropriately
+            logger.error("{}", FormatUtils.formatException(e));
             return new QueryRun(e.getMessage(), ErrorCategories.categorizeHttpError(e), System.nanoTime() - startTime);
         } catch (QueryExceptionHTTP e) {
+            logger.error("{}", FormatUtils.formatException(e));
             return new QueryRun(e.getMessage(), ErrorCategories.categorizeHttpError(e), System.nanoTime() - startTime);
         } finally {
             // Clean up query execution

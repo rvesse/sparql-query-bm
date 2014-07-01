@@ -32,6 +32,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import net.sf.sparql.benchmarking.stats.OperationRun;
 
 import org.joda.time.Instant;
@@ -163,5 +166,30 @@ public class FormatUtils {
         } else {
             return String.format("%,d", resultCount);
         }
+    }
+
+    /**
+     * Formats an exception as a string for logging purposes
+     * <p>
+     * Necessary because slf4j does not by default have a method for logging
+     * exceptions
+     * </p>
+     * 
+     * @param e
+     *            Exception
+     * @return String for logging purposes
+     */
+    public static String formatException(Throwable e) {
+        StringWriter writer = new StringWriter();
+        PrintWriter pwriter = new PrintWriter(writer);
+        writer.append(e.getClass().getCanonicalName());
+        if (e.getMessage() != null) {
+            writer.append(": ");
+            writer.append(e.getMessage());
+        }
+        writer.append('\n');
+        e.printStackTrace(pwriter);
+        pwriter.flush();
+        return writer.toString();
     }
 }

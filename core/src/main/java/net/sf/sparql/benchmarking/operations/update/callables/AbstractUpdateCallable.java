@@ -48,6 +48,7 @@ import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.impl.UpdateRun;
 import net.sf.sparql.benchmarking.util.ErrorCategories;
+import net.sf.sparql.benchmarking.util.FormatUtils;
 
 /**
  * Abstract callable for update operations
@@ -120,6 +121,7 @@ public abstract class AbstractUpdateCallable<T extends Options> extends Abstract
             processor.execute();
         } catch (HttpException e) {
             // Make sure to categorize HTTP errors appropriately
+            logger.error("{}", FormatUtils.formatException(e));
             return new UpdateRun(e.getMessage(), ErrorCategories.categorizeHttpError(e), System.nanoTime() - startTime);
         }
 

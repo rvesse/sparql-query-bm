@@ -34,7 +34,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.sf.sparql.benchmarking.stats.OperationMixStats;
 import net.sf.sparql.benchmarking.stats.impl.OperationMixStatsImpl;
@@ -47,7 +49,7 @@ import net.sf.sparql.benchmarking.stats.impl.OperationMixStatsImpl;
  */
 public class OperationMixImpl implements OperationMix {
 
-    protected static final Logger logger = Logger.getLogger(OperationMixImpl.class);
+    protected static final Logger logger = LoggerFactory.getLogger(OperationMixImpl.class);
 
     private OperationMixStats stats = new OperationMixStatsImpl();
     private List<Operation> operations = new ArrayList<Operation>();

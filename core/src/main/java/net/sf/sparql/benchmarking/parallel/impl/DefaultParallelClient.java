@@ -40,8 +40,9 @@ import net.sf.sparql.benchmarking.runners.Runner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
 import net.sf.sparql.benchmarking.util.FormatUtils;
 
-import org.apache.log4j.Logger;
 import org.joda.time.Instant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default parallel client for running multi-threaded testing
@@ -52,7 +53,7 @@ import org.joda.time.Instant;
  */
 public class DefaultParallelClient<T extends Options> extends AbstractParallelClient<T> {
 
-    private static final Logger logger = Logger.getLogger(DefaultParallelClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultParallelClient.class);
 
     /**
      * Creates a new Parallel Client
@@ -113,7 +114,7 @@ public class DefaultParallelClient<T extends Options> extends AbstractParallelCl
                 runner.reportProgress(options);
             } catch (Exception e) {
                 // Log Error
-                logger.error(e.getMessage());
+                logger.error(FormatUtils.formatException(e));
                 if (options.getHaltOnError() || options.getHaltAny()) {
                     // Inform manager it needs to halt other clients
                     manager.halt();

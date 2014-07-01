@@ -37,7 +37,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Progress Listener that writes the informational messages to a file
@@ -51,7 +52,7 @@ public class FileProgressListener extends StreamProgressListener {
 	
 	private boolean append = false;
 	private File file;
-	private static final Logger logger = Logger.getLogger(FileProgressListener.class);
+	private static final Logger logger = LoggerFactory.getLogger(FileProgressListener.class);
 	
 	/**
 	 * Creates a new File Progress Listener which may append to the file of the given name depending on the {@code append} parameter
