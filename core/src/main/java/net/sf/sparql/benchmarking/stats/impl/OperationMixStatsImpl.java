@@ -59,9 +59,6 @@ public class OperationMixStatsImpl implements OperationMixStats {
 
     private List<OperationMixRun> runs = new ArrayList<OperationMixRun>();
     private ParallelTimer timer = new ParallelTimer();
-    private static final StandardDeviation sdev = new StandardDeviation(false);
-    private static final Variance var = new Variance(false);
-    private static final GeometricMean gmean = new GeometricMean();
 
     @Override
     public Iterator<OperationMixRun> getRuns() {
@@ -97,7 +94,7 @@ public class OperationMixStatsImpl implements OperationMixStats {
             this.runs.remove(r);
         }
     }
-    
+
     @Override
     public long getTotalOperations() {
         long total = 0;
@@ -193,13 +190,11 @@ public class OperationMixStatsImpl implements OperationMixStats {
     public double getGeometricAverageRuntime() {
         if (this.runs.size() == 0)
             return 0;
-        double[] values = new double[this.runs.size()];
-        int i = 0;
+        GeometricMean gmean = new GeometricMean();
         for (OperationMixRun r : this.runs) {
-            values[i] = (double) r.getTotalRuntime();
-            i++;
+            gmean.increment(r.getTotalRuntime());
         }
-        return gmean.evaluate(values);
+        return gmean.getResult();
     }
 
     @Override
@@ -226,24 +221,20 @@ public class OperationMixStatsImpl implements OperationMixStats {
 
     @Override
     public double getVariance() {
-        double[] values = new double[this.runs.size()];
-        int i = 0;
+        Variance var = new Variance();
         for (OperationMixRun r : this.runs) {
-            values[i] = (double) r.getTotalRuntime();
-            i++;
+            var.increment(r.getTotalRuntime());
         }
-        return var.evaluate(values);
+        return var.getResult();
     }
 
     @Override
     public double getStandardDeviation() {
-        double[] values = new double[this.runs.size()];
-        int i = 0;
+        StandardDeviation sdev = new StandardDeviation();
         for (OperationMixRun r : this.runs) {
-            values[i] = (double) r.getTotalRuntime();
-            i++;
+            sdev.increment(r.getTotalRuntime());
         }
-        return sdev.evaluate(values);
+        return sdev.getResult();
     }
 
     @Override

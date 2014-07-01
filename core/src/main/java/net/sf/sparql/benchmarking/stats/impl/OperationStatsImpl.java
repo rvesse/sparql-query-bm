@@ -57,9 +57,6 @@ import org.apache.commons.math.stat.descriptive.moment.Variance;
 public class OperationStatsImpl implements OperationStats {
 
     private List<OperationRun> runs = new ArrayList<OperationRun>();
-    private static final Variance var = new Variance(false);
-    private static final StandardDeviation sdev = new StandardDeviation(false);
-    private static final GeometricMean gmean = new GeometricMean();
     private ParallelTimer timer = new ParallelTimer();
 
     @Override
@@ -138,13 +135,11 @@ public class OperationStatsImpl implements OperationStats {
     public double getGeometricAverageRuntime() {
         if (this.runs.size() == 0)
             return 0;
-        double[] values = new double[this.runs.size()];
-        int i = 0;
+        GeometricMean gmean = new GeometricMean();
         for (OperationRun r : this.runs) {
-            values[i] = (double) r.getRuntime();
-            i++;
+            gmean.increment(r.getRuntime());
         }
-        return OperationStatsImpl.gmean.evaluate(values);
+        return gmean.getResult();
     }
 
     @Override
@@ -178,24 +173,20 @@ public class OperationStatsImpl implements OperationStats {
 
     @Override
     public double getVariance() {
-        double[] values = new double[this.runs.size()];
-        int i = 0;
+        Variance var = new Variance();
         for (OperationRun r : this.runs) {
-            values[i] = (double) r.getRuntime();
-            i++;
+            var.increment(r.getRuntime());
         }
-        return OperationStatsImpl.var.evaluate(values);
+        return var.getResult();
     }
 
     @Override
     public double getStandardDeviation() {
-        double[] values = new double[this.runs.size()];
-        int i = 0;
+        StandardDeviation sdev = new StandardDeviation();
         for (OperationRun r : this.runs) {
-            values[i] = (double) r.getRuntime();
-            i++;
+            sdev.increment(r.getRuntime());
         }
-        return OperationStatsImpl.sdev.evaluate(values);
+        return sdev.getResult();
     }
 
     @Override
