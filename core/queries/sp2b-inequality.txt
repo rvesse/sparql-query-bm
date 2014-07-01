@@ -1,7 +1,0 @@
-inequality/sp2b-type-filter.rq
-inequality/sp2b-type-minus.rq
-inequality/sp2b-multiple-filter.rq
-inequality/sp2b-multiple-minus.rq
-inequality/sp2b-ignore-supernode-filter.rq
-inequality/sp2b-ignore-supernode-minus.rq
-inequality/sp2b-ignore-supernode-twin-minus.rq

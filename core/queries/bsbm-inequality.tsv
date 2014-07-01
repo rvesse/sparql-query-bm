@@ -1,0 +1,4 @@
+query	inequality/bsbm-type-filter.rq	Single Filter !=
+query	inequality/bsbm-type-minus.rq	Single Minus
+query	inequality/bsbm-multiple-filter.rq	Multiple Filter !=
+query	inequality/bsbm-multiple-minus.rq	Multiple Minus

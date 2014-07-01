@@ -1,4 +1,0 @@
-inequality/bsbm-type-filter.rq
-inequality/bsbm-type-minus.rq
-inequality/bsbm-multiple-filter.rq
-inequality/bsbm-multiple-minus.rq

@@ -1,0 +1,3 @@
+query	serializer/ask.txt	ASK
+query	serializer/construct.txt	CONSTRUCT
+query	serializer/select.txt	SELECT

@@ -90,12 +90,6 @@ public class TestLoaders {
     }
 
     @Test
-    public void classic_mix_loader_01() throws IOException {
-        OperationMix mix = OperationMixLoaderRegistry.getLoader("txt").load(new File("queries/lubm.txt"));
-        Assert.assertEquals(14, mix.size());
-    }
-
-    @Test
     public void tsv_mix_loader_01() throws IOException {
         OperationMix mix = OperationMixLoaderRegistry.getLoader("tsv").load(new File("queries/lubm.tsv"));
         Assert.assertEquals(14, mix.size());

@@ -1,3 +1,0 @@
-serializer/ask.txt
-serializer/construct.txt
-serializer/select.txt
