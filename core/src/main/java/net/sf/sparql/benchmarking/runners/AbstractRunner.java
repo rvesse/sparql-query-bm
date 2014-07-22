@@ -527,7 +527,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
                 "Average Runtime (Geometric): " + FormatUtils.formatSeconds(op.getStats().getGeometricAverageRuntime()));
         reportProgress(options, "Minimum Runtime: " + FormatUtils.formatSeconds(op.getStats().getMinimumRuntime()));
         reportProgress(options, "Maximum Runtime: " + FormatUtils.formatSeconds(op.getStats().getMaximumRuntime()));
-        reportProgress(options, "Runtime Variance: " + FormatUtils.formatSeconds(op.getStats().getVariance()));
+        reportProgress(options, "Runtime Variance: " + FormatUtils.formatSecondsSquared(op.getStats().getVariance()));
         reportProgress(options,
                 "Runtime Standard Deviation: " + FormatUtils.formatSeconds(op.getStats().getStandardDeviation()));
         reportProgress(options);

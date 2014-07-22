@@ -336,7 +336,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
 		reportProgress(
 				options,
 				"Mix Runtime Variance: "
-						+ FormatUtils.formatSeconds(operationMix.getStats()
+						+ FormatUtils.formatSecondsSquared(operationMix.getStats()
 								.getVariance()));
 		reportProgress(
 				options,

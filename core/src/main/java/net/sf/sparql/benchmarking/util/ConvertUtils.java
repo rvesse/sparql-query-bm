@@ -5,14 +5,14 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-* Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
   notice, this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
 
-* Neither the name Cray Inc. nor the names of its contributors may be
+ * Neither the name Cray Inc. nor the names of its contributors may be
   used to endorse or promote products derived from this software
   without specific prior written permission.
 
@@ -28,7 +28,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-*/
+ */
 
 package net.sf.sparql.benchmarking.util;
 
@@ -94,6 +94,28 @@ public class ConvertUtils {
     }
 
     /**
+     * Converts nanoseconds squared to milliseconds squared
+     * 
+     * @param nanosecondsSquared
+     *            Nanoseconds squared
+     * @return Milliseconds squared
+     */
+    public static double toMillisecondsSquared(long nanosecondsSquared) {
+        return toMillisecondsSquared((double) nanosecondsSquared);
+    }
+
+    /**
+     * Converts nanoseconds squared to milliseconds squared
+     * 
+     * @param nanosecondsSquared
+     *            Nanoseconds squared
+     * @return Milliseconds squared
+     */
+    public static double toMillisecondsSquared(double nanosecondsSquared) {
+        return nanosecondsSquared / Math.pow(ConvertUtils.NANOSECONDS_PER_MILLISECONDS, 2);
+    }
+
+    /**
      * Converts nanoseconds to seconds
      * 
      * @param nanoseconds
@@ -114,6 +136,29 @@ public class ConvertUtils {
     public static double toSeconds(double nanoseconds) {
         double ms = toMilliseconds(nanoseconds);
         return ms / ConvertUtils.MILLISECONDS_PER_SECONDS;
+    }
+
+    /**
+     * Converts nanoseconds squared to seconds squared
+     * 
+     * @param nanoseconds
+     *            Nanoseconds squared
+     * @return Seconds squared
+     */
+    public static double toSecondsSquared(long nanosecondsSquared) {
+        return ConvertUtils.toSecondsSquared((double) nanosecondsSquared);
+    }
+
+    /**
+     * Converts nanoseconds squared to seconds squared
+     * 
+     * @param nanoseconds
+     *            Nanoseconds squared
+     * @return Seconds squared
+     */
+    public static double toSecondsSquared(double nanosecondsSquared) {
+        double ms = toMillisecondsSquared(nanosecondsSquared);
+        return ms / Math.pow(ConvertUtils.MILLISECONDS_PER_SECONDS, 2);
     }
 
     /**

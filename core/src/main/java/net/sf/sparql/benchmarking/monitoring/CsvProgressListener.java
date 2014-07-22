@@ -199,7 +199,7 @@ public class CsvProgressListener implements ProgressListener {
             this.buffer.append(op.getStats().getGeometricAverageRuntime() + ",");
             this.buffer.append(ConvertUtils.toSeconds(op.getStats().getMinimumRuntime()) + ",");
             this.buffer.append(ConvertUtils.toSeconds(op.getStats().getMaximumRuntime()) + ",");
-            this.buffer.append(ConvertUtils.toSeconds(op.getStats().getVariance()) + ",");
+            this.buffer.append(ConvertUtils.toSecondsSquared(op.getStats().getVariance()) + ",");
             this.buffer.append(ConvertUtils.toSeconds(op.getStats().getStandardDeviation()) + ",");
             this.buffer.append(op.getStats().getOperationsPerSecond() + ",");
             if (wasMultithreaded)
@@ -230,7 +230,7 @@ public class CsvProgressListener implements ProgressListener {
             results.append(ConvertUtils.toSeconds(operationMix.getStats().getGeometricAverageRuntime()) + ",");
             results.append(ConvertUtils.toSeconds(operationMix.getStats().getMinimumRuntime()) + ",");
             results.append(ConvertUtils.toSeconds(operationMix.getStats().getMaximumRuntime()) + ",");
-            results.append(ConvertUtils.toSeconds(operationMix.getStats().getVariance()) + ",");
+            results.append(ConvertUtils.toSecondsSquared(operationMix.getStats().getVariance()) + ",");
             results.append(ConvertUtils.toSeconds(operationMix.getStats().getStandardDeviation()) + ",");
             results.append(Double.toString(operationMix.getStats().getOperationMixesPerHour()));
             if (wasMultithreaded)

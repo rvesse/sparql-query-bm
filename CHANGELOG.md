@@ -5,6 +5,7 @@
 - Fix OperationStats.getVariance() being reported in seconds instead of nanoseconds
 - Change Core API to only depend on slf4j and exclude log4j so it can more easily be used with other logging frameworks
 - Add additional logging of errors direct to logging framework
+- Fix GitHub Issue #1 - Variance is incorrectly converted and presented
 
 ## Version 2.0.0 (June 9th 2014)
 - Support arbitrary operations e.g. updates, sleeps, parameterized queries etc.

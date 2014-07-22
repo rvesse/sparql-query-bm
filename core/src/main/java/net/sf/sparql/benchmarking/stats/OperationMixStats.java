@@ -170,7 +170,7 @@ public interface OperationMixStats {
     /**
      * Gets the variance in mix runtime
      * 
-     * @return Runtime Variance in nanoseconds
+     * @return Runtime Variance in nanoseconds squared
      */
     public abstract double getVariance();
 

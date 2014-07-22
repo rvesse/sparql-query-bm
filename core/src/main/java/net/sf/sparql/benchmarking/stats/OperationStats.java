@@ -139,7 +139,7 @@ public interface OperationStats {
     /**
      * Gets the variance for the operation runtimes
      * 
-     * @return Runtime Variance in nanoseconds
+     * @return Runtime Variance in nanoseconds squared
      */
     public abstract double getVariance();
 

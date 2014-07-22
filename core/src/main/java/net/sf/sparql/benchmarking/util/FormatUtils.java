@@ -96,7 +96,7 @@ public class FormatUtils {
      * @return Time in seconds
      */
     public static String formatSeconds(long time) {
-        return String.format("%,fs", ConvertUtils.toSeconds(time));
+        return String.format("%,f seconds", ConvertUtils.toSeconds(time));
     }
 
     /**
@@ -107,7 +107,29 @@ public class FormatUtils {
      * @return Time in seconds
      */
     public static String formatSeconds(double time) {
-        return String.format("%,fs", ConvertUtils.toSeconds(time));
+        return String.format("%,f seconds", ConvertUtils.toSeconds(time));
+    }
+
+    /**
+     * Formats Time to show as seconds squared
+     * 
+     * @param time
+     *            Time in nanoseconds squared
+     * @return Time in seconds squared
+     */
+    public static String formatSecondsSquared(long timeSquared) {
+        return String.format("%,f seconds squared", ConvertUtils.toSecondsSquared(timeSquared));
+    }
+
+    /**
+     * Formats Time to show as seconds squared
+     * 
+     * @param time
+     *            Time in nanoseconds squared
+     * @return Time in seconds squared
+     */
+    public static String formatSecondsSquared(double timeSquared) {
+        return String.format("%,f seconds squared", ConvertUtils.toSecondsSquared(timeSquared));
     }
 
     /**
