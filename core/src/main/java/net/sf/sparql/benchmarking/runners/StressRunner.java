@@ -157,6 +157,12 @@ public class StressRunner extends AbstractRunner<StressOptions> {
         // Teardown
         runTeardown(options);
 
+        // Reset parallel threads to 1
+        // This is so that when used with ProgressListeners that identify the
+        // threads printing the output we don't end up with the summary being an
+        // unreadable mess filled with thread identifiers
+        options.setParallelThreads(1);
+
         reportProgress(options, "Finished stress testing");
         reportProgress(options);
 
