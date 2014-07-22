@@ -96,7 +96,7 @@ public class FormatUtils {
      * @return Time in seconds
      */
     public static String formatSeconds(long time) {
-        return ConvertUtils.toSeconds(time) + "s";
+        return String.format("%,fs", ConvertUtils.toSeconds(time));
     }
 
     /**
@@ -107,7 +107,7 @@ public class FormatUtils {
      * @return Time in seconds
      */
     public static String formatSeconds(double time) {
-        return ConvertUtils.toSeconds(time) + "s";
+        return String.format("%,fs", ConvertUtils.toSeconds(time));
     }
 
     /**
