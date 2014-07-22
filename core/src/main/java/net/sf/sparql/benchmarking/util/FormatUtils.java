@@ -144,6 +144,28 @@ public class FormatUtils {
     }
 
     /**
+     * Formats an integer as a string
+     * 
+     * @param value
+     *            Integer
+     * @return Formatted integer
+     */
+    public static String formatNumber(long value) {
+        return String.format("%,d", value);
+    }
+
+    /**
+     * Formats a double as a string
+     * 
+     * @param value
+     *            Double
+     * @return Formatted double
+     */
+    public static String formatNumber(double value) {
+        return String.format("%,f", value);
+    }
+
+    /**
      * Formats a string for CSV escaping it as a double quoted CSV string if
      * necessary
      * 

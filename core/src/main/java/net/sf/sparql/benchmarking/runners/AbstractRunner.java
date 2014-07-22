@@ -389,7 +389,9 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             String description = ErrorCategories.getDescription(category);
             if (description == null)
                 description = String.format("  Unknown Category %d", category);
-            reportProgress(options, "  " + description + ": " + categorizedErrors.get(category).size() + " error(s)");
+            reportProgress(options,
+                    "  " + description + ": " + String.format("%,d", categorizedErrors.get(category).size())
+                            + " error(s)");
         }
     }
 
@@ -498,15 +500,15 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
      */
     protected void reportOperationSummary(T options, Operation op) {
         reportProgress(options, "Operation ID " + op.getId() + " of type " + op.getType() + " (" + op.getName() + ")");
-        reportProgress(options, "Total Runs: " + op.getStats().getRunCount());
-        reportProgress(options, "Total Errors: " + op.getStats().getTotalErrors());
+        reportProgress(options, "Total Runs: " + FormatUtils.formatNumber(op.getStats().getRunCount()));
+        reportProgress(options, "Total Errors: " + FormatUtils.formatNumber(op.getStats().getTotalErrors()));
         if (op.getStats().getTotalErrors() > 0) {
             // Show errors by category
             Map<Integer, List<OperationRun>> categorizedErrors = op.getStats().getCategorizedErrors();
             this.reportCategorizedErrors(options, categorizedErrors);
         }
-        reportProgress(options, "Total Results: " + op.getStats().getTotalResults());
-        reportProgress(options, "Average Results: " + op.getStats().getAverageResults());
+        reportProgress(options, "Total Results: " + FormatUtils.formatNumber(op.getStats().getTotalResults()));
+        reportProgress(options, "Average Results: " + FormatUtils.formatNumber(op.getStats().getAverageResults()));
         reportProgress(options,
                 "Total Response Time: " + FormatUtils.formatSeconds(op.getStats().getTotalResponseTime()));
         reportProgress(
@@ -531,12 +533,17 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
         reportProgress(options,
                 "Runtime Standard Deviation: " + FormatUtils.formatSeconds(op.getStats().getStandardDeviation()));
         reportProgress(options);
-        reportProgress(options, "Operations per Second: " + op.getStats().getOperationsPerSecond());
+        reportProgress(options,
+                "Operations per Second: " + FormatUtils.formatNumber(op.getStats().getOperationsPerSecond()));
         if (options.getParallelThreads() > 1)
-            reportProgress(options, "Actual Operations per Second: " + op.getStats().getActualOperationsPerSecond());
-        reportProgress(options, "Operations per Hour: " + op.getStats().getOperationsPerHour());
+            reportProgress(
+                    options,
+                    "Actual Operations per Second: "
+                            + FormatUtils.formatNumber(op.getStats().getActualOperationsPerSecond()));
+        reportProgress(options, "Operations per Hour: " + FormatUtils.formatNumber(op.getStats().getOperationsPerHour()));
         if (options.getParallelThreads() > 1)
-            reportProgress(options, "Actual Operations per Hour: " + op.getStats().getActualOperationsPerHour());
+            reportProgress(options,
+                    "Actual Operations per Hour: " + FormatUtils.formatNumber(op.getStats().getActualOperationsPerHour()));
         reportProgress(options);
     }
 

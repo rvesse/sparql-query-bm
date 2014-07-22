@@ -73,158 +73,145 @@ import net.sf.sparql.benchmarking.util.FormatUtils;
  */
 public class StressRunner extends AbstractRunner<StressOptions> {
 
-	static final Logger logger = LoggerFactory.getLogger(StressRunner.class);
+    static final Logger logger = LoggerFactory.getLogger(StressRunner.class);
 
-	@Override
-	public void run(StressOptions options) {
-		// Inform Listeners that we are starting benchmarking
-		started(options);
+    @Override
+    public void run(StressOptions options) {
+        // Inform Listeners that we are starting benchmarking
+        started(options);
 
-		// Validate Options
-		if (options.getQueryEndpoint() == null
-				&& options.getUpdateEndpoint() == null
-				&& options.getGraphStoreEndpoint() == null
-				&& options.getCustomEndpoints().size() == 0
-				&& options.getDataset() == null) {
-			System.err
-					.println("At least one remote endpoint or an in-memory dataset must be set");
-			halt(options, "No endpoint was set");
-		}
-		if (options.getOperationMix() == null) {
-			System.err.println("Operation Mix has not been set");
-			halt(options, "No Operation Mix was set");
-		}
+        // Validate Options
+        if (options.getQueryEndpoint() == null && options.getUpdateEndpoint() == null
+                && options.getGraphStoreEndpoint() == null && options.getCustomEndpoints().size() == 0
+                && options.getDataset() == null) {
+            System.err.println("At least one remote endpoint or an in-memory dataset must be set");
+            halt(options, "No endpoint was set");
+        }
+        if (options.getOperationMix() == null) {
+            System.err.println("Operation Mix has not been set");
+            halt(options, "No Operation Mix was set");
+        }
 
-		Iterator<Operation> ops;
-		checkOperations(options);
+        Iterator<Operation> ops;
+        checkOperations(options);
 
-		// Print Options for User Reference
-		reportGeneralOptions(options);
-		reportStressOptions(options);
+        // Print Options for User Reference
+        reportGeneralOptions(options);
+        reportStressOptions(options);
 
-		// Sanity Checking
-		runSanityChecks(options);
+        // Sanity Checking
+        runSanityChecks(options);
 
-		// Summarize operations to be used
-		reportProgress(options, "Starting soak testing...");
-		reportProgress(options, options.getOperationMix().size()
-				+ " operations were loaded:");
+        // Summarize operations to be used
+        reportProgress(options, "Starting soak testing...");
+        reportProgress(options, options.getOperationMix().size() + " operations were loaded:");
 
-		int i = 0;
-		ops = options.getOperationMix().getOperations();
-		while (ops.hasNext()) {
-			Operation op = ops.next();
-			reportProgress(options,
-					"Operation ID " + i + " of type " + op.getType() + " ("
-							+ op.getName() + ")");
-			reportProgress(options, op.getContentString());
-			reportProgress(options);
-			i++;
-		}
+        int i = 0;
+        ops = options.getOperationMix().getOperations();
+        while (ops.hasNext()) {
+            Operation op = ops.next();
+            reportProgress(options, "Operation ID " + i + " of type " + op.getType() + " (" + op.getName() + ")");
+            reportProgress(options, op.getContentString());
+            reportProgress(options);
+            i++;
+        }
 
-		// Setup
-		runSetup(options);
+        // Setup
+        runSetup(options);
 
-		// Actual Runs
-		reportProgress(options, "Running stress tests...");
-		Instant startInstant = Instant.now();
-		Instant endInstant = startInstant;
-		reportProgress(options,
-				"Start Time: " + FormatUtils.formatInstant(startInstant));
-		reportProgress(options);
+        // Actual Runs
+        reportProgress(options, "Running stress tests...");
+        Instant startInstant = Instant.now();
+        Instant endInstant = startInstant;
+        reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
+        reportProgress(options);
 
-		long startTime = System.nanoTime();
-		long endTime = startTime;
-		// Stress tests are always multi-threaded
-		StressTestParallelClientManager stressClientManager = new StressTestParallelClientManager(
-				this, options);
-		ParallelClientManagerTask<StressOptions> task = new ParallelClientManagerTask<StressOptions>(
-				stressClientManager);
-		options.getExecutor().submit(task);
-		try {
-			task.get();
-		} catch (InterruptedException e) {
-			logger.error("Stress testing was interrupted - " + e.getMessage());
-			if (options.getHaltAny())
-				halt(options, e);
-		} catch (ExecutionException e) {
-			logger.error("Stress testing encountered an error - "
-					+ e.getMessage());
+        long startTime = System.nanoTime();
+        long endTime = startTime;
+        // Stress tests are always multi-threaded
+        StressTestParallelClientManager stressClientManager = new StressTestParallelClientManager(this, options);
+        ParallelClientManagerTask<StressOptions> task = new ParallelClientManagerTask<StressOptions>(
+                stressClientManager);
+        options.getExecutor().submit(task);
+        try {
+            task.get();
+        } catch (InterruptedException e) {
+            logger.error("Stress testing was interrupted - " + e.getMessage());
+            if (options.getHaltAny())
+                halt(options, e);
+        } catch (ExecutionException e) {
+            logger.error("Stress testing encountered an error - " + e.getMessage());
 
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			logger.error(sw.toString());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            logger.error(sw.toString());
 
-			if (options.getHaltOnError() || options.getHaltAny())
-				halt(options, e);
-		}
+            if (options.getHaltOnError() || options.getHaltAny())
+                halt(options, e);
+        }
 
-		// Get end time
-		endTime = System.nanoTime();
-		endInstant = Instant.now();
+        // Get end time
+        endTime = System.nanoTime();
+        endInstant = Instant.now();
 
-		// Teardown
-		runTeardown(options);
+        // Teardown
+        runTeardown(options);
 
-		reportProgress(options, "Finished stress testing");
-		reportProgress(options);
+        reportProgress(options, "Finished stress testing");
+        reportProgress(options);
 
-		// Summarize Operations
-		reportProgress(options, "Operation Summary");
-		reportProgress(options, "-----------------");
-		reportProgress(options);
+        // Summarize Operations
+        reportProgress(options, "Operation Summary");
+        reportProgress(options, "-----------------");
+        reportProgress(options);
 
-		ops = options.getOperationMix().getOperations();
-		while (ops.hasNext()) {
-			Operation op = ops.next();
+        ops = options.getOperationMix().getOperations();
+        while (ops.hasNext()) {
+            Operation op = ops.next();
 
-			// Print Summary
-			reportOperationSummary(options, op);
-		}
+            // Print Summary
+            reportOperationSummary(options, op);
+        }
 
-		reportProgress(options, "Stress Test Summary");
-		reportProgress(options, "-----------------");
-		reportProgress(options);
-		reportProgress(options, "Total Mix Runs: "
-				+ options.getOperationMix().getStats().getRunCount());
-		reportProgress(options, "Total Operations Run: "
-				+ options.getOperationMix().getStats().getTotalOperations());
-		reportProgress(options);
-		reportProgress(options, "Total Errors: "
-				+ options.getOperationMix().getStats().getTotalErrors());
-		if (options.getOperationMix().getStats().getTotalErrors() > 0) {
-			// Show errors by category
-			Map<Integer, List<OperationRun>> categorizedErrors = options
-					.getOperationMix().getStats().getCategorizedErrors();
-			reportCategorizedErrors(options, categorizedErrors);
-		}
-		reportProgress(options);
-		reportProgress(options,
-				"Start Time: " + FormatUtils.formatInstant(startInstant));
-		reportProgress(options,
-				"End Time: " + FormatUtils.formatInstant(endInstant));
-		reportProgress(options,
-				"Total Runtime: " + ConvertUtils.toMinutes(endTime - startTime)
-						+ " minutes");
-		reportProgress(options, "Maximum Parallel Threads: "
-				+ stressClientManager.getCurrentClientCount());
-		reportProgress(options);
+        reportProgress(options, "Stress Test Summary");
+        reportProgress(options, "-----------------");
+        reportProgress(options);
+        reportProgress(options,
+                "Total Mix Runs: " + FormatUtils.formatNumber(options.getOperationMix().getStats().getRunCount()));
+        reportProgress(
+                options,
+                "Total Operations Run: "
+                        + FormatUtils.formatNumber(options.getOperationMix().getStats().getTotalOperations()));
+        reportProgress(options);
+        reportProgress(options,
+                "Total Errors: " + FormatUtils.formatNumber(options.getOperationMix().getStats().getTotalErrors()));
+        if (options.getOperationMix().getStats().getTotalErrors() > 0) {
+            // Show errors by category
+            Map<Integer, List<OperationRun>> categorizedErrors = options.getOperationMix().getStats()
+                    .getCategorizedErrors();
+            reportCategorizedErrors(options, categorizedErrors);
+        }
+        reportProgress(options);
+        reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
+        reportProgress(options, "End Time: " + FormatUtils.formatInstant(endInstant));
+        reportProgress(options, "Total Runtime: " + ConvertUtils.toMinutes(endTime - startTime) + " minutes");
+        reportProgress(options,
+                "Maximum Parallel Threads: " + FormatUtils.formatNumber(stressClientManager.getCurrentClientCount()));
+        reportProgress(options);
 
-		// Finally inform listeners that running finished OK
-		finished(options);
-	}
+        // Finally inform listeners that running finished OK
+        finished(options);
+    }
 
-	private void reportStressOptions(StressOptions options) {
-		reportProgress(options, "Stress Options");
-		reportProgress(options, "------------");
-		reportProgress(options);
-		reportProgress(options, "Maximum Threads = "
-				+ (options.getMaxThreads() > 0 ? options.getMaxThreads()
-						: "Unlimited"));
-		reportProgress(options, "Maximum Runtime = "
-				+ (options.getMaxRuntime() > 0 ? options.getMaxRuntime()
-						+ " minutes" : "Unlimited"));
-		reportProgress(options, "Ramp Up Factor = " + options.getRampUpFactor());
-		reportProgress(options);
-	}
+    private void reportStressOptions(StressOptions options) {
+        reportProgress(options, "Stress Options");
+        reportProgress(options, "------------");
+        reportProgress(options);
+        reportProgress(options, "Maximum Threads = "
+                + (options.getMaxThreads() > 0 ? options.getMaxThreads() : "Unlimited"));
+        reportProgress(options, "Maximum Runtime = "
+                + (options.getMaxRuntime() > 0 ? options.getMaxRuntime() + " minutes" : "Unlimited"));
+        reportProgress(options, "Ramp Up Factor = " + options.getRampUpFactor());
+        reportProgress(options);
+    }
 }

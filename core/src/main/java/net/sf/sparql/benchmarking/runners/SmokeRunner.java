@@ -26,119 +26,111 @@ import net.sf.sparql.benchmarking.util.FormatUtils;
  */
 public class SmokeRunner extends AbstractRunner<Options> {
 
-	@Override
-	public void run(Options options) {
-		// Inform Listeners that we are starting benchmarking
-		started(options);
+    @Override
+    public void run(Options options) {
+        // Inform Listeners that we are starting benchmarking
+        started(options);
 
-		// Validate options
-		if (options.getOperationMix() == null) {
-			System.err.println("Operation Mix has not been set");
-			halt(options, "No Operation Mix was set");
-		}
+        // Validate options
+        if (options.getOperationMix() == null) {
+            System.err.println("Operation Mix has not been set");
+            halt(options, "No Operation Mix was set");
+        }
 
-		Iterator<Operation> ops;
-		checkOperations(options);
+        Iterator<Operation> ops;
+        checkOperations(options);
 
-		// Print Options for User Reference
-		reportGeneralOptions(options);
+        // Print Options for User Reference
+        reportGeneralOptions(options);
 
-		// Sanity Checking
-		runSanityChecks(options);
+        // Sanity Checking
+        runSanityChecks(options);
 
-		// Summarise operations to be used
-		reportProgress(options, "Starting smoke testing...");
-		reportProgress(options, options.getOperationMix().size()
-				+ " operations were loaded:");
+        // Summarise operations to be used
+        reportProgress(options, "Starting smoke testing...");
+        reportProgress(options, options.getOperationMix().size() + " operations were loaded:");
 
-		int i = 0;
-		ops = options.getOperationMix().getOperations();
-		while (ops.hasNext()) {
-			Operation op = ops.next();
-			reportProgress(options,
-					"Operation ID " + i + " of type " + op.getType() + " ("
-							+ op.getName() + ")");
-			reportProgress(options, op.getContentString());
-			reportProgress(options);
-			i++;
-		}
+        int i = 0;
+        ops = options.getOperationMix().getOperations();
+        while (ops.hasNext()) {
+            Operation op = ops.next();
+            reportProgress(options, "Operation ID " + i + " of type " + op.getType() + " (" + op.getName() + ")");
+            reportProgress(options, op.getContentString());
+            reportProgress(options);
+            i++;
+        }
 
-		// Setup
-		runSetup(options);
+        // Setup
+        runSetup(options);
 
-		// Actual Run
-		reportProgress(options, "Running smoke tests...");
-		long startTime = System.nanoTime();
-		Instant startInstant = Instant.now();
-		Instant endInstant = startInstant;
-		reportProgress(options,
-				"Start Time: " + FormatUtils.formatInstant(startInstant));
-		reportProgress(options);
+        // Actual Run
+        reportProgress(options, "Running smoke tests...");
+        long startTime = System.nanoTime();
+        Instant startInstant = Instant.now();
+        Instant endInstant = startInstant;
+        reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
+        reportProgress(options);
 
-		// Smoke tests run the mix only once
-		reportBeforeOperationMix(options, options.getOperationMix());
-		OperationMixRun r = this.runMix(options);
-		reportAfterOperationMix(options, null, r);
-		reportProgress(options);
+        // Smoke tests run the mix only once
+        reportBeforeOperationMix(options, options.getOperationMix());
+        OperationMixRun r = this.runMix(options);
+        reportAfterOperationMix(options, null, r);
+        reportProgress(options);
 
-		// Get end time
-		long endTime = System.nanoTime();
-		endInstant = Instant.now();
+        // Get end time
+        long endTime = System.nanoTime();
+        endInstant = Instant.now();
 
-		// Tear down
-		runTeardown(options);
+        // Tear down
+        runTeardown(options);
 
-		reportProgress(options, "Finished smoke tests");
-		reportProgress(options);
+        reportProgress(options, "Finished smoke tests");
+        reportProgress(options);
 
-		// Summarise Operations
-		if (options.getOperationMix().getStats().getTotalErrors() > 0) {
-			reportProgress(options, "Failed Operation Summary");
-			reportProgress(options, "-----------------");
-			reportProgress(options);
+        // Summarise Operations
+        if (options.getOperationMix().getStats().getTotalErrors() > 0) {
+            reportProgress(options, "Failed Operation Summary");
+            reportProgress(options, "-----------------");
+            reportProgress(options);
 
-			ops = options.getOperationMix().getOperations();
-			while (ops.hasNext()) {
-				Operation op = ops.next();
+            ops = options.getOperationMix().getOperations();
+            while (ops.hasNext()) {
+                Operation op = ops.next();
 
-				// Don't report operations if they had zero errors
-				if (op.getStats().getTotalErrors() == 0)
-					continue;
+                // Don't report operations if they had zero errors
+                if (op.getStats().getTotalErrors() == 0)
+                    continue;
 
-				// Print Summary
-				reportOperationSummary(options, op);
-			}
-		}
+                // Print Summary
+                reportOperationSummary(options, op);
+            }
+        }
 
-		reportProgress(options, "Smoke Test Summary");
-		reportProgress(options, "-----------------");
-		reportProgress(options);
-		reportProgress(options,
-				"Result: "
-						+ (options.getOperationMix().getStats()
-								.getTotalErrors() == 0 ? "Pass" : "Failure"));
-		reportProgress(options, "Total Operations Run: "
-				+ options.getOperationMix().getStats().getTotalOperations());
-		reportProgress(options);
-		reportProgress(options, "Total Errors: "
-				+ options.getOperationMix().getStats().getTotalErrors());
-		if (options.getOperationMix().getStats().getTotalErrors() > 0) {
-			// Show errors by category
-			Map<Integer, List<OperationRun>> categorizedErrors = options
-					.getOperationMix().getStats().getCategorizedErrors();
-			reportCategorizedErrors(options, categorizedErrors);
-		}
-		reportProgress(options);
-		reportProgress(options,
-				"Start Time: " + FormatUtils.formatInstant(startInstant));
-		reportProgress(options,
-				"End Time: " + FormatUtils.formatInstant(endInstant));
-		reportProgress(options,
-				"Total Runtime: " + ConvertUtils.toMinutes(endTime - startTime)
-						+ " minutes");
-		reportProgress(options);
+        reportProgress(options, "Smoke Test Summary");
+        reportProgress(options, "-----------------");
+        reportProgress(options);
+        reportProgress(options, "Result: "
+                + (options.getOperationMix().getStats().getTotalErrors() == 0 ? "Pass" : "Failure"));
+        reportProgress(
+                options,
+                "Total Operations Run: "
+                        + FormatUtils.formatNumber(options.getOperationMix().getStats().getTotalOperations()));
+        reportProgress(options);
+        reportProgress(options,
+                "Total Errors: " + FormatUtils.formatNumber(options.getOperationMix().getStats().getTotalErrors()));
+        if (options.getOperationMix().getStats().getTotalErrors() > 0) {
+            // Show errors by category
+            Map<Integer, List<OperationRun>> categorizedErrors = options.getOperationMix().getStats()
+                    .getCategorizedErrors();
+            reportCategorizedErrors(options, categorizedErrors);
+        }
+        reportProgress(options);
+        reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
+        reportProgress(options, "End Time: " + FormatUtils.formatInstant(endInstant));
+        reportProgress(options, "Total Runtime: " + ConvertUtils.toMinutes(endTime - startTime) + " minutes");
+        reportProgress(options);
 
-		// Finally inform listeners that running finished OK
-		finished(options);
-	}
+        // Finally inform listeners that running finished OK
+        finished(options);
+    }
 }
