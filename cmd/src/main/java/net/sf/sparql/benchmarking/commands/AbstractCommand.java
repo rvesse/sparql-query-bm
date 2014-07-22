@@ -34,9 +34,18 @@ package net.sf.sparql.benchmarking.commands;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 import javax.inject.Inject;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.SystemDefaultHttpClient;
+import org.apache.jena.riot.web.HttpOp;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -293,6 +302,9 @@ public abstract class AbstractCommand {
     @Option(name = { "--ensure-absolute-uris" }, description = "Ensures that relative URIs in SPARQL queries/updates are transmitted in absolute form when passed to services for execution.  This option is useful when you need to have relative URIs in your test suites for portability but want to enforce that they are always resolved relative to this application and not by the executor service.")
     public boolean ensureAbsoluteURIs = false;
 
+    @Option(name = { "--insecure" }, hidden = true, description = "Configures HTTPS communications to be insecure, this allows for testing against systems that use self-signed certificates without having to modify your Java keystore but prevents detection of SSL problems")
+    public boolean insecure = false;
+
     /**
      * Method that should be implemented to run the actual command
      * 
@@ -324,6 +336,7 @@ public abstract class AbstractCommand {
      *            Options to populate
      * @throws IOException
      */
+    @SuppressWarnings("deprecation")
     protected final <T extends Options> void applyStandardOptions(T options) throws IOException {
         // Configure logging options first because later configuration steps may
         // log interesting information
@@ -426,5 +439,31 @@ public abstract class AbstractCommand {
         options.setAuthenticator(AuthUtils.prepareAuthenticator(this.username, this.password, this.preemptiveAuth,
                 formUrl, formUserField, formPwdField, new String[] { this.queryEndpoint, this.updateEndpoint,
                         this.gspEndpoint }));
+
+        // Insecure HTTPS Communication
+        if (this.insecure) {
+            HttpClient client = new SystemDefaultHttpClient();
+            SSLSocketFactory sslFactory;
+            try {
+                sslFactory = new SSLSocketFactory(new TrustStrategy() {
+
+                    @Override
+                    public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                        // Trust all certificates
+                        return true;
+                    }
+                });
+            } catch (Throwable e) {
+                throw new RuntimeException("Unable to configure insecure HTTPS communcation", e);
+            }
+            sslFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+            Scheme https = new Scheme("https", 443, sslFactory);
+            SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
+            registry.register(https);
+
+            // Actually set the insecure client to use
+            HttpOp.setDefaultHttpClient(client);
+            HttpOp.setUseDefaultClientWithAuthentication(true);
+        }
     }
 }
