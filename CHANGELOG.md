@@ -1,6 +1,10 @@
 # Change Log
 
-## Version 2.0.1 (Unreleased)
+## Version 2.1.0 (Unreleased)
+
+
+
+## Version 2.0.1 (July 28th 2014)
 - Support option for making relative URIs absolute prior to actually executing them
 - Fix OperationStats.getVariance() being reported in seconds instead of nanoseconds
 - Change Core API to only depend on slf4j and exclude log4j so it can more easily be used with other logging frameworks
