@@ -1,7 +1,7 @@
 # Change Log
 
 ## Version 2.1.0 (Unreleased)
-
+- Add suites directory to distribution package
 
 
 ## Version 2.0.1 (July 28th 2014)

@@ -26,7 +26,7 @@
 				<include>README.md</include>
 				<include>example-assembler.ttl</include>
 			</includes>
-			<directoryMode>0644</directoryMode>
+			<directoryMode>0755</directoryMode>
 			<fileMode>0644</fileMode>
 		</fileSet>
 		<fileSet>
@@ -41,8 +41,14 @@
 				<include>soak</include>
 				<include>stress</include>
 			</includes>
-			<directoryMode>0644</directoryMode>
+			<directoryMode>0755</directoryMode>
 			<fileMode>0755</fileMode>
+		</fileSet>
+		<fileSet>
+			<directory>../core/queries/</directory>
+			<outputDirectory>cmd/suites/</outputDirectory>
+			<directoryMode>0755</directoryMode>
+			<fileMode>0644</fileMode>
 		</fileSet>
 		<fileSet>
 			<directory>../core/target/</directory>
