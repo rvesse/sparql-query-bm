@@ -1,8 +1,9 @@
 # Change Log
 
 ## Version 2.1.0 (Unreleased)
+- BREAKING - Now Requires Java 7
 - Add suites directory to distribution package
-
+- Upgrade to latest Jena and ARQ (Jena 2.12.0 and ARQ 2.12.0)
 
 ## Version 2.0.1 (July 28th 2014)
 - Support option for making relative URIs absolute prior to actually executing them

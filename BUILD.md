@@ -11,11 +11,14 @@ various scripts for different ways of invoking this.
 
 ## Building for an alternate Java Version
 
-By default the project is set up to build for Java 6 for backwards compatibility purposes.  
+By default the project is set up to build for Java 7.  
 You can change what version it is built for by setting the `jdk.target` property, for example
-to build for Java 7:
+to build for Java 8:
 
-    mvn package -Djdk.target=1.7 
+    mvn package -Djdk.target=1.8
+
+Note that the mimimum Java version supported is Java 7 since some of our dependencies require
+Java 7 
 
 ## Scripts
 
