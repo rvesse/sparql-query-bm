@@ -32,6 +32,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.commands;
 
+import io.airlift.airline.HelpOption;
+import io.airlift.airline.Option;
+import io.airlift.airline.SingleCommand;
+import io.airlift.airline.help.Help;
+import io.airlift.airline.model.CommandMetadata;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -65,11 +71,6 @@ import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.mix.SamplingOperationMixRunner;
 import net.sf.sparql.benchmarking.util.AuthUtils;
 import net.sf.sparql.benchmarking.util.FileUtils;
-import io.airlift.command.Help;
-import io.airlift.command.HelpOption;
-import io.airlift.command.Option;
-import io.airlift.command.SingleCommand;
-import io.airlift.command.model.CommandMetadata;
 
 /**
  * Abstract command which provides all the common options
@@ -319,13 +320,17 @@ public abstract class AbstractCommand {
      * 
      * @param cls
      *            Command class
+     * @throws IOException 
      */
     public static void showUsage(Class<?> cls) {
         CommandMetadata metadata = SingleCommand.singleCommand(cls).getCommandMetadata();
-        StringBuilder builder = new StringBuilder();
-        Help.help(metadata, builder);
+        try {
+            Help.help(metadata, System.err);
+        } catch (IOException e) {
+            System.err.println("Unable to show usage summary due to error: ");
+            e.printStackTrace(System.err);
+        }
         System.err.print(ANSI_RESET);
-        System.err.println(builder.toString());
         System.exit(1);
     }
 

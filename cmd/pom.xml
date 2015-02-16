@@ -41,9 +41,8 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>io.airlift</groupId>
+			<groupId>com.github.rvesse</groupId>
 			<artifactId>airline</artifactId>
-			<version>0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -73,7 +72,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.4</version>
+				<version>${plugin.shade.version}</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -86,6 +85,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${plugin.javadoc.version}</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -117,6 +117,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>${plugin.source.version}</version>
 				<executions>
 					<execution>
 						<phase>package</phase>

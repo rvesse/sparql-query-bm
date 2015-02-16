@@ -45,15 +45,15 @@ import net.sf.sparql.benchmarking.loader.OperationLoaderRegistry;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import io.airlift.command.Arguments;
-import io.airlift.command.Command;
-import io.airlift.command.HelpOption;
-import io.airlift.command.Option;
-import io.airlift.command.ParseArgumentsMissingException;
-import io.airlift.command.ParseArgumentsUnexpectedException;
-import io.airlift.command.ParseOptionMissingException;
-import io.airlift.command.ParseOptionMissingValueException;
-import io.airlift.command.SingleCommand;
+import io.airlift.airline.Arguments;
+import io.airlift.airline.Command;
+import io.airlift.airline.HelpOption;
+import io.airlift.airline.Option;
+import io.airlift.airline.ParseArgumentsMissingException;
+import io.airlift.airline.ParseArgumentsUnexpectedException;
+import io.airlift.airline.ParseOptionMissingException;
+import io.airlift.airline.ParseOptionMissingValueException;
+import io.airlift.airline.SingleCommand;
 
 /**
  * A command which provides help about available operations

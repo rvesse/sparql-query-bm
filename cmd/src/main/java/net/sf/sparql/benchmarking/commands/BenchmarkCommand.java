@@ -32,17 +32,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.commands;
 
+import io.airlift.airline.Command;
+import io.airlift.airline.Option;
+import io.airlift.airline.ParseArgumentsMissingException;
+import io.airlift.airline.ParseArgumentsUnexpectedException;
+import io.airlift.airline.ParseOptionMissingException;
+import io.airlift.airline.ParseOptionMissingValueException;
+import io.airlift.airline.SingleCommand;
+
 import java.io.IOException;
 
 import org.apache.commons.lang.ArrayUtils;
-
-import io.airlift.command.Command;
-import io.airlift.command.Option;
-import io.airlift.command.ParseArgumentsMissingException;
-import io.airlift.command.ParseArgumentsUnexpectedException;
-import io.airlift.command.ParseOptionMissingException;
-import io.airlift.command.ParseOptionMissingValueException;
-import io.airlift.command.SingleCommand;
 
 import net.sf.sparql.benchmarking.options.BenchmarkOptions;
 import net.sf.sparql.benchmarking.runners.AbstractRunner;

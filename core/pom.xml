@@ -94,6 +94,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${plugin.javadoc.version}</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -129,6 +130,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>${plugin.source.version}</version>
 				<executions>
 					<execution>
 						<phase>package</phase>

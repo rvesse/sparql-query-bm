@@ -11,13 +11,13 @@ import net.sf.sparql.benchmarking.runners.mix.InOrderOperationMixRunner;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import io.airlift.command.Command;
-import io.airlift.command.Option;
-import io.airlift.command.ParseArgumentsMissingException;
-import io.airlift.command.ParseArgumentsUnexpectedException;
-import io.airlift.command.ParseOptionMissingException;
-import io.airlift.command.ParseOptionMissingValueException;
-import io.airlift.command.SingleCommand;
+import io.airlift.airline.Command;
+import io.airlift.airline.Option;
+import io.airlift.airline.ParseArgumentsMissingException;
+import io.airlift.airline.ParseArgumentsUnexpectedException;
+import io.airlift.airline.ParseOptionMissingException;
+import io.airlift.airline.ParseOptionMissingValueException;
+import io.airlift.airline.SingleCommand;
 
 /**
  * Runs the smoke tester from the Command Line
