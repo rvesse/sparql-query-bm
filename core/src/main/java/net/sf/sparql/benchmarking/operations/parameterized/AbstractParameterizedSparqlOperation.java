@@ -38,9 +38,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.engine.binding.Binding;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.engine.binding.Binding;
 
 import net.sf.sparql.benchmarking.operations.AbstractOperation;
 

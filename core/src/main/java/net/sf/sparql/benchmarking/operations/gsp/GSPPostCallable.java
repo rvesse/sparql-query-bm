@@ -36,8 +36,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations.gsp;
 
-import com.hp.hpl.jena.query.DatasetAccessor;
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.query.DatasetAccessor;
+import org.apache.jena.rdf.model.Model;
 
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;

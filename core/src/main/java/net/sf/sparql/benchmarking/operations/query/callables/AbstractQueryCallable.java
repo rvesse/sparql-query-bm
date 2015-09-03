@@ -36,11 +36,11 @@ import org.apache.jena.atlas.web.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.sparql.engine.http.QueryExceptionHTTP;
 
 import net.sf.sparql.benchmarking.operations.AbstractOperationCallable;
 import net.sf.sparql.benchmarking.options.Options;

@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.jena.atlas.web.auth.HttpAuthenticator;
 
-import com.hp.hpl.jena.query.Dataset;
+import org.apache.jena.query.Dataset;
 
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.OperationMix;

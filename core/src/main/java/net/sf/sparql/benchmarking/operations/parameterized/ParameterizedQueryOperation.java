@@ -34,7 +34,7 @@ package net.sf.sparql.benchmarking.operations.parameterized;
 
 import java.util.Collection;
 
-import com.hp.hpl.jena.sparql.engine.binding.Binding;
+import org.apache.jena.sparql.engine.binding.Binding;
 
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;

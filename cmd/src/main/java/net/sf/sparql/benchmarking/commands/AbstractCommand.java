@@ -58,9 +58,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.sparql.core.assembler.AssemblerUtils;
-import com.hp.hpl.jena.sparql.core.assembler.DatasetAssemblerVocab;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.sparql.core.assembler.AssemblerUtils;
+import org.apache.jena.sparql.core.assembler.DatasetAssemblerVocab;
 
 import net.sf.sparql.benchmarking.loader.InMemoryOperations;
 import net.sf.sparql.benchmarking.loader.OperationMixLoader;

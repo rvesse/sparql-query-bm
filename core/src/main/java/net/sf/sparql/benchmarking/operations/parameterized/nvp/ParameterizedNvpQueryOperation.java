@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.hp.hpl.jena.sparql.engine.binding.Binding;
+import org.apache.jena.sparql.engine.binding.Binding;
 
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.operations.parameterized.ParameterizedQueryOperation;

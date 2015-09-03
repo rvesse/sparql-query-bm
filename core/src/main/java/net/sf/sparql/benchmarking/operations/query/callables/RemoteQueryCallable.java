@@ -36,7 +36,7 @@ import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
 
-import com.hp.hpl.jena.query.Query;
+import org.apache.jena.query.Query;
 
 /**
  * A Callable for queries so we can execute them asynchronously with timeouts

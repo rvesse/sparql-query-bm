@@ -31,7 +31,7 @@
 package net.sf.sparql.benchmarking.operations.query;
 
 import net.sf.sparql.benchmarking.operations.Operation;
-import com.hp.hpl.jena.query.Query;
+import org.apache.jena.query.Query;
 
 /**
  * Interface for operations that makes a query

@@ -1,213 +1,217 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.sparql-query-bm</groupId>
-	<artifactId>parent</artifactId>
-	<version>2.1.1-SNAPSHOT</version>
-	<name>SPARQL Query Benchmarker</name>
-	<description>Parent for the SPARQL Query Benchmarker</description>
-	<url>http://sourceforge.net/projects/sparql-query-bm</url>
-	<packaging>pom</packaging>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.sf.sparql-query-bm</groupId>
+  <artifactId>parent</artifactId>
+  <version>2.1.1-SNAPSHOT</version>
+  <name>SPARQL Query Benchmarker</name>
+  <description>Parent for the SPARQL Query Benchmarker</description>
+  <url>http://sourceforge.net/projects/sparql-query-bm</url>
+  <packaging>pom</packaging>
 
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
 
-	<properties>
-		<!-- Build properties -->
-		<jdk.target>1.7</jdk.target>
-		<jdk.minimum>1.7</jdk.minimum> <!-- At least 1.7 is required because Jena requires 1.7 -->
+  <properties>
+    <!-- Build properties -->
+    <jdk.target>1.8</jdk.target>
+    <jdk.minimum>1.8</jdk.minimum> <!-- At least 1.7 is required because Jena requires 1.8 -->
 
-		<!-- Dependency versions -->
-		<log4j.version>1.2.16</log4j.version>
-		<slf4j.version>1.7.6</slf4j.version>
-		<junit.version>4.12</junit.version>
-		<commons-lang.version>2.4</commons-lang.version>
-		<commons-math.version>2.2</commons-math.version>
-		<arq.version>2.12.1</arq.version>
-		<jena.version>2.12.1</jena.version>
-		
-		<!-- Plugin versions -->
-		<plugin.compiler.version>3.2</plugin.compiler.version>
-		<plugin.source.version>2.4</plugin.source.version>
-		<plugin.javadoc.version>2.10.1</plugin.javadoc.version>
-		<plugin.enforcer.version>1.4</plugin.enforcer.version>
-		<plugin.shade.version>2.3</plugin.shade.version>
-	</properties>
+    <!-- Dependency versions -->
+    <log4j.version>1.2.16</log4j.version>
+    <slf4j.version>1.7.6</slf4j.version>
+    <junit.version>4.12</junit.version>
+    <commons-lang.version>2.4</commons-lang.version>
+    <commons-math.version>2.2</commons-math.version>
+    <arq.version>3.0.0</arq.version>
+    <jena.version>3.0.0</jena.version>
 
-	<licenses>
-		<license>
-			<name>BSD 3 Clause License</name>
-			<url>http://opensource.org/licenses/BSD-3-Clause</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
+    <!-- Plugin versions -->
+    <plugin.compiler.version>3.2</plugin.compiler.version>
+    <plugin.source.version>2.4</plugin.source.version>
+    <plugin.javadoc.version>2.10.1</plugin.javadoc.version>
+    <plugin.enforcer.version>1.4</plugin.enforcer.version>
+    <plugin.shade.version>2.3</plugin.shade.version>
+  </properties>
 
-	<scm>
-		<url>https://sourceforge.net/p/sparql-query-bm/git/</url>
-		<developerConnection>scm:git:ssh://git.code.sf.net/p/sparql-query-bm/git</developerConnection>
-		<connection>scm:git:git://git.code.sf.net/p/sparql-query-bm/git</connection>
-		<tag>HEAD</tag>
-	</scm>
-	<developers>
-		<developer>
-			<id>rvesse</id>
-			<name>Rob Vesse</name>
-			<email>rvesse@dotnetrdf.org</email>
-		</developer>
-	</developers>
+  <licenses>
+    <license>
+      <name>BSD 3 Clause License</name>
+      <url>http://opensource.org/licenses/BSD-3-Clause</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
-	<modules>
-		<module>core</module>
-		<module>cmd</module>
-		<module>distribution</module>
-	</modules>
+  <scm>
+    <url>https://sourceforge.net/p/sparql-query-bm/git/</url>
+    <developerConnection>scm:git:ssh://git.code.sf.net/p/sparql-query-bm/git</developerConnection>
+    <connection>scm:git:git://git.code.sf.net/p/sparql-query-bm/git</connection>
+    <tag>HEAD</tag>
+  </scm>
+  <developers>
+    <developer>
+      <id>rvesse</id>
+      <name>Rob Vesse</name>
+      <email>rvesse@dotnetrdf.org</email>
+    </developer>
+  </developers>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>commons-lang</groupId>
-				<artifactId>commons-lang</artifactId>
-				<version>${commons-lang.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-math</artifactId>
-				<version>${commons-math.version}</version>
-			</dependency>
+  <modules>
+    <module>core</module>
+    <module>cmd</module>
+    <module>distribution</module>
+  </modules>
 
-			<!-- Test Dependencies -->
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
-				<scope>test</scope>
-			</dependency>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>${commons-lang.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-math</artifactId>
+        <version>${commons-math.version}</version>
+      </dependency>
 
-			<!-- Jena Dependencies -->
-			<dependency>
-				<groupId>org.apache.jena</groupId>
-				<artifactId>jena-arq</artifactId>
-				<version>${arq.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.jena</groupId>
-				<artifactId>jena-core</artifactId>
-				<version>${jena.version}</version>
-			</dependency>
+      <!-- Test Dependencies -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
 
-			<!-- Other Dependencies -->
-			<dependency>
-				<groupId>com.github.rvesse</groupId>
-				<artifactId>airline</artifactId>
-				<version>0.9.1</version>
-			</dependency>
+      <!-- Jena Dependencies -->
+      <dependency>
+        <groupId>org.apache.jena</groupId>
+        <artifactId>jena-arq</artifactId>
+        <version>${arq.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jena</groupId>
+        <artifactId>jena-core</artifactId>
+        <version>${jena.version}</version>
+      </dependency>
 
-			<!-- Logging Dependencies -->
-			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>jcl-over-slf4j</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+      <!-- Other Dependencies -->
+      <dependency>
+        <groupId>com.github.rvesse</groupId>
+        <artifactId>airline</artifactId>
+        <version>0.9.1</version>
+      </dependency>
 
-	<build>
-		<plugins>
-			<!-- Compiler Plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${plugin.compiler.version}</version>
-				<configuration>
-					<source>${jdk.target}</source>
-					<target>${jdk.target}</target>
-				</configuration>
-			</plugin>
+      <!-- Logging Dependencies -->
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
-			<!-- Enforcer Plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>${plugin.enforcer.version}</version>
-				<executions>
-					<execution>
-						<id>enforce-versions</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<requireJavaVersion>
-									<version>${jdk.minimum}</version>
-								</requireJavaVersion>
-							</rules>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
+  <build>
+    <plugins>
+      <!-- Compiler Plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${plugin.compiler.version}</version>
+        <configuration>
+          <source>${jdk.target}</source>
+          <target>${jdk.target}</target>
+        </configuration>
+      </plugin>
 
-		<pluginManagement>
-			<plugins>
-				<!-- Javadoc Plugin -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.9.1</version>
-				</plugin>
-				<!-- Sources Plugin -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>2.2.1</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+      <!-- Enforcer Plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${plugin.enforcer.version}</version>
+        <executions>
+          <execution>
+            <id>enforce-versions</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>${jdk.minimum}</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
 
-	<profiles>
-		<profile>
-			<id>release</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-release-plugin</artifactId>
-						<version>2.5</version>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.5</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+    <pluginManagement>
+      <plugins>
+        <!-- Javadoc Plugin -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.9.1</version>
+          <configuration>
+            <additionalparam>-Xdoclint:none</additionalparam>
+          </configuration>
+        </plugin>
+        <!-- Sources Plugin -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.2.1</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <version>2.5</version>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

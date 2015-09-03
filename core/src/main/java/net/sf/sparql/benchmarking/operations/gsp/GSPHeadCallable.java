@@ -35,7 +35,7 @@ package net.sf.sparql.benchmarking.operations.gsp;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
-import com.hp.hpl.jena.query.DatasetAccessor;
+import org.apache.jena.query.DatasetAccessor;
 
 /**
  * A callable which runs the Graph Store Protocol HEAD operation

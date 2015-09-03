@@ -37,9 +37,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 import net.sf.sparql.benchmarking.operations.query.callables.RemoteQueryCallable;
 import net.sf.sparql.benchmarking.options.Options;

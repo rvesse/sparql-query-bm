@@ -1,11 +1,11 @@
 # Change Log
 
 ## Version 2.1.0 (Unreleased)
-- BREAKING - Now Requires Java 7
+- **BREAKING** - Now Requires Java 8
 - Add suites directory to distribution package
 - Upgrade dependencies
-    - Jena 2.12.1
-    - ARQ 2.12.0
+    - Jena 3.0.0
+    - ARQ 3.0.0
     - JUnit 4.12
     - Airline 0.9.1
 - Use latest Maven plugin versions for builds

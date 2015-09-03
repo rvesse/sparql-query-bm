@@ -36,8 +36,8 @@ import net.sf.sparql.benchmarking.operations.query.DatasetSizeOperation;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.sparql.util.NodeFactoryExtra;
+import org.apache.jena.graph.Node;
+import org.apache.jena.sparql.util.NodeFactoryExtra;
 
 /**
  * A callable for getting the value of a specific variable in the first row of a

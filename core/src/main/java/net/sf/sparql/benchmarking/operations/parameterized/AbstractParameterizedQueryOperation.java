@@ -33,8 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package net.sf.sparql.benchmarking.operations.parameterized;
 
 import java.util.Collection;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.sparql.engine.binding.Binding;
+import org.apache.jena.query.Query;
+import org.apache.jena.sparql.engine.binding.Binding;
 
 import net.sf.sparql.benchmarking.operations.OperationCallable;
 import net.sf.sparql.benchmarking.operations.query.QueryOperation;

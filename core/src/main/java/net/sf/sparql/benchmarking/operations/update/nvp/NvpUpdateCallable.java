@@ -37,9 +37,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.hp.hpl.jena.sparql.modify.UpdateProcessRemoteBase;
-import com.hp.hpl.jena.update.UpdateProcessor;
-import com.hp.hpl.jena.update.UpdateRequest;
+import org.apache.jena.sparql.modify.UpdateProcessRemoteBase;
+import org.apache.jena.update.UpdateProcessor;
+import org.apache.jena.update.UpdateRequest;
 
 import net.sf.sparql.benchmarking.operations.update.callables.RemoteUpdateCallable;
 import net.sf.sparql.benchmarking.options.Options;

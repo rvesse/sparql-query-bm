@@ -40,8 +40,8 @@ import org.apache.jena.atlas.web.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.update.UpdateProcessor;
-import com.hp.hpl.jena.update.UpdateRequest;
+import org.apache.jena.update.UpdateProcessor;
+import org.apache.jena.update.UpdateRequest;
 
 import net.sf.sparql.benchmarking.operations.AbstractOperationCallable;
 import net.sf.sparql.benchmarking.options.Options;

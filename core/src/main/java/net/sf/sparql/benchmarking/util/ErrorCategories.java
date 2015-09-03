@@ -38,7 +38,7 @@ import java.util.Map;
 import org.apache.http.HttpStatus;
 import org.apache.jena.atlas.web.HttpException;
 
-import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+import org.apache.jena.sparql.engine.http.QueryExceptionHTTP;
 
 /**
  * Helper class containing constants and methods related to error categories

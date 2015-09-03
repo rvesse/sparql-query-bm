@@ -35,8 +35,8 @@ package net.sf.sparql.benchmarking.operations.gsp;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
 
-import com.hp.hpl.jena.query.DatasetAccessor;
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.query.DatasetAccessor;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * A callable which runs the Graph Store Protocol GET operation

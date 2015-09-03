@@ -42,7 +42,7 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.util.FileUtils;
+import org.apache.jena.util.FileUtils;
 
 /**
  * Abstract operation loader that provides useful protected methods for loader

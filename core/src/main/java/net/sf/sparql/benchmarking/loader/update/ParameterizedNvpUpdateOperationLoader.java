@@ -41,9 +41,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.sparql.engine.binding.Binding;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFactory;
+import org.apache.jena.sparql.engine.binding.Binding;
 
 import net.sf.sparql.benchmarking.loader.AbstractNvpOperationLoader;
 import net.sf.sparql.benchmarking.loader.AbstractOperationLoader;

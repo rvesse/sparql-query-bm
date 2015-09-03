@@ -39,7 +39,7 @@ import java.util.concurrent.ExecutorService;
 import org.apache.jena.atlas.web.auth.HttpAuthenticator;
 import org.apache.jena.riot.WebContent;
 
-import com.hp.hpl.jena.query.Dataset;
+import org.apache.jena.query.Dataset;
 
 import net.sf.sparql.benchmarking.monitoring.ProgressListener;
 import net.sf.sparql.benchmarking.operations.OperationMix;

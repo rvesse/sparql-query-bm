@@ -32,8 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.operations.query;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryFactory;
 
 /**
  * Represents a query operation that always uses the same fixed query
