@@ -1,6 +1,6 @@
 # Change Log
 
-## Version 2.1.1 (Unreleased)
+## Version 2.1.1 (5th November 2015)
 
 - Upgrade dependencies
     - Airline 2.0.0
