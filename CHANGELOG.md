@@ -1,19 +1,21 @@
 # Change Log
 
+## Version 2.1.2 (Unreleased)
+
 ## Version 2.1.1 (5th November 2015)
 
+- **BREAKING** - Now Requires Java 8
 - Upgrade dependencies
     - Airline 2.0.0
+    - Jena 3.0.0
+    - ARQ 3.0.0
 - Upgrade Maven plugin versions for builds
 - Fix bug with XML results producing an error during final reporting
 - Remove deprecated references to Sonatype OSS Parent
 
 ## Version 2.1.0 (17th February 2015)
-- **BREAKING** - Now Requires Java 8
 - Add suites directory to distribution package
 - Upgrade dependencies
-    - Jena 3.0.0
-    - ARQ 3.0.0
     - JUnit 4.12
     - Airline 0.9.1
 - Use latest Maven plugin versions for builds    
