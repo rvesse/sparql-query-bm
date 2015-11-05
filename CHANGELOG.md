@@ -1,6 +1,14 @@
 # Change Log
 
-## Version 2.1.0 (Unreleased)
+## Version 2.1.1 (Unreleased)
+
+- Upgrade dependencies
+    - Airline 2.0.0
+- Upgrade Maven plugin versions for builds
+- Fix bug with XML results producing an error during final reporting
+- Remove deprecated references to Sonatype OSS Parent
+
+## Version 2.1.0 (17th February 2015)
 - **BREAKING** - Now Requires Java 8
 - Add suites directory to distribution package
 - Upgrade dependencies
@@ -8,8 +16,7 @@
     - ARQ 3.0.0
     - JUnit 4.12
     - Airline 0.9.1
-- Use latest Maven plugin versions for builds
-    
+- Use latest Maven plugin versions for builds    
 
 ## Version 2.0.1 (July 28th 2014)
 - Support option for making relative URIs absolute prior to actually executing them

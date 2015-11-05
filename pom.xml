@@ -9,12 +9,6 @@
   <url>http://sourceforge.net/projects/sparql-query-bm</url>
   <packaging>pom</packaging>
 
-  <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>7</version>
-  </parent>
-
   <properties>
     <!-- Build properties -->
     <jdk.target>1.8</jdk.target>
@@ -36,6 +30,8 @@
     <plugin.javadoc.version>2.10.1</plugin.javadoc.version>
     <plugin.enforcer.version>1.4</plugin.enforcer.version>
     <plugin.shade.version>2.3</plugin.shade.version>
+    <plugin.release.version>2.5.1</plugin.release.version>
+    <plugin.gpg.version>1.6</plugin.gpg.version>
   </properties>
 
   <licenses>
@@ -59,6 +55,17 @@
       <email>rvesse@dotnetrdf.org</email>
     </developer>
   </developers>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 
   <modules>
     <module>core</module>
@@ -172,7 +179,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.9.1</version>
+          <version>${plugin.javadoc.version}</version>
           <configuration>
             <additionalparam>-Xdoclint:none</additionalparam>
           </configuration>
@@ -181,7 +188,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>2.2.1</version>
+          <version>${plugin.source.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -195,12 +202,12 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
-            <version>2.5</version>
+            <version>${plugin.release.version}</version>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.5</version>
+            <version>${plugin.gpg.version}</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
