@@ -32,11 +32,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.commands;
 
-import io.airlift.airline.HelpOption;
-import io.airlift.airline.Option;
-import io.airlift.airline.SingleCommand;
-import io.airlift.airline.help.Help;
-import io.airlift.airline.model.CommandMetadata;
+import com.github.rvesse.airline.HelpOption;
+import com.github.rvesse.airline.annotations.Option;
+import com.github.rvesse.airline.annotations.restrictions.Required;
+import com.github.rvesse.airline.SingleCommand;
+import com.github.rvesse.airline.help.Help;
+import com.github.rvesse.airline.model.CommandMetadata;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,7 +88,7 @@ public abstract class AbstractCommand {
      * Help option
      */
     @Inject
-    public HelpOption helpOption;
+    public HelpOption<AbstractCommand> helpOption;
 
     /**
      * Halt on timeout option
@@ -170,7 +171,8 @@ public abstract class AbstractCommand {
     /**
      * Mix option
      */
-    @Option(name = { "-m", "--mix" }, arity = 1, title = "Mix File", required = true, description = "Sets the operation mix file which provides the mix of operations to be run.")
+    @Option(name = { "-m", "--mix" }, arity = 1, title = "Mix File", description = "Sets the operation mix file which provides the mix of operations to be run.")
+    @Required
     public String mixFile;
 
     /**

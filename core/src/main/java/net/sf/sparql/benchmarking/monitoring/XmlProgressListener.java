@@ -266,10 +266,6 @@ public class XmlProgressListener implements ProgressListener {
             throw new RuntimeException(
                     "handleFinished() on XmlProgressListener was called but it appears handleStarted() was never called, another listener may have caused handleStarted() to be bypassed for this listener");
 
-        if (!FileUtils.checkFile(this.file, allowOverwrite)) {
-            throw new RuntimeException("XML Output File is not a file, already exists or is not writable");
-        }
-
         try {
             closeTag(TAG_MIX_RUNS);
 

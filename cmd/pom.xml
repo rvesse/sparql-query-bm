@@ -1,132 +1,131 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>cmd</artifactId>
-	<name>SPARQL Query Benchmarker - CLI</name>
-	<description>A command line interface to the benchmarking core</description>
-	<url>http://sourceforge.net/projects/sparql-query-bm</url>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>cmd</artifactId>
+  <name>SPARQL Query Benchmarker - CLI</name>
+  <description>A command line interface to the benchmarking core</description>
+  <url>http://sourceforge.net/projects/sparql-query-bm</url>
 
-	<parent>
-		<groupId>net.sf.sparql-query-bm</groupId>
-		<artifactId>parent</artifactId>
-		<version>2.1.1-SNAPSHOT</version>
-		<relativePath>../</relativePath>
-	</parent>
+  <parent>
+    <groupId>net.sf.sparql-query-bm</groupId>
+    <artifactId>parent</artifactId>
+    <version>2.1.1-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
 
-	<licenses>
-		<license>
-			<name>BSD 3 Clause License</name>
-			<url>http://opensource.org/licenses/BSD-3-Clause</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
+  <licenses>
+    <license>
+      <name>BSD 3 Clause License</name>
+      <url>http://opensource.org/licenses/BSD-3-Clause</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
-	<scm>
-		<url>https://sourceforge.net/p/sparql-query-bm/git/</url>
-		<developerConnection>scm:git:ssh://git.code.sf.net/p/sparql-query-bm/git</developerConnection>
-		<connection>scm:git:git://git.code.sf.net/p/sparql-query-bm/git</connection>
-		<tag>HEAD</tag>
-	</scm>
-	<developers>
-		<developer>
-			<id>rvesse</id>
-			<name>Rob Vesse</name>
-			<email>rvesse@dotnetrdf.org</email>
-		</developer>
-	</developers>
+  <scm>
+    <url>https://sourceforge.net/p/sparql-query-bm/git/</url>
+    <developerConnection>scm:git:ssh://git.code.sf.net/p/sparql-query-bm/git</developerConnection>
+    <connection>scm:git:git://git.code.sf.net/p/sparql-query-bm/git</connection>
+    <tag>HEAD</tag>
+  </scm>
+  <developers>
+    <developer>
+      <id>rvesse</id>
+      <name>Rob Vesse</name>
+      <email>rvesse@dotnetrdf.org</email>
+    </developer>
+  </developers>
 
-	<dependencies>
-		<dependency>
-			<groupId>net.sf.sparql-query-bm</groupId>
-			<artifactId>core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.rvesse</groupId>
-			<artifactId>airline</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>net.sf.sparql-query-bm</groupId>
+      <artifactId>core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.rvesse</groupId>
+      <artifactId>airline</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </dependency>
 
-		<!-- Test Dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-	<build>
-		<finalName>sparql-query-bm-cli</finalName>
+  <build>
+    <finalName>sparql-query-bm-cli</finalName>
 
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>${plugin.shade.version}</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${plugin.javadoc.version}</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<javadocVersion>${jdk.target}</javadocVersion>
-					<quiet>true</quiet>
-					<encoding>UTF-8</encoding>
-					<charset>UTF-8</charset>
-					<docencoding>UTF-8</docencoding>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${plugin.shade.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <javadocVersion>${jdk.target}</javadocVersion>
+          <quiet>true</quiet>
+          <encoding>UTF-8</encoding>
+          <charset>UTF-8</charset>
+          <docencoding>UTF-8</docencoding>
 
-					<links>
-						<link>http://jena.apache.org/documentation/javadoc/arq/</link>
-						<link>http://jena.apache.org/documentation/javadoc/jena/</link>
-					</links>
+          <links>
+            <link>http://jena.apache.org/documentation/javadoc/arq/</link>
+            <link>http://jena.apache.org/documentation/javadoc/jena/</link>
+          </links>
 
-					<groups>
-						<group>
-							<title>Commands API</title>
-							<packages>net.sf.sparql.benchmarking.commands*</packages>
-						</group>
-					</groups>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>${plugin.source.version}</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+          <groups>
+            <group>
+              <title>Commands API</title>
+              <packages>net.sf.sparql.benchmarking.commands*</packages>
+            </group>
+          </groups>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

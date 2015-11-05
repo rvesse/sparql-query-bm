@@ -28,6 +28,7 @@
     <commons-math.version>2.2</commons-math.version>
     <arq.version>3.0.0</arq.version>
     <jena.version>3.0.0</jena.version>
+    <airline.version>2.0.0</airline.version>
 
     <!-- Plugin versions -->
     <plugin.compiler.version>3.2</plugin.compiler.version>
@@ -102,7 +103,7 @@
       <dependency>
         <groupId>com.github.rvesse</groupId>
         <artifactId>airline</artifactId>
-        <version>0.9.1</version>
+        <version>${airline.version}</version>
       </dependency>
 
       <!-- Logging Dependencies -->

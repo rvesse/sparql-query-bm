@@ -45,15 +45,15 @@ import net.sf.sparql.benchmarking.loader.OperationLoaderRegistry;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import io.airlift.airline.Arguments;
-import io.airlift.airline.Command;
-import io.airlift.airline.HelpOption;
-import io.airlift.airline.Option;
-import io.airlift.airline.ParseArgumentsMissingException;
-import io.airlift.airline.ParseArgumentsUnexpectedException;
-import io.airlift.airline.ParseOptionMissingException;
-import io.airlift.airline.ParseOptionMissingValueException;
-import io.airlift.airline.SingleCommand;
+import com.github.rvesse.airline.annotations.Arguments;
+import com.github.rvesse.airline.annotations.Command;
+import com.github.rvesse.airline.HelpOption;
+import com.github.rvesse.airline.annotations.Option;
+import com.github.rvesse.airline.parser.errors.ParseArgumentsMissingException;
+import com.github.rvesse.airline.parser.errors.ParseArgumentsUnexpectedException;
+import com.github.rvesse.airline.parser.errors.ParseOptionMissingException;
+import com.github.rvesse.airline.parser.errors.ParseOptionMissingValueException;
+import com.github.rvesse.airline.SingleCommand;
 
 /**
  * A command which provides help about available operations
@@ -68,7 +68,7 @@ public class OperationsCommand {
      * Help option
      */
     @Inject
-    public HelpOption helpOption;
+    public HelpOption<OperationsCommand> helpOption;
 
     /**
      * Operation option
