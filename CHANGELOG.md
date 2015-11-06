@@ -2,6 +2,10 @@
 
 ## Version 2.1.2 (Unreleased)
 
+- Upgrade dependencies
+    - Jena 3.0.1-SNAPSHOT
+- Fix possible bug with hangs when long running queries time out or are otherwise terminated that both hangs the client and causes the server to waste resources
+
 ## Version 2.1.1 (5th November 2015)
 
 - **BREAKING** - Now Requires Java 8

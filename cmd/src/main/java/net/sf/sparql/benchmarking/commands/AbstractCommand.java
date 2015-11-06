@@ -46,12 +46,16 @@ import java.security.cert.X509Certificate;
 
 import javax.inject.Inject;
 
+import org.apache.http.ConnectionReuseStrategy;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.SystemDefaultHttpClient;
+import org.apache.http.protocol.HttpContext;
 import org.apache.jena.riot.web.HttpOp;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.FileAppender;
@@ -111,128 +115,149 @@ public abstract class AbstractCommand {
     /**
      * Timeout option
      */
-    @Option(name = { "-t", "--timeout" }, arity = 1, title = "Seconds", description = "Sets the operation timeout in seconds, a zero/negative value is used to indicate no timeout.")
+    @Option(name = { "-t",
+            "--timeout" }, arity = 1, title = "Seconds", description = "Sets the operation timeout in seconds, a zero/negative value is used to indicate no timeout.")
     public int timeout = Options.DEFAULT_TIMEOUT;
 
     /**
      * Parallel threads option
      */
-    @Option(name = { "-p", "--parallel" }, arity = 1, title = "Threads", description = "Sets the number of parallel threads to use for testing.")
+    @Option(name = { "-p",
+            "--parallel" }, arity = 1, title = "Threads", description = "Sets the number of parallel threads to use for testing.")
     public int parallelThreads = 1;
 
     /**
      * Maximum delay between operations option
      */
-    @Option(name = { "-d", "--max-delay" }, arity = 1, title = "Milliseconds", description = "Sets the maximum delay between operations in milliseconds.")
+    @Option(name = { "-d",
+            "--max-delay" }, arity = 1, title = "Milliseconds", description = "Sets the maximum delay between operations in milliseconds.")
     public int maxDelay = Options.DEFAULT_MAX_DELAY;
 
     /**
      * Query endpoint option
      */
-    @Option(name = { "-q", "--query-endpoint" }, arity = 1, title = "Query Endpoint URI", description = "Sets the SPARQL query endpoint URI.")
+    @Option(name = { "-q",
+            "--query-endpoint" }, arity = 1, title = "Query Endpoint URI", description = "Sets the SPARQL query endpoint URI.")
     public String queryEndpoint;
 
     /**
      * Update endpoint option
      */
-    @Option(name = { "-u", "--update-endpoint" }, arity = 1, title = "Update Endpoint URI", description = "Sets the SPARQL update endpoint URI.")
+    @Option(name = { "-u",
+            "--update-endpoint" }, arity = 1, title = "Update Endpoint URI", description = "Sets the SPARQL update endpoint URI.")
     public String updateEndpoint;
 
     /**
      * Graph store endpoint option
      */
-    @Option(name = { "-g", "--gsp-endpoint" }, arity = 1, title = "Graph Store Endpoint URI", description = "Sets the SPARQL graph store protocol endpoint URI.")
+    @Option(name = { "-g",
+            "--gsp-endpoint" }, arity = 1, title = "Graph Store Endpoint URI", description = "Sets the SPARQL graph store protocol endpoint URI.")
     public String gspEndpoint;
 
     /**
      * Enable compression option
      */
-    @Option(name = { "--compression", "--allow-compression" }, description = "Enables the use of GZip/Deflate compression when communicating with the server assuming the server supports it.")
+    @Option(name = { "--compression",
+            "--allow-compression" }, description = "Enables the use of GZip/Deflate compression when communicating with the server assuming the server supports it.")
     public boolean enableCompression = false;
 
     /**
      * ASK Format option
      */
-    @Option(name = { "--results-ask", "--ask-format" }, arity = 1, title = "MIME Type", description = "Sets the results format that will be requested for ASK queries.")
+    @Option(name = { "--results-ask",
+            "--ask-format" }, arity = 1, title = "MIME Type", description = "Sets the results format that will be requested for ASK queries.")
     public String askFormat = Options.DEFAULT_FORMAT_ASK;
 
     /**
      * SELECT Format option
      */
-    @Option(name = { "--results-select", "--select-format" }, arity = 1, title = "MIME Type", description = "Sets the results format that will be requested for SELECT queries.")
+    @Option(name = { "--results-select",
+            "--select-format" }, arity = 1, title = "MIME Type", description = "Sets the results format that will be requested for SELECT queries.")
     public String selectFormat = Options.DEFAULT_FORMAT_SELECT;
 
     /**
      * Graph Format option
      */
-    @Option(name = { "--results-graph", "--graph-format" }, arity = 1, title = "MIME Type", description = "Sets the results format that will be requested for CONSTRUCT/DESCRIBE queries and operations that retrieve a graph.")
+    @Option(name = { "--results-graph",
+            "--graph-format" }, arity = 1, title = "MIME Type", description = "Sets the results format that will be requested for CONSTRUCT/DESCRIBE queries and operations that retrieve a graph.")
     public String graphFormat = Options.DEFAULT_FORMAT_GRAPH;
 
     /**
      * Mix option
      */
-    @Option(name = { "-m", "--mix" }, arity = 1, title = "Mix File", description = "Sets the operation mix file which provides the mix of operations to be run.")
+    @Option(name = { "-m",
+            "--mix" }, arity = 1, title = "Mix File", description = "Sets the operation mix file which provides the mix of operations to be run.")
     @Required
     public String mixFile;
 
     /**
      * Sanity checking option
      */
-    @Option(name = { "-s", "--sanity-checks" }, arity = 1, title = "Level", description = "Sets the sanity checking level, this is the number of basic sanity checks the system to be tested must pass before actual tests will be started.  This should normally be set to a value no greater than 3 though some commands may support higher sanity checking levels.")
+    @Option(name = { "-s",
+            "--sanity-checks" }, arity = 1, title = "Level", description = "Sets the sanity checking level, this is the number of basic sanity checks the system to be tested must pass before actual tests will be started.  This should normally be set to a value no greater than 3 though some commands may support higher sanity checking levels.")
     public int sanityCheckLevel = Options.DEFAULT_SANITY_CHECKS;
 
     /**
      * Disable random order option
      */
-    @Option(name = { "--norand", "--no-random" }, description = "Disables randomized ordering of operations within mixes.")
+    @Option(name = { "--norand",
+            "--no-random" }, description = "Disables randomized ordering of operations within mixes.")
     public boolean noRandom = false;
 
     /**
      * Sample size option
      */
-    @Option(name = { "--sample-size" }, arity = 1, title = "Sample Size", description = "Sets the sample size used, this controls how many of the operations in the mix are run in each run of the mix.  You may also want to set --sample-repeats when setting a sample size larger than the mix size otherwise the sample size will be capped at the mix size.  When neither this nor --sample-repeats is specified the default behaviour of running every operation in every mix run is used.")
+    @Option(name = {
+            "--sample-size" }, arity = 1, title = "Sample Size", description = "Sets the sample size used, this controls how many of the operations in the mix are run in each run of the mix.  You may also want to set --sample-repeats when setting a sample size larger than the mix size otherwise the sample size will be capped at the mix size.  When neither this nor --sample-repeats is specified the default behaviour of running every operation in every mix run is used.")
     public int sampleSize = 0;
 
     /**
      * Sample repeats option
      */
-    @Option(name = { "--sample-repeats" }, description = "Enables repeats for sampling, this allows an operation to potentially run multiple times within a single run of the mix.  You may also want to set --sample-size to control how many operations are run in each mix run.  When neither this nor --sample-repeats is specified the default behaviour of running every operation in every mix run is used.")
+    @Option(name = {
+            "--sample-repeats" }, description = "Enables repeats for sampling, this allows an operation to potentially run multiple times within a single run of the mix.  You may also want to set --sample-size to control how many operations are run in each mix run.  When neither this nor --sample-repeats is specified the default behaviour of running every operation in every mix run is used.")
     public boolean sampleRepeats = false;
 
     /**
      * User name option
      */
-    @Option(name = { "--username" }, arity = 1, title = "Username", description = "Sets the user name used for authentication.")
+    @Option(name = {
+            "--username" }, arity = 1, title = "Username", description = "Sets the user name used for authentication.")
     public String username;
 
     /**
      * Password option
      */
-    @Option(name = { "--password" }, arity = 1, title = "Password", description = "Sets the password used for authentication.")
+    @Option(name = {
+            "--password" }, arity = 1, title = "Password", description = "Sets the password used for authentication.")
     public String password;
 
     /**
      * Pre-emptive authentication option
      */
-    @Option(name = { "--preemptive-auth" }, description = "Enables pre-emptive authentication, only has an effect if HTTP basic authentication is being used.")
+    @Option(name = {
+            "--preemptive-auth" }, description = "Enables pre-emptive authentication, only has an effect if HTTP basic authentication is being used.")
     public boolean preemptiveAuth = false;
 
     /**
      * Form URL option
      */
-    @Option(name = { "--form-url" }, arity = 1, title = "Form URL", description = "Sets the URL used to login for form based authentication, this option is required if you wish to use form based authentication.  When not specified and the --username and --password options are specified standard HTTP authentication is assumed.")
+    @Option(name = {
+            "--form-url" }, arity = 1, title = "Form URL", description = "Sets the URL used to login for form based authentication, this option is required if you wish to use form based authentication.  When not specified and the --username and --password options are specified standard HTTP authentication is assumed.")
     public String formUrl;
 
     /**
      * Form user name field
      */
-    @Option(name = { "--form-user-field" }, arity = 1, title = "Form User Field", description = "Sets the user name field used for form based authentication (defaults to httpd_username).")
+    @Option(name = {
+            "--form-user-field" }, arity = 1, title = "Form User Field", description = "Sets the user name field used for form based authentication (defaults to httpd_username).")
     public String formUserField;
 
     /**
      * Form password field
      */
-    @Option(name = { "--form-password-field" }, arity = 1, title = "Form Password Field", description = "Sets the password field used for form based authentication (defaults to httpd_password).")
+    @Option(name = {
+            "--form-password-field" }, arity = 1, title = "Form Password Field", description = "Sets the password field used for form based authentication (defaults to httpd_password).")
     public String formPwdField;
 
     /**
@@ -250,62 +275,73 @@ public abstract class AbstractCommand {
     /**
      * Debug option
      */
-    @Option(name = { "--debug" }, description = "Enables debug level logging, must be used with the --logging or --log-file option to have a visible effect.")
+    @Option(name = {
+            "--debug" }, description = "Enables debug level logging, must be used with the --logging or --log-file option to have a visible effect.")
     public boolean debug = false;
 
     /**
      * Trace option
      */
-    @Option(name = { "--trace" }, description = "Enables trace level logging, must be used with the --logging or --log-file option to have a visible effect.")
+    @Option(name = {
+            "--trace" }, description = "Enables trace level logging, must be used with the --logging or --log-file option to have a visible effect.")
     public boolean trace = false;
 
     /**
      * Quite mode option
      */
-    @Option(name = { "--quiet" }, description = "Enables quiet mode, in this mode general progress information is not printed to standard out.")
+    @Option(name = {
+            "--quiet" }, description = "Enables quiet mode, in this mode general progress information is not printed to standard out.")
     public boolean quiet = false;
 
     /**
      * Setup mix option
      */
-    @Option(name = { "--setup" }, arity = 1, title = "Setup Mix", description = "Sets a mix file containing a mix that will be used as a setup mix i.e. it will run the operations specified in it once in the exact order given before actual testing starts.")
+    @Option(name = {
+            "--setup" }, arity = 1, title = "Setup Mix", description = "Sets a mix file containing a mix that will be used as a setup mix i.e. it will run the operations specified in it once in the exact order given before actual testing starts.")
     public String setupMixFile;
 
     /**
      * Tear down mix option
      */
-    @Option(name = { "--teardown" }, arity = 1, title = "Teardown Mix", description = "Sets a mix fix containing a mix that will be used as a tear down mix i.e. it will run the operations specified in it once in the exact order given after actual testing finished.")
+    @Option(name = {
+            "--teardown" }, arity = 1, title = "Teardown Mix", description = "Sets a mix fix containing a mix that will be used as a tear down mix i.e. it will run the operations specified in it once in the exact order given after actual testing finished.")
     public String teardownMixFile;
     /**
      * Limit option
      */
-    @Option(name = { "-l", "--limit" }, arity = 1, title = "Limit", description = "Sets a limit that will be added to queries without a LIMIT clause, those with a LIMIT clause will use the lesser of their declared limit and this limit.  Values <= 0 are interpreted as imposing no limit on queries")
+    @Option(name = { "-l",
+            "--limit" }, arity = 1, title = "Limit", description = "Sets a limit that will be added to queries without a LIMIT clause, those with a LIMIT clause will use the lesser of their declared limit and this limit.  Values <= 0 are interpreted as imposing no limit on queries")
     public long limit = Options.DEFAULT_LIMIT;
     /**
      * No count option
      */
-    @Option(name = { "--nocount", "--no-count" }, description = "Disables result counting for SELECT queries, allows measuring just the time to respond to queries rather than the time to complete the entire query which may be useful when benchmarking against very large datasets or when the IO path between the benchmarker and the system being benchmarked is known to be a bottleneck.")
+    @Option(name = { "--nocount",
+            "--no-count" }, description = "Disables result counting for SELECT queries, allows measuring just the time to respond to queries rather than the time to complete the entire query which may be useful when benchmarking against very large datasets or when the IO path between the benchmarker and the system being benchmarked is known to be a bottleneck.")
     public boolean noCount = false;
 
     /**
      * Dataset assembler file option
      */
-    @Option(name = { "--dataset", "--dataset-assembler" }, arity = 1, title = "Dataset Assembler File", description = "Provides an assembler file that describes an dataset that can be loaded and used for in-memory testing.  This uses the standard Jena assembler vocabulary and mechanisms.")
+    @Option(name = { "--dataset",
+            "--dataset-assembler" }, arity = 1, title = "Dataset Assembler File", description = "Provides an assembler file that describes an dataset that can be loaded and used for in-memory testing.  This uses the standard Jena assembler vocabulary and mechanisms.")
     public String dsAssemblerFile;
 
     /**
      * In-memory operations mode option
      */
-    @Option(name = { "--in-memory" }, description = "Disables remote query and update operations by redirecting the loaders to the in-memory variants of these operations.  Allows you to easily use a mix originally designed for remote services to also be run against in-memory datasets.")
+    @Option(name = {
+            "--in-memory" }, description = "Disables remote query and update operations by redirecting the loaders to the in-memory variants of these operations.  Allows you to easily use a mix originally designed for remote services to also be run against in-memory datasets.")
     public boolean inMemoryOperations = false;
 
     /**
      * Ensure absolute URIs option
      */
-    @Option(name = { "--ensure-absolute-uris" }, description = "Ensures that relative URIs in SPARQL queries/updates are transmitted in absolute form when passed to services for execution.  This option is useful when you need to have relative URIs in your test suites for portability but want to enforce that they are always resolved relative to this application and not by the executor service.")
+    @Option(name = {
+            "--ensure-absolute-uris" }, description = "Ensures that relative URIs in SPARQL queries/updates are transmitted in absolute form when passed to services for execution.  This option is useful when you need to have relative URIs in your test suites for portability but want to enforce that they are always resolved relative to this application and not by the executor service.")
     public boolean ensureAbsoluteURIs = false;
 
-    @Option(name = { "--insecure" }, hidden = true, description = "Configures HTTPS communications to be insecure, this allows for testing against systems that use self-signed certificates without having to modify your Java keystore but prevents detection of SSL problems")
+    @Option(name = {
+            "--insecure" }, hidden = true, description = "Configures HTTPS communications to be insecure, this allows for testing against systems that use self-signed certificates without having to modify your Java keystore but prevents detection of SSL problems")
     public boolean insecure = false;
 
     /**
@@ -322,7 +358,7 @@ public abstract class AbstractCommand {
      * 
      * @param cls
      *            Command class
-     * @throws IOException 
+     * @throws IOException
      */
     public static void showUsage(Class<?> cls) {
         CommandMetadata metadata = SingleCommand.singleCommand(cls).getCommandMetadata();
@@ -370,14 +406,14 @@ public abstract class AbstractCommand {
             System.out.println("Running in verbose mode, run with --quiet to disable");
             options.addListener(new ConsoleProgressListener());
         } else if (this.logToConsole) {
-            System.out
-                    .println("Running with logging to console enabled, quiet mode is enabled but will have limited effect especially if you've set --debug or --trace as well");
+            System.out.println(
+                    "Running with logging to console enabled, quiet mode is enabled but will have limited effect especially if you've set --debug or --trace as well");
         }
 
         // Load the operation mix
         // Try to get a loader for the given mix file
-        OperationMixLoader mixLoader = OperationMixLoaderRegistry.getLoader(FileUtils.getExtension(this.mixFile, true,
-                false));
+        OperationMixLoader mixLoader = OperationMixLoaderRegistry
+                .getLoader(FileUtils.getExtension(this.mixFile, true, false));
         if (mixLoader == null)
             throw new RuntimeException("No mix loader is associated with files with the extension "
                     + FileUtils.getExtension(this.mixFile, true, true));
@@ -444,8 +480,8 @@ public abstract class AbstractCommand {
 
         // Authentication
         options.setAuthenticator(AuthUtils.prepareAuthenticator(this.username, this.password, this.preemptiveAuth,
-                formUrl, formUserField, formPwdField, new String[] { this.queryEndpoint, this.updateEndpoint,
-                        this.gspEndpoint }));
+                formUrl, formUserField, formPwdField,
+                new String[] { this.queryEndpoint, this.updateEndpoint, this.gspEndpoint }));
 
         // Insecure HTTPS Communication
         if (this.insecure) {
@@ -467,6 +503,20 @@ public abstract class AbstractCommand {
             Scheme https = new Scheme("https", 443, sslFactory);
             SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
             registry.register(https);
+
+            // Need to not re-use connections as otherwise if a query is
+            // terminated early whether due to timeout or due to result counting
+            // being disabled if we are re-using connections HTTP Client will
+            // try to consume the remaining response which can cause us to hang
+            // and also ties up server resources potentially skewing the
+            // performance numbers if running multi-threaded
+            ((AbstractHttpClient) client).setReuseStrategy(new ConnectionReuseStrategy() {
+                @Override
+                public boolean keepAlive(HttpResponse response, HttpContext context) {
+                    // Don't re-use connections
+                    return false;
+                }
+            });
 
             // Actually set the insecure client to use
             HttpOp.setDefaultHttpClient(client);
