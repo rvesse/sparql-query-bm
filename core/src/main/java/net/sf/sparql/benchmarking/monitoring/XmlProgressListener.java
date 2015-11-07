@@ -58,65 +58,65 @@ public class XmlProgressListener implements ProgressListener {
     private boolean allowOverwrite = false;
 
     //@formatter:off
-	/**
-	 * Constants for Tag and Attribute Names
-	 */
-	@SuppressWarnings("javadoc")
+    /**
+     * Constants for Tag and Attribute Names
+     */
+    @SuppressWarnings("javadoc")
     public static final String TAG_SPARQL_BENCHMARK = "sparqlBenchmark",
-							   TAG_CONFIGURATION = "configuration",
-							   TAG_CONFIG_PROPERTY = "property",
-							   ATTR_ID = "id",
-							   ATTR_NAME = "name",
-							   ATTR_VALUE = "value",
-							   ATTR_TYPE = "type",
-							   TAG_OPERATIONS = "operations",
-							   TAG_OPERATION = "operation",
-							   TAG_MIX_RUNS = "operationMixRuns",
-							   TAG_MIX_RUN = "operationMixRun",
-							   TAG_STATS = "statistics",
-							   TAG_SUMMARY = "summary",
-							   ATTR_COMPRESSION = "compression",
-							   ATTR_LIMIT = "limit",
-							   ATTR_COUNTING = "counting",
-							   ATTR_THREADS = "threads",
-							   ATTR_SELECT_FORMAT = "selectFormat",
-							   ATTR_GRAPH_FORMAT = "graphFormat",
-							   ATTR_ASK_FORMAT = "askFormat",
-							   ATTR_MAX_DELAY = "maxDelay",
-							   ATTR_TIMEOUT = "timeout",
-							   ATTR_OUTLIERS = "outliers",
-							   ATTR_RANDOM_ORDER = "randomOrder",
-							   ATTR_RUNS = "runs",
-							   ATTR_WARMUPS = "warmups",
-							   ATTR_SANITY_CHECKING = "sanityChecking",
-							   ATTR_QUERY_ENDPOINT = "queryEndpoint",
-							   ATTR_RESPONSE_TIME = "responseTime",
-							   ATTR_TOTAL_RESPONSE_TIME = "totalResponseTime",
-							   ATTR_RUNTIME = "runtime",
-							   ATTR_RESULT_COUNT = "resultCount",
-							   ATTR_TOTAL_RUNTIME = "totalRuntime",
-							   ATTR_ACTUAL_RUNTIME = "actualRuntime",
-							   ATTR_ACTUAL_AVG_RUNTIME = "averageActualRuntime",
-							   ATTR_MIN_OPERATION_RUNTIME = "minOperationRuntime",
-							   ATTR_MAX_OPERATION_RUNTIME = "maxOperationRuntime",
-							   ATTR_MIN_MIX_RUNTIME = "minMixRuntime",
-							   ATTR_MAX_MIX_RUNTIME = "maxMixRuntime",
-							   ATTR_AVG_RUNTIME = "averageRuntime",
-							   ATTR_AVG_RUNTIME_GEOM = "averageRuntimeGeometric",
-							   ATTR_AVG_RESPONSE_TIME = "averageResponseTime",
-							   ATTR_AVG_RESPONSE_TIME_GEOM = "averageResponseTimeGeometric",
-							   ATTR_VARIANCE = "variance",
-							   ATTR_STD_DEV = "standardDeviation",
-							   ATTR_OPS = "operationsPerSecond",
-							   ATTR_ACTUAL_OPS = "actualOperationsPerSecond",
-							   ATTR_OPH = "operationsPerHour",
-							   ATTR_ACTUAL_OPH = "actualOperationsPerHour",
-							   ATTR_OMPH = "operationMixesPerHour",
-							   ATTR_ACTUAL_OMPH = "actualOperationMixesPerHour",
-							   ATTR_FASTEST_OPERATION = "fastestOperation",
-							   ATTR_SLOWEST_OPERATION = "slowestOperation",
-							   ATTR_RUN_ORDER = "runOrder";
-	//@formatter:on
+                               TAG_CONFIGURATION = "configuration",
+                               TAG_CONFIG_PROPERTY = "property",
+                               ATTR_ID = "id",
+                               ATTR_NAME = "name",
+                               ATTR_VALUE = "value",
+                               ATTR_TYPE = "type",
+                               TAG_OPERATIONS = "operations",
+                               TAG_OPERATION = "operation",
+                               TAG_MIX_RUNS = "operationMixRuns",
+                               TAG_MIX_RUN = "operationMixRun",
+                               TAG_STATS = "statistics",
+                               TAG_SUMMARY = "summary",
+                               ATTR_COMPRESSION = "compression",
+                               ATTR_LIMIT = "limit",
+                               ATTR_COUNTING = "counting",
+                               ATTR_THREADS = "threads",
+                               ATTR_SELECT_FORMAT = "selectFormat",
+                               ATTR_GRAPH_FORMAT = "graphFormat",
+                               ATTR_ASK_FORMAT = "askFormat",
+                               ATTR_MAX_DELAY = "maxDelay",
+                               ATTR_TIMEOUT = "timeout",
+                               ATTR_OUTLIERS = "outliers",
+                               ATTR_RANDOM_ORDER = "randomOrder",
+                               ATTR_RUNS = "runs",
+                               ATTR_WARMUPS = "warmups",
+                               ATTR_SANITY_CHECKING = "sanityChecking",
+                               ATTR_QUERY_ENDPOINT = "queryEndpoint",
+                               ATTR_RESPONSE_TIME = "responseTime",
+                               ATTR_TOTAL_RESPONSE_TIME = "totalResponseTime",
+                               ATTR_RUNTIME = "runtime",
+                               ATTR_RESULT_COUNT = "resultCount",
+                               ATTR_TOTAL_RUNTIME = "totalRuntime",
+                               ATTR_ACTUAL_RUNTIME = "actualRuntime",
+                               ATTR_ACTUAL_AVG_RUNTIME = "averageActualRuntime",
+                               ATTR_MIN_OPERATION_RUNTIME = "minOperationRuntime",
+                               ATTR_MAX_OPERATION_RUNTIME = "maxOperationRuntime",
+                               ATTR_MIN_MIX_RUNTIME = "minMixRuntime",
+                               ATTR_MAX_MIX_RUNTIME = "maxMixRuntime",
+                               ATTR_AVG_RUNTIME = "averageRuntime",
+                               ATTR_AVG_RUNTIME_GEOM = "averageRuntimeGeometric",
+                               ATTR_AVG_RESPONSE_TIME = "averageResponseTime",
+                               ATTR_AVG_RESPONSE_TIME_GEOM = "averageResponseTimeGeometric",
+                               ATTR_VARIANCE = "variance",
+                               ATTR_STD_DEV = "standardDeviation",
+                               ATTR_OPS = "operationsPerSecond",
+                               ATTR_ACTUAL_OPS = "actualOperationsPerSecond",
+                               ATTR_OPH = "operationsPerHour",
+                               ATTR_ACTUAL_OPH = "actualOperationsPerHour",
+                               ATTR_OMPH = "operationMixesPerHour",
+                               ATTR_ACTUAL_OMPH = "actualOperationMixesPerHour",
+                               ATTR_FASTEST_OPERATION = "fastestOperation",
+                               ATTR_SLOWEST_OPERATION = "slowestOperation",
+                               ATTR_RUN_ORDER = "runOrder";
+    //@formatter:on
 
     /**
      * Creates a new XML progress listener which writes to the given path unless
@@ -390,12 +390,10 @@ public class XmlProgressListener implements ProgressListener {
         finishAttributes();
 
         Iterator<OperationRun> rs = run.getRuns();
-        int id = 0;
         while (rs.hasNext()) {
             OperationRun r = rs.next();
             openTag(TAG_OPERATION, true);
-            addAttribute(ATTR_ID, id);
-            id++;
+            addAttribute(ATTR_ID, r.getId());
             addAttribute(ATTR_RUN_ORDER, r.getRunOrder());
             addAttribute(ATTR_RESPONSE_TIME, r.getResponseTime());
             addAttribute(ATTR_RUNTIME, r.getRuntime());

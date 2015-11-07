@@ -108,8 +108,7 @@ public abstract class AbstractOperationMixRunner implements OperationMixRunner {
         List<OperationRun> runs = new ArrayList<OperationRun>();
 
         // Generate a random sequence of integers so we execute the queries in a
-        // random order
-        // each time the query set is run
+        // random order each time the query set is run
         List<Integer> ids = this.getOperationOrder(options, mix);
         if (this.reportOperationOrder(options)) {
             StringBuffer operationOrder = new StringBuffer();
@@ -148,8 +147,7 @@ public abstract class AbstractOperationMixRunner implements OperationMixRunner {
             if (options.getMaxDelay() > 0) {
                 try {
                     long delay = (long) (Math.random() * options.getMaxDelay());
-                    runner.reportProgress(
-                            options,
+                    runner.reportProgress(options,
                             "Sleeping for "
                                     + ConvertUtils.toSeconds((long) (delay * ConvertUtils.NANOSECONDS_PER_MILLISECONDS))
                                     + "s before next operation");
