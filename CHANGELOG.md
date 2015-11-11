@@ -11,6 +11,10 @@
     - Operations that time out during the warmups are excluded from subsequent runs
     - Operations that reach a configurable failure threshold are excluded from subsequent runs
     - Operation timeout is automatically tuned based on the observed maximum runtime during warmups
+- New local limit option (`--local-limit`)
+    - The local limit applies only to how many results are counted and not to the queries themselves
+    - This provides a compromise between enforcing a limit on queries (`--limit`) and not counting results at all (`--no-count`) both of which can make results less realistic.  Enforcing a limit asks the system being tested to do less work and may cause it to optimise and process the query differently.  On the other hand not counting results can skew results because often calculating the first result can be very quick but calculating all the results takes much longer.
+    - Therefore being able to count some portion of the results allows you to put an upper bound on the amount of work a system does for a given query
 
 ## Version 2.1.1 (5th November 2015)
 
