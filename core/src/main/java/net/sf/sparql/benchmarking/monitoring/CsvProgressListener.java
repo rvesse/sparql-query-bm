@@ -133,9 +133,12 @@ public class CsvProgressListener implements ProgressListener {
         }
         this.buffer.append("Random Operation Order," + options.getRandomizeOrder() + "\n");
         this.buffer.append("Outliers," + bOps.getOutliers() + "\n");
-        this.buffer.append("Timeout," + (options.getTimeout() > 0 ? Integer.toString(options.getTimeout()) : "disabled") + "s\n");
+        this.buffer.append(
+                "Timeout," + (options.getTimeout() > 0 ? Integer.toString(options.getTimeout()) : "disabled") + "s\n");
         this.buffer.append("Max Delay between Operations," + options.getMaxDelay() + "s\n");
         this.buffer.append("Result Limit," + (options.getLimit() <= 0 ? "Query Specified" : options.getLimit()) + "\n");
+        this.buffer.append("Result Counting Limit,"
+                + (options.getLocalLimit() <= 0 ? "Disabled" : options.getLocalLimit()) + "\n");
         this.buffer.append("ASK Results Format," + options.getResultsAskFormat() + "\n");
         this.buffer.append("Graph Results Format," + options.getResultsGraphFormat() + "\n");
         this.buffer.append("SELECT Results Format," + options.getResultsSelectFormat() + "\n");
@@ -174,11 +177,11 @@ public class CsvProgressListener implements ProgressListener {
         // Operation Summary Header
         this.buffer.append(",\nOperation Summary,\n");
         if (wasMultithreaded) {
-            this.buffer
-                    .append("Operation,Type,Total Response Time,Average Response Time (Arithmetic),Total Runtime,Actual Runtime,Average Runtime (Arithmetic),Actual Average Runtime (Arithmetic),Average Runtime (Geometric),Min Runtime,Max Runtime,Variance,Standard Deviation,Operations per Second,Actual Operations per Second,Operations per Hour,Actual Operations per Hour\n");
+            this.buffer.append(
+                    "Operation,Type,Total Response Time,Average Response Time (Arithmetic),Total Runtime,Actual Runtime,Average Runtime (Arithmetic),Actual Average Runtime (Arithmetic),Average Runtime (Geometric),Min Runtime,Max Runtime,Variance,Standard Deviation,Operations per Second,Actual Operations per Second,Operations per Hour,Actual Operations per Hour\n");
         } else {
-            this.buffer
-                    .append("Operation,Type,Total Response Time,Average Response Time (Arithmetic),Total Runtime,Average Runtime (Arithmetic),Average Runtime (Geometric),Min Runtime,Max Runtime,Variance,Standard Deviation,Queries per Second,Queries per Hour\n");
+            this.buffer.append(
+                    "Operation,Type,Total Response Time,Average Response Time (Arithmetic),Total Runtime,Average Runtime (Arithmetic),Average Runtime (Geometric),Min Runtime,Max Runtime,Variance,Standard Deviation,Queries per Second,Queries per Hour\n");
         }
 
         OperationMix operationMix = options.getOperationMix();
@@ -215,9 +218,11 @@ public class CsvProgressListener implements ProgressListener {
             FileWriter results = new FileWriter(this.f);
 
             if (wasMultithreaded) {
-                results.append("Total Response Time,Average Response Time (Arithmetic),Total Runtime,Actual Runtime,Average Runtime (Arithmetic),Actual Average Runtime (Arithmetic),Average Runtime (Geometric),Minimum Mix Runtime,Maximum Mix Runtime,Variance,Standard Deviation,Operation Mixes per Hour,Actual Operation Mixes per Hour\n");
+                results.append(
+                        "Total Response Time,Average Response Time (Arithmetic),Total Runtime,Actual Runtime,Average Runtime (Arithmetic),Actual Average Runtime (Arithmetic),Average Runtime (Geometric),Minimum Mix Runtime,Maximum Mix Runtime,Variance,Standard Deviation,Operation Mixes per Hour,Actual Operation Mixes per Hour\n");
             } else {
-                results.append("Total Response Time,Average Response Time (Arithmetic),Total Runtime,Average Runtime (Arithmetic),Average Runtime (Geometric),Minimum Mix Runtime,Maximum Mix Runtime,Variance,Standard Deviation,Operation Mixes per Hour\n");
+                results.append(
+                        "Total Response Time,Average Response Time (Arithmetic),Total Runtime,Average Runtime (Arithmetic),Average Runtime (Geometric),Minimum Mix Runtime,Maximum Mix Runtime,Variance,Standard Deviation,Operation Mixes per Hour\n");
             }
             results.append(ConvertUtils.toSeconds(operationMix.getStats().getTotalResponseTime()) + ",");
             results.append(ConvertUtils.toSeconds(operationMix.getStats().getAverageResponseTime()) + ",");
@@ -256,7 +261,7 @@ public class CsvProgressListener implements ProgressListener {
     public <T extends Options> void progress(Runner<T> runner, T options, String message) {
         // We don't handle informational messages
     }
-    
+
     /**
      * Does nothing as this listener discards individual operation run
      * statistics
@@ -283,7 +288,7 @@ public class CsvProgressListener implements ProgressListener {
         // We don't handle query run stats as they are produced, we're only
         // interested in aggregate stats at the end
     }
-    
+
     @Override
     public <T extends Options> void beforeOperationMix(Runner<T> runner, T options, OperationMix mix) {
         // We don't handle before operation mix events
@@ -294,7 +299,8 @@ public class CsvProgressListener implements ProgressListener {
      * printing to the CSV file
      */
     @Override
-    public synchronized <T extends Options> void afterOperationMix(Runner<T> runner, T options, OperationMix mix, OperationMixRun run) {
+    public synchronized <T extends Options> void afterOperationMix(Runner<T> runner, T options, OperationMix mix,
+            OperationMixRun run) {
         this.buffer.append(this.run + ",");
         this.buffer.append(ConvertUtils.toSeconds(run.getTotalResponseTime()) + ",");
         this.buffer.append(ConvertUtils.toSeconds(run.getTotalRuntime()) + ",");

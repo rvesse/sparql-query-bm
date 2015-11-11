@@ -87,6 +87,7 @@ public class OptionsImpl implements Options {
     private OperationMixRunner mixRunner;
     private OperationRunner opRunner;
     private long limit = DEFAULT_LIMIT;
+    private long localLimit = DEFAULT_LIMIT;
     private boolean noCount = false;
     private boolean ensureAbsoluteURIs = false;
 
@@ -129,6 +130,7 @@ public class OptionsImpl implements Options {
         copy.setHaltOnError(this.getHaltOnError());
         copy.setHaltOnTimeout(this.getHaltOnTimeout());
         copy.setLimit(this.getLimit());
+        copy.setLocalLimit(this.getLocalLimit());
         copy.setMaxDelay(this.getMaxDelay());
         copy.setMixRunner(this.getMixRunner());
         copy.setNoCount(this.getNoCount());
@@ -220,6 +222,11 @@ public class OptionsImpl implements Options {
     @Override
     public long getLimit() {
         return limit;
+    }
+    
+    @Override
+    public long getLocalLimit() {
+        return localLimit;
     }
 
     @Override
@@ -374,6 +381,11 @@ public class OptionsImpl implements Options {
     @Override
     public void setLimit(long limit) {
         this.limit = limit;
+    }
+    
+    @Override
+    public void setLocalLimit(long limit) {
+        this.localLimit = limit;
     }
 
     @Override

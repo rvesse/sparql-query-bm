@@ -77,6 +77,7 @@ public class XmlProgressListener implements ProgressListener {
                                TAG_SUMMARY = "summary",
                                ATTR_COMPRESSION = "compression",
                                ATTR_LIMIT = "limit",
+                               ATTR_LOCAL_LIMIT = "localLimit",
                                ATTR_COUNTING = "counting",
                                ATTR_THREADS = "threads",
                                ATTR_SELECT_FORMAT = "selectFormat",
@@ -198,6 +199,7 @@ public class XmlProgressListener implements ProgressListener {
             printProperty(ATTR_THREADS, options.getParallelThreads());
             printProperty(ATTR_COUNTING, !options.getNoCount());
             printProperty(ATTR_LIMIT, options.getLimit());
+            printProperty(ATTR_LOCAL_LIMIT, options.getLocalLimit());
             printProperty(ATTR_COMPRESSION, options.getAllowCompression());
 
             // Print Queries

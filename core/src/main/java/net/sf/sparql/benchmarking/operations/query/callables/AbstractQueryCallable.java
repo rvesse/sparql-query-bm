@@ -136,7 +136,8 @@ public abstract class AbstractQueryCallable<T extends Options> extends AbstractO
 
         // Count Results
         long numResults = 0;
-        while (rset.hasNext() && !isCancelled()) {
+        long localLimit = options.getLocalLimit();
+        while (rset.hasNext() && !isCancelled() && (localLimit <= 0 || localLimit < numResults)) {
             numResults++;
             rset.next();
         }

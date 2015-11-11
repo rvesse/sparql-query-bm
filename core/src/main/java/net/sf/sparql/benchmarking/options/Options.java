@@ -237,6 +237,24 @@ public interface Options {
     public abstract long getLimit();
 
     /**
+     * Gets the limit on the number of query results that will be counted
+     * <p>
+     * This setting provides a compromise between enforcing a limit on actual
+     * queries and not counting results at all. If you impose a limit on queries
+     * via the {@link #getLimit()}/{@link #setLimit(long)} option it can change
+     * how a store evaluates a query because you are asking it to do less work.
+     * On the other hand not counting results at all via the
+     * {@link #getNoCount()}/{@link #setNoCount(boolean)} option can yield
+     * unrealistic results because often a store can very quickly produce the
+     * first result but producing many results may require substantially more
+     * work.
+     * </p>
+     * 
+     * @return Limit to impose on counting of results
+     */
+    public abstract long getLocalLimit();
+
+    /**
      * Gets the Progress Listeners registered
      * 
      * @return Progress Listeners
@@ -487,6 +505,24 @@ public interface Options {
      *            Limit to impose
      */
     public abstract void setLimit(long limit);
+
+    /**
+     * Sets the limit on the number of query results that will be counted
+     * <p>
+     * This setting provides a compromise between enforcing a limit on actual
+     * queries and not counting results at all. If you impose a limit on queries
+     * via the {@link #getLimit()}/{@link #setLimit(long)} option it can change
+     * how a store evaluates a query because you are asking it to do less work.
+     * On the other hand not counting results at all via the
+     * {@link #getNoCount()}/{@link #setNoCount(boolean)} option can yield
+     * unrealistic results because often a store can very quickly produce the
+     * first result but producing many results may require substantially more
+     * work.
+     * </p>
+     * 
+     * @return Limit to impose on counting of results
+     */
+    public abstract void setLocalLimit(long limit);
 
     /**
      * Sets the maximum delay between operations

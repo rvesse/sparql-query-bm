@@ -313,6 +313,12 @@ public abstract class AbstractCommand {
             "--limit" }, arity = 1, title = "Limit", description = "Sets a limit that will be added to queries without a LIMIT clause, those with a LIMIT clause will use the lesser of their declared limit and this limit.  Values <= 0 are interpreted as imposing no limit on queries")
     public long limit = Options.DEFAULT_LIMIT;
     /**
+     * Local Limit option
+     */
+    @Option(name = {
+            "--local-limit" }, arity = 1, title = "LocalLimit", description = "Sets a limit on the number of results that will be counted.  This option provides a compromise between using --limit to impose a limit on the queries submitted to the systems being tested and using --no-count to disable result counting entirely allowing you to customise how much work you want to have the system being tested perform.  Values <= 0 are interpreted as imposing no limit on results counted")
+    public long localLimit = Options.DEFAULT_LIMIT;
+    /**
      * No count option
      */
     @Option(name = { "--nocount",
@@ -466,6 +472,7 @@ public abstract class AbstractCommand {
         options.setHaltOnError(this.haltOnError);
         options.setHaltOnTimeout(this.haltOnTimeout);
         options.setLimit(this.limit);
+        options.setLocalLimit(this.localLimit);
         options.setMaxDelay(this.maxDelay);
         options.setNoCount(this.noCount);
         options.setParallelThreads(this.parallelThreads);
