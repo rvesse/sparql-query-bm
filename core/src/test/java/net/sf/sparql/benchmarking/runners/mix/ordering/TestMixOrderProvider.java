@@ -145,13 +145,17 @@ public class TestMixOrderProvider {
         Assert.assertEquals(0, excludes.size());
 
         // Run the mix
-        // This should result in two operations timing out and being excluded
+        // This should result in two/three operations timing out and being
+        // excluded
+        // Will depend on exact scheduling of threads because one of the
+        // operations runs for exactly 3 seconds so may be over/under the
+        // timeout
         options.getMixRunner().warmup(new BenchmarkRunner(), options, mix);
-        Assert.assertEquals(2, excludes.size());
+        Assert.assertTrue(excludes.size() >= 2 && excludes.size() <= 3);
 
         check(5, options, provider, excludes);
     }
-    
+
     @Test
     public void intelligent_01b() {
         MixOrderProvider provider = new DefaultMixOrderProvider();
@@ -169,7 +173,7 @@ public class TestMixOrderProvider {
         // Nothing should be excluded as it will all run within the timeout
         options.getMixRunner().warmup(new BenchmarkRunner(), options, mix);
         Assert.assertEquals(0, excludes.size());
-        
+
         // When we do the first real run we'll adjust the timeout appropriately
         options.getMixRunner().run(new BenchmarkRunner(), options, mix);
         Assert.assertEquals(7, options.getTimeout());
