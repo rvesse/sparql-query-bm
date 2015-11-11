@@ -32,11 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.runners.mix;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.sf.sparql.benchmarking.operations.OperationMix;
-import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.runners.mix.ordering.InOrderMixOrderProvider;
 
 /**
  * An operation mix runner which runs all the operations in the mix in their
@@ -47,22 +43,9 @@ import net.sf.sparql.benchmarking.options.Options;
  */
 public class InOrderOperationMixRunner extends AbstractOperationMixRunner {
 
-    @Override
-    protected <T extends Options> List<Integer> getOperationOrder(T options, OperationMix mix) {
-        List<Integer> ids = new ArrayList<Integer>();
-        // Fixed Order
-        for (int i = 0; i < mix.size(); i++) {
-            ids.add(i);
-        }
-        return ids;
+    public InOrderOperationMixRunner() {
+        super(new InOrderMixOrderProvider());
     }
 
-    /**
-     * Returns {@code false} since there is no need to report the operation
-     * order since it will always be the same
-     */
-    @Override
-    protected <T extends Options> boolean reportOperationOrder(T options) {
-        return false;
-    }
+
 }

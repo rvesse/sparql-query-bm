@@ -32,11 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.runners.mix;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.runners.mix.ordering.DefaultMixOrderProvider;
 
 /**
  * Default operation mix runner which runs all the operations in a mix either in
@@ -47,26 +44,8 @@ import net.sf.sparql.benchmarking.options.Options;
  */
 public class DefaultOperationMixRunner extends AbstractOperationMixRunner {
 
-    @Override
-    protected <T extends Options> List<Integer> getOperationOrder(T options, OperationMix mix) {
-        List<Integer> ids = new ArrayList<Integer>();
-        if (options.getRandomizeOrder()) {
-            // Randomize the Order
-            List<Integer> unallocatedIds = new ArrayList<Integer>();
-            for (int i = 0; i < mix.size(); i++) {
-                unallocatedIds.add(i);
-            }
-            while (unallocatedIds.size() > 0) {
-                int id = (int) (Math.random() * unallocatedIds.size());
-                ids.add(unallocatedIds.get(id));
-                unallocatedIds.remove(id);
-            }
-        } else {
-            // Fixed Order
-            for (int i = 0; i < mix.size(); i++) {
-                ids.add(i);
-            }
-        }
-        return ids;
+    public DefaultOperationMixRunner() {
+        super(new DefaultMixOrderProvider());
     }
+
 }

@@ -11,3 +11,8 @@ dependency-reduced-pom.xml
 
 # Misc
 ensure-licenses.bat
+
+# Benchmarker Artifacts
+results.xml
+results.csv
+log.txt

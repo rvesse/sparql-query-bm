@@ -50,7 +50,7 @@ public interface OperationMixRunner {
      * Performs a operation mix run returning the statistics as a
      * {@link OperationMixRun}
      * <p>
-     * Implementations are also expected to record the information within the
+     * Implementations are expected to record the information within the
      * {@link OperationMixStats} object of the given {@link OperationMix}
      * instance prior to returning the statistics.
      * </p>
@@ -64,4 +64,23 @@ public interface OperationMixRunner {
      * @return Operation Mix run details
      */
     public abstract <T extends Options> OperationMixRun run(Runner<T> runner, T options, OperationMix mix);
+
+    /**
+     * Performs a operation mix warmup run returning the statistics as a
+     * {@link OperationMixRun}
+     * <p>
+     * Implementations are expected to record the information within the
+     * {@link OperationMixStats} object of the given {@link OperationMix}
+     * instance prior to returning the statistics.
+     * </p>
+     * 
+     * @param runner
+     *            Runner
+     * @param options
+     *            Options
+     * @param mix
+     *            Operation mix to be run
+     * @return Operation Mix run details
+     */
+    public abstract <T extends Options> OperationMixRun warmup(Runner<T> runner, T options, OperationMix mix);
 }

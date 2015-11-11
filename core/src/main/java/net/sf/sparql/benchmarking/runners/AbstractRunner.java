@@ -105,8 +105,8 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             try {
                 l.finish(this, options, false);
             } catch (Exception e) {
-                System.err.println(l.getClass().getName() + " encountered an error during handleFinish() - "
-                        + e.getMessage());
+                System.err.println(
+                        l.getClass().getName() + " encountered an error during handleFinish() - " + e.getMessage());
                 logger.error("{} encountered an error during handleFinish() - {}", l.getClass().getName(),
                         e.getMessage());
                 if (options.getHaltOnError() || options.getHaltAny()) {
@@ -140,8 +140,8 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             try {
                 l.progress(this, options, message);
             } catch (Exception e) {
-                System.err.println(l.getClass().getName() + " encountered an error during handleProgress() - "
-                        + e.getMessage());
+                System.err.println(
+                        l.getClass().getName() + " encountered an error during handleProgress() - " + e.getMessage());
                 logger.error("{} encountered an error during handleProgress() - {}", l.getClass().getName(),
                         e.getMessage());
                 if (options.getHaltAny() || options.getHaltOnError()) {
@@ -162,8 +162,8 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             try {
                 l.beforeOperation(this, options, operation);
             } catch (Exception e) {
-                System.err.println(l.getClass().getName() + " encountered an error during beforeOperation() - "
-                        + e.getMessage());
+                System.err.println(
+                        l.getClass().getName() + " encountered an error during beforeOperation() - " + e.getMessage());
                 logger.error("{} encountered an error during beforeOperation() - {}", l.getClass().getName(),
                         e.getMessage());
                 if (options.getHaltAny() || options.getHaltOnTimeout()) {
@@ -179,8 +179,8 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             try {
                 l.afterOperation(this, options, operation, run);
             } catch (Exception e) {
-                System.err.println(l.getClass().getName() + " encountered an error during afterOperation() - "
-                        + e.getMessage());
+                System.err.println(
+                        l.getClass().getName() + " encountered an error during afterOperation() - " + e.getMessage());
                 logger.error("{} encountered an error during afterOperation() - {}", l.getClass().getName(),
                         e.getMessage());
                 if (options.getHaltAny() || options.getHaltOnTimeout()) {
@@ -249,9 +249,8 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             // Remember to account for whether we are running against a remote
             // service or an in-memory dataset
             // Favours testing the remote service even if both are defined
-            FutureTask<OperationRun> task = new FutureTask<OperationRun>(
-                    options.getQueryEndpoint() != null ? new RemoteQueryCallable<T>(q, this, options)
-                            : new InMemoryQueryCallable<T>(q, this, options));
+            FutureTask<OperationRun> task = new FutureTask<OperationRun>(options.getQueryEndpoint() != null
+                    ? new RemoteQueryCallable<T>(q, this, options) : new InMemoryQueryCallable<T>(q, this, options));
             reportPartialProgress(options, "Sanity Check " + (i + 1) + " of " + checks.length + "...");
             try {
                 // Run the operation using a 30 second timeout
@@ -367,12 +366,16 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
      *            Options
      * @return Operation Mix run
      */
-    protected OperationMixRun runMix(T options) {
+    protected OperationMixRun runMix(T options, boolean warmup) {
         OperationMixRunner runner = options.getMixRunner();
         if (runner == null)
             runner = this.defaultRunner;
 
-        return runner.run(this, options, options.getOperationMix());
+        if (warmup) {
+            return runner.warmup(this, options, options.getOperationMix());
+        } else {
+            return runner.run(this, options, options.getOperationMix());
+        }
     }
 
     /**
@@ -389,9 +392,8 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             String description = ErrorCategories.getDescription(category);
             if (description == null)
                 description = String.format("  Unknown Category %d", category);
-            reportProgress(options,
-                    "  " + description + ": " + String.format("%,d", categorizedErrors.get(category).size())
-                            + " error(s)");
+            reportProgress(options, "  " + description + ": "
+                    + String.format("%,d", categorizedErrors.get(category).size()) + " error(s)");
         }
     }
 
@@ -406,8 +408,8 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             try {
                 l.finish(this, options, true);
             } catch (Exception e) {
-                System.err.println(l.getClass().getName() + " encountered an error during handleFinish() - "
-                        + e.getMessage());
+                System.err.println(
+                        l.getClass().getName() + " encountered an error during handleFinish() - " + e.getMessage());
                 e.printStackTrace(System.err);
                 logger.error("{} encountered an error during handleFinish() - {}", l.getClass().getName(),
                         e.getMessage());
@@ -429,8 +431,8 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
             try {
                 l.start(this, options);
             } catch (Exception e) {
-                System.err.println(l.getClass().getName() + " encountered an error during handleStarted() - "
-                        + e.getMessage());
+                System.err.println(
+                        l.getClass().getName() + " encountered an error during handleStarted() - " + e.getMessage());
                 e.printStackTrace(System.err);
                 logger.error("{} encountered an error during handleStarted() - {}", l.getClass().getName(),
                         e.getMessage());
@@ -451,14 +453,10 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
         reportProgress(options, "General Options");
         reportProgress(options, "---------------");
         reportProgress(options);
-        reportProgress(
-                options,
-                "Query Endpoint = "
-                        + (options.getQueryEndpoint() == null ? "not specified" : options.getQueryEndpoint()));
-        reportProgress(
-                options,
-                "Update Endpoint = "
-                        + (options.getUpdateEndpoint() == null ? "not specified" : options.getUpdateEndpoint()));
+        reportProgress(options, "Query Endpoint = "
+                + (options.getQueryEndpoint() == null ? "not specified" : options.getQueryEndpoint()));
+        reportProgress(options, "Update Endpoint = "
+                + (options.getUpdateEndpoint() == null ? "not specified" : options.getUpdateEndpoint()));
         reportProgress(options, "Graph Store Protocol Endpoint = "
                 + (options.getGraphStoreEndpoint() == null ? "not specified" : options.getGraphStoreEndpoint()));
         if (options.getCustomEndpoints().size() > 0) {
@@ -473,8 +471,8 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
                 + (options.getSetupMix() != null ? options.getSetupMix().size() + " Operation(s)" : "disabled"));
         reportProgress(options, "Teardown Mix = "
                 + (options.getTeardownMix() != null ? options.getTeardownMix().size() + " Operation(s)" : "disabled"));
-        reportProgress(options, "Timeout = "
-                + (options.getTimeout() > 0 ? options.getTimeout() + " seconds" : "disabled"));
+        reportProgress(options,
+                "Timeout = " + (options.getTimeout() > 0 ? options.getTimeout() + " seconds" : "disabled"));
         reportProgress(options, "Max Delay between Operations = " + options.getMaxDelay() + " milliseconds");
         reportProgress(options, "Halt on Timeout = " + options.getHaltOnTimeout());
         reportProgress(options, "Halt on Error = " + options.getHaltOnError());
@@ -511,22 +509,18 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
         reportProgress(options, "Average Results: " + FormatUtils.formatNumber(op.getStats().getAverageResults()));
         reportProgress(options,
                 "Total Response Time: " + FormatUtils.formatSeconds(op.getStats().getTotalResponseTime()));
-        reportProgress(
-                options,
-                "Average Response Time (Arithmetic): "
-                        + FormatUtils.formatSeconds(op.getStats().getAverageResponseTime()));
+        reportProgress(options, "Average Response Time (Arithmetic): "
+                + FormatUtils.formatSeconds(op.getStats().getAverageResponseTime()));
         reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(op.getStats().getTotalRuntime()));
         if (options.getParallelThreads() > 1)
             reportProgress(options, "Actual Runtime: " + FormatUtils.formatSeconds(op.getStats().getActualRuntime()));
         reportProgress(options,
                 "Average Runtime (Arithmetic): " + FormatUtils.formatSeconds(op.getStats().getAverageRuntime()));
         if (options.getParallelThreads() > 1)
-            reportProgress(
-                    options,
-                    "Actual Average Runtime (Arithmetic): "
-                            + FormatUtils.formatSeconds(op.getStats().getActualAverageRuntime()));
-        reportProgress(options,
-                "Average Runtime (Geometric): " + FormatUtils.formatSeconds(op.getStats().getGeometricAverageRuntime()));
+            reportProgress(options, "Actual Average Runtime (Arithmetic): "
+                    + FormatUtils.formatSeconds(op.getStats().getActualAverageRuntime()));
+        reportProgress(options, "Average Runtime (Geometric): "
+                + FormatUtils.formatSeconds(op.getStats().getGeometricAverageRuntime()));
         reportProgress(options, "Minimum Runtime: " + FormatUtils.formatSeconds(op.getStats().getMinimumRuntime()));
         reportProgress(options, "Maximum Runtime: " + FormatUtils.formatSeconds(op.getStats().getMaximumRuntime()));
         reportProgress(options, "Runtime Variance: " + FormatUtils.formatSecondsSquared(op.getStats().getVariance()));
@@ -536,14 +530,13 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
         reportProgress(options,
                 "Operations per Second: " + FormatUtils.formatNumber(op.getStats().getOperationsPerSecond()));
         if (options.getParallelThreads() > 1)
-            reportProgress(
-                    options,
-                    "Actual Operations per Second: "
-                            + FormatUtils.formatNumber(op.getStats().getActualOperationsPerSecond()));
-        reportProgress(options, "Operations per Hour: " + FormatUtils.formatNumber(op.getStats().getOperationsPerHour()));
+            reportProgress(options, "Actual Operations per Second: "
+                    + FormatUtils.formatNumber(op.getStats().getActualOperationsPerSecond()));
+        reportProgress(options,
+                "Operations per Hour: " + FormatUtils.formatNumber(op.getStats().getOperationsPerHour()));
         if (options.getParallelThreads() > 1)
-            reportProgress(options,
-                    "Actual Operations per Hour: " + FormatUtils.formatNumber(op.getStats().getActualOperationsPerHour()));
+            reportProgress(options, "Actual Operations per Hour: "
+                    + FormatUtils.formatNumber(op.getStats().getActualOperationsPerHour()));
         reportProgress(options);
     }
 

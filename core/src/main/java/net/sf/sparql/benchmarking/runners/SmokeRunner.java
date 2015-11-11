@@ -73,7 +73,7 @@ public class SmokeRunner extends AbstractRunner<Options> {
 
         // Smoke tests run the mix only once
         reportBeforeOperationMix(options, options.getOperationMix());
-        OperationMixRun r = this.runMix(options);
+        OperationMixRun r = this.runMix(options, false);
         reportAfterOperationMix(options, null, r);
         reportProgress(options);
 

@@ -32,12 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package net.sf.sparql.benchmarking.runners.mix;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import net.sf.sparql.benchmarking.operations.OperationMix;
-import net.sf.sparql.benchmarking.options.Options;
+import net.sf.sparql.benchmarking.runners.mix.ordering.SamplingMixOrderProvider;
 
 /**
  * An operation mix runner that runs a sample of the operations in the mix
@@ -62,11 +57,8 @@ import net.sf.sparql.benchmarking.options.Options;
  */
 public class SamplingOperationMixRunner extends AbstractOperationMixRunner {
 
-    private int sampleSize = 0;
-    private boolean allowRepeats = false;
-
     /**
-     * Creates a runner with the given sample size
+     * Creates a sampling mix runner with the given sample size
      * 
      * @param sampleSize
      *            Sample size, if <= 0 then sample size will always be the mix
@@ -77,8 +69,8 @@ public class SamplingOperationMixRunner extends AbstractOperationMixRunner {
     }
 
     /**
-     * Creates a runner which optionally allows repeats, the sample size will
-     * always be the mix size
+     * Creates a sampling mix runner which optionally allows repeats, the sample
+     * size will always be the mix size
      * 
      * @param allowRepeats
      *            Whether to allow repeats
@@ -88,79 +80,17 @@ public class SamplingOperationMixRunner extends AbstractOperationMixRunner {
     }
 
     /**
-     * Creates a runner with the given sample size that optionally allows
-     * repeats
+     * Creates a sampling mix runner with the given sample size that optionally
+     * allows repeats
      * 
      * @param sampleSize
      *            Sample size, if <= 0 then sample size will always be the mix
      *            size
      * @param allowRepeats
-     *            WHether to allow repeats
+     *            Whether to allow repeats
      */
     public SamplingOperationMixRunner(int sampleSize, boolean allowRepeats) {
-        this.sampleSize = sampleSize;
-        this.allowRepeats = allowRepeats;
-    }
-
-    @Override
-    protected <T extends Options> List<Integer> getOperationOrder(T options, OperationMix mix) {
-        if (options.getRandomizeOrder()) {
-            return getRandomSample(mix);
-        } else {
-            return getInOrderSample(mix);
-        }
-    }
-
-    protected List<Integer> getRandomSample(OperationMix mix) {
-        List<Integer> ids = new ArrayList<Integer>();
-        int limit = this.sampleSize > 0 ? this.sampleSize : mix.size();
-
-        // Prepare the pool
-        List<Integer> pool = new ArrayList<Integer>();
-        for (int i = 0; i < mix.size(); i++) {
-            pool.add(i);
-        }
-        Random random = new Random();
-        while (ids.size() < limit) {
-            if (pool.size() == 0) {
-                // If the desired sample size is greater than the mix size and
-                // repeats are not allowed the pool will be empty before we've
-                // reached the limit so we just return a sample that is of the
-                // size of the mix
-                return ids;
-            }
-
-            // Pick next operation from the pool
-            int id = random.nextInt(pool.size());
-            ids.add(id);
-
-            // Remove from pool when not allowing repeats
-            if (!this.allowRepeats) {
-                ids.remove(new Integer(id));
-            }
-        }
-
-        return ids;
-    }
-
-    protected List<Integer> getInOrderSample(OperationMix mix) {
-        List<Integer> ids = new ArrayList<Integer>();
-        int limit = this.sampleSize > 0 ? this.sampleSize : mix.size();
-
-        for (int id = 0; ids.size() < limit; id++) {
-            if (id >= ids.size()) {
-                // If the desired sample size is greater than the mix size then
-                // we either wrap around if repeats are allowed or we return a
-                // sample that is of the size of the mix
-                if (this.allowRepeats) {
-                    id = 0;
-                } else {
-                    return ids;
-                }
-            }
-            ids.add(id);
-        }
-        return ids;
+        super(new SamplingMixOrderProvider(sampleSize, allowRepeats));
     }
 
 }

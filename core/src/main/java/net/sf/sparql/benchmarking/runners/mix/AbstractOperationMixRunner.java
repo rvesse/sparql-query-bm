@@ -39,6 +39,7 @@ import net.sf.sparql.benchmarking.operations.Operation;
 import net.sf.sparql.benchmarking.operations.OperationMix;
 import net.sf.sparql.benchmarking.options.Options;
 import net.sf.sparql.benchmarking.runners.Runner;
+import net.sf.sparql.benchmarking.runners.mix.ordering.MixOrderProvider;
 import net.sf.sparql.benchmarking.runners.operations.DefaultOperationRunner;
 import net.sf.sparql.benchmarking.runners.operations.OperationRunner;
 import net.sf.sparql.benchmarking.stats.OperationMixRun;
@@ -56,6 +57,13 @@ import net.sf.sparql.benchmarking.util.FormatUtils;
 public abstract class AbstractOperationMixRunner implements OperationMixRunner {
 
     private OperationRunner defaultRunner = new DefaultOperationRunner();
+    private final MixOrderProvider orderProvider;
+
+    public AbstractOperationMixRunner(MixOrderProvider provider) {
+        if (provider == null)
+            throw new NullPointerException("provider cannot be null");
+        this.orderProvider = provider;
+    }
 
     /**
      * Runs an operation based on the configured {@link OperationRunner} using
@@ -74,29 +82,9 @@ public abstract class AbstractOperationMixRunner implements OperationMixRunner {
         return opRunner.run(runner, options, op);
     }
 
-    /**
-     * Gets the order in which the runner should run the operations
-     * 
-     * @param options
-     *            Options
-     * @param mix
-     *            Mix containing the operations to be run
-     * @return Operation order expressed as a list of IDs
-     */
-    protected abstract <T extends Options> List<Integer> getOperationOrder(T options, OperationMix mix);
-
-    /**
-     * Whether the runner should report the order of operations as a progress
-     * message
-     * <p>
-     * The default implementation returns {@code true} so operation order is
-     * always reported
-     * </p>
-     * 
-     * @return True if operation order should be default
-     */
-    protected <T extends Options> boolean reportOperationOrder(T options) {
-        return true;
+    @Override
+    public <T extends Options> OperationMixRun warmup(Runner<T> runner, T options, OperationMix mix) {
+        return run(runner, options, mix);
     }
 
     @Override
@@ -109,8 +97,8 @@ public abstract class AbstractOperationMixRunner implements OperationMixRunner {
 
         // Generate a random sequence of integers so we execute the queries in a
         // random order each time the query set is run
-        List<Integer> ids = this.getOperationOrder(options, mix);
-        if (this.reportOperationOrder(options)) {
+        List<Integer> ids = this.orderProvider.getOperationOrder(options, mix);
+        if (this.orderProvider.reportOperationOrder(options)) {
             StringBuffer operationOrder = new StringBuffer();
             operationOrder.append("Operation Order for this Run is ");
             for (int i = 0; i < ids.size(); i++) {

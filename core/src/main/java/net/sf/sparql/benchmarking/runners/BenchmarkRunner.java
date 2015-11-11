@@ -122,7 +122,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options);
         for (i = 0; i < options.getWarmups(); i++) {
             reportProgress(options, "Warmup Run " + (i + 1) + " of " + options.getWarmups());
-            OperationMixRun r = this.runMix(options);
+            OperationMixRun r = this.runMix(options, true);
             reportProgress(options);
             reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(r.getTotalResponseTime()));
             reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(r.getTotalRuntime()));
@@ -153,7 +153,7 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
                 reportProgress(options, "Operation Mix Run " + (i + 1) + " of " + options.getRuns());
                 reportProgress(options, "Current Time: " + FormatUtils.formatInstant(Instant.now()));
                 reportBeforeOperationMix(options, options.getOperationMix());
-                OperationMixRun r = this.runMix(options);
+                OperationMixRun r = this.runMix(options, false);
                 reportAfterOperationMix(options, options.getOperationMix(), r);
                 reportProgress(options);
                 reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(r.getTotalResponseTime()));

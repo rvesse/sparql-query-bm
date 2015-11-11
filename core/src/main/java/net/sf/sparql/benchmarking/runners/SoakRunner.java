@@ -152,7 +152,7 @@ public class SoakRunner extends AbstractRunner<SoakOptions> {
                 }
                 i++;
                 reportBeforeOperationMix(options, options.getOperationMix());
-                OperationMixRun r = this.runMix(options);
+                OperationMixRun r = this.runMix(options, false);
                 reportAfterOperationMix(options, null, r);
                 reportProgress(options);
 

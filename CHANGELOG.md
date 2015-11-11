@@ -1,10 +1,16 @@
 # Change Log
 
-## Version 2.1.2 (Unreleased)
+## Version 2.2.0 (Unreleased)
 
 - Upgrade dependencies
     - Jena 3.0.1-SNAPSHOT
 - Fix possible bug with hangs when long running queries time out or are otherwise terminated that both hangs the client and causes the server to waste resources
+- **BREAKING** Refactored how the built-in mix runners get their operation ordering to support other new features - this involves some slight changes to the `OperationMixRunner` API
+- New `IntelligentMixRunner` primarily designed for benchmarking
+    - Automatically tunes the mix being run during the run
+    - Operations that time out during the warmups are excluded from subsequent runs
+    - Operations that reach a configurable failure threshold are excluded from subsequent runs
+    - Operation timeout is automatically tuned based on the observed maximum runtime during warmups
 
 ## Version 2.1.1 (5th November 2015)
 

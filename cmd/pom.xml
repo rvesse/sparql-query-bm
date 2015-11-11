@@ -8,7 +8,7 @@
   <parent>
     <groupId>net.sf.sparql-query-bm</groupId>
     <artifactId>parent</artifactId>
-    <version>2.1.2-SNAPSHOT</version>
+    <version>2.2.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
 
