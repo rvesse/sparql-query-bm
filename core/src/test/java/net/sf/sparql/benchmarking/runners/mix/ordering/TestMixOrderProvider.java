@@ -33,7 +33,7 @@ public class TestMixOrderProvider {
     private OperationMix createFailureMix(int size) {
         List<Operation> ops = new ArrayList<>();
         while (ops.size() < size) {
-            ops.add(new FailOperation(String.format("Fail #", ops.size() + 1), ops.size() + 1));
+            ops.add(new FailOperation(String.format("Fail #%d", ops.size() + 1), ops.size() + 1));
         }
         return new OperationMixImpl(ops);
     }
