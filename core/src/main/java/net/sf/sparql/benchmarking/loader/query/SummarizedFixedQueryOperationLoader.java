@@ -36,31 +36,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.query.InMemoryFixedQueryOperation;
+import net.sf.sparql.benchmarking.operations.query.SummarizedFixedQueryOperation;
 
 /**
- * In-Memory Query operation loader
+ * Query operation loader
  * 
  * @author rvesse
  * 
  */
-public class InMemoryFixedQueryOperationLoader extends AbstractQueryOperationLoader {
+public class SummarizedFixedQueryOperationLoader extends AbstractQueryOperationLoader {
 
-    static final Logger logger = LoggerFactory.getLogger(InMemoryFixedQueryOperationLoader.class);
+    static final Logger logger = LoggerFactory.getLogger(SummarizedFixedQueryOperationLoader.class);
 
     @Override
     public String getPreferredName() {
-        return "mem-query";
+        return "sum-query";
     }
 
     @Override
     public String getDescription() {
-        return "The mem-query operation makes a fixed SPARQL query against a local in-memory dataset";
+        return "The query operation makes a summarized form of a fixed SPARQL query against a remote SPARQL service via HTTP";
     }
 
     @Override
     protected Operation createQueryOperation(String name, String query) {
-        return new InMemoryFixedQueryOperation(name, query);
+        return new SummarizedFixedQueryOperation(name, query);
     }
 
 }

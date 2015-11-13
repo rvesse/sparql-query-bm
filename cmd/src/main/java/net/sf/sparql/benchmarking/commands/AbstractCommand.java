@@ -68,8 +68,11 @@ import org.apache.jena.sparql.core.assembler.AssemblerUtils;
 import org.apache.jena.sparql.core.assembler.DatasetAssemblerVocab;
 
 import net.sf.sparql.benchmarking.loader.InMemoryOperations;
+import net.sf.sparql.benchmarking.loader.OperationLoaderRegistry;
 import net.sf.sparql.benchmarking.loader.OperationMixLoader;
 import net.sf.sparql.benchmarking.loader.OperationMixLoaderRegistry;
+import net.sf.sparql.benchmarking.loader.query.InMemorySummarizedFixedQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.query.SummarizedFixedQueryOperationLoader;
 import net.sf.sparql.benchmarking.monitoring.ConsoleProgressListener;
 import net.sf.sparql.benchmarking.options.HaltBehaviour;
 import net.sf.sparql.benchmarking.options.Options;
@@ -339,6 +342,10 @@ public abstract class AbstractCommand {
             "--in-memory" }, description = "Disables remote query and update operations by redirecting the loaders to the in-memory variants of these operations.  Allows you to easily use a mix originally designed for remote services to also be run against in-memory datasets.")
     public boolean inMemoryOperations = false;
 
+    @Option(name = {
+            "--summarize" }, description = "Runs queries in summarized form rather than original form.  Summarized form essentially rewrites the query so that we request the system being tested compute the full query but summarize the number of results using a COUNT(*) thus eliminating full results materialization from the benchmarking.")
+    public boolean summarizeQueries = false;
+
     /**
      * Ensure absolute URIs option
      */
@@ -436,8 +443,12 @@ public abstract class AbstractCommand {
                 throw new RuntimeException("Failed to find a dataset in the provided assembler file");
             options.setDataset(ds);
         }
-        if (this.inMemoryOperations)
-            InMemoryOperations.useInMemoryOperations();
+        if (this.inMemoryOperations) {
+            InMemoryOperations.useInMemoryOperations(this.summarizeQueries);
+        } else {
+            OperationLoaderRegistry.addLoader("query", new SummarizedFixedQueryOperationLoader());
+            OperationLoaderRegistry.addLoader("mem-query", new InMemorySummarizedFixedQueryOperationLoader());
+        }
 
         // Set operation mixes
         // Has to happen after in-memory operation support setup in case the

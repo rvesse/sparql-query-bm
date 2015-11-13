@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sf.sparql.benchmarking.operations.Operation;
-import net.sf.sparql.benchmarking.operations.query.InMemoryFixedQueryOperation;
+import net.sf.sparql.benchmarking.operations.query.InMemorySummarizedFixedQueryOperation;
 
 /**
  * In-Memory Query operation loader
@@ -44,23 +44,21 @@ import net.sf.sparql.benchmarking.operations.query.InMemoryFixedQueryOperation;
  * @author rvesse
  * 
  */
-public class InMemoryFixedQueryOperationLoader extends AbstractQueryOperationLoader {
+public class InMemorySummarizedFixedQueryOperationLoader extends AbstractQueryOperationLoader {
 
-    static final Logger logger = LoggerFactory.getLogger(InMemoryFixedQueryOperationLoader.class);
+    static final Logger logger = LoggerFactory.getLogger(InMemorySummarizedFixedQueryOperationLoader.class);
+
+    protected Operation createQueryOperation(String name, String query) {
+        return new InMemorySummarizedFixedQueryOperation(name, query);
+    }
 
     @Override
     public String getPreferredName() {
-        return "mem-query";
+        return "sum-mem-query";
     }
 
     @Override
     public String getDescription() {
-        return "The mem-query operation makes a fixed SPARQL query against a local in-memory dataset";
+        return "The sum-mem-query operation makes summarizes a fixed SPARQL query against a local in-memory dataset";
     }
-
-    @Override
-    protected Operation createQueryOperation(String name, String query) {
-        return new InMemoryFixedQueryOperation(name, query);
-    }
-
 }

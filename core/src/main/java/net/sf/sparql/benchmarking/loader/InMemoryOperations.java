@@ -35,6 +35,7 @@ package net.sf.sparql.benchmarking.loader;
 import net.sf.sparql.benchmarking.loader.query.FixedQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.InMemoryFixedQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.InMemoryParameterizedQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.query.InMemorySummarizedFixedQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.ParameterizedQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.update.FixedUpdateOperationLoader;
 import net.sf.sparql.benchmarking.loader.update.InMemoryFixedUpdateOperationLoader;
@@ -84,6 +85,17 @@ public class InMemoryOperations {
         // Update Operations
         OperationLoaderRegistry.addLoader("update", new InMemoryFixedUpdateOperationLoader());
         OperationLoaderRegistry.addLoader("param-update", new InMemoryParameterizedUpdateOperationLoader());
+    }
+
+    public static void useInMemoryOperations(boolean summarize) {
+        useInMemoryOperations();
+
+        if (!summarize)
+            return;
+
+        // Switch Query Operations for Summarized Query Operations
+        OperationLoaderRegistry.addLoader("query", new InMemorySummarizedFixedQueryOperationLoader());
+        //OperationLoaderRegistry.addLoader("param-query", new InMemorySummarizedParameterizedQueryOperationLoader());
     }
 
     /**

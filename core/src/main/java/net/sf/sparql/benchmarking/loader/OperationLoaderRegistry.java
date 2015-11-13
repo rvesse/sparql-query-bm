@@ -45,8 +45,10 @@ import net.sf.sparql.benchmarking.loader.query.DatasetSizeOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.FixedNvpQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.InMemoryFixedQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.InMemoryParameterizedQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.query.InMemorySummarizedFixedQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.ParameterizedNvpQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.ParameterizedQueryOperationLoader;
+import net.sf.sparql.benchmarking.loader.query.SummarizedFixedQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.query.FixedQueryOperationLoader;
 import net.sf.sparql.benchmarking.loader.update.FixedNvpUpdateOperationLoader;
 import net.sf.sparql.benchmarking.loader.update.InMemoryFixedUpdateOperationLoader;
@@ -86,6 +88,8 @@ public class OperationLoaderRegistry {
         addLoader(new InMemoryParameterizedQueryOperationLoader());
         addLoader(new ParameterizedNvpQueryOperationLoader());
         addLoader(new DatasetSizeOperationLoader());
+        addLoader(new SummarizedFixedQueryOperationLoader());
+        addLoader(new InMemorySummarizedFixedQueryOperationLoader());
 
         // Update operations
         addLoader(new FixedUpdateOperationLoader());
