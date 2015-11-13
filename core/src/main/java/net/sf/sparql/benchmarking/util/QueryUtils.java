@@ -1,6 +1,7 @@
 package net.sf.sparql.benchmarking.util;
 
 import org.apache.jena.query.Query;
+import org.apache.jena.shared.impl.PrefixMappingImpl;
 import org.apache.jena.sparql.core.Prologue;
 import org.apache.jena.sparql.expr.Expr;
 import org.apache.jena.sparql.expr.aggregate.AggCount;
@@ -61,7 +62,9 @@ public class QueryUtils {
             }
         } else if (rawQuery.isSelectType()) {
             // Simple wrap as sub-query in a SELECT
-            Query summaryQuery = prepareWrapper(rawQuery.getPrologue());
+            Query summaryQuery = prepareWrapper(rawQuery);
+            rawQuery.setBaseURI((String) null);
+            rawQuery.setPrefixMapping(new PrefixMappingImpl());
             summaryQuery.setQueryPattern(new ElementSubQuery(rawQuery));
             return summaryQuery;
         } else {
@@ -72,7 +75,11 @@ public class QueryUtils {
     }
 
     private static Query prepareWrapper(Prologue prologue) {
-        Query summaryQuery = new Query(prologue);
+        Query summaryQuery = new Query();
+        if (prologue.explicitlySetBaseURI()) {
+            summaryQuery.setBaseURI(prologue.getBaseURI());
+        }
+        summaryQuery.setPrefixMapping(prologue.getPrefixMapping());
 
         summaryQuery.setQuerySelectType();
         Aggregator countAgg = new AggCount();
