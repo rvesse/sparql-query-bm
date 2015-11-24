@@ -81,7 +81,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
 
     @Override
     public void halt(T options, String message) {
-        System.err.println("Benchmarking Aborted - Halting due to " + message);
+        System.err.println("Testing Aborted - Halting due to " + message);
         if (!halted) {
             // Make sure we only reallyHalt once, otherwise, we infinite loop
             // with bad behavior from a listener.
@@ -120,7 +120,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
         case EXIT:
             System.exit(2);
         case THROW_EXCEPTION:
-            throw new RuntimeException("Benchmarking Aborted - Halting due to " + message);
+            throw new RuntimeException("Testing Aborted - Halting due to " + message);
         }
     }
 

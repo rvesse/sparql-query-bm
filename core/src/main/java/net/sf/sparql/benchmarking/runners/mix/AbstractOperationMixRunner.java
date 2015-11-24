@@ -90,7 +90,7 @@ public abstract class AbstractOperationMixRunner implements OperationMixRunner {
     @Override
     public <T extends Options> OperationMixRun run(Runner<T> runner, T options, OperationMix mix) {
         if (mix.size() == 0)
-            throw new IllegalArgumentException("Cannot run an empty operation mix");
+            runner.halt(options, "Cannot run an empty operation mix");
 
         long runOrder = options.getGlobalOrder();
         List<OperationRun> runs = new ArrayList<OperationRun>();
@@ -98,6 +98,8 @@ public abstract class AbstractOperationMixRunner implements OperationMixRunner {
         // Generate a random sequence of integers so we execute the queries in a
         // random order each time the query set is run
         List<Integer> ids = this.orderProvider.getOperationOrder(options, mix);
+        if (ids.size() == 0)
+            runner.halt(options, "MixOrderProvider produced an empty ordering of operations to run");
         if (this.orderProvider.reportOperationOrder(options)) {
             StringBuffer operationOrder = new StringBuffer();
             operationOrder.append("Operation Order for this Run is ");

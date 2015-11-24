@@ -84,6 +84,10 @@ public class IntelligentMixRunner extends AbstractOperationMixRunner {
                     checkFailureThreshold(runner, options, mix, excludes, opRun);
                 }
             }
+            
+            // Check we haven't excluded all operations
+            if (excludes.size() == mix.size())
+                runner.halt(options, "Intelligent mix runner has excluded all operations from further runs due to timeouts/failures");
         }
 
         return run;
@@ -138,6 +142,10 @@ public class IntelligentMixRunner extends AbstractOperationMixRunner {
                 }
             }
         }
+        
+        // Check we haven't excluded all operations
+        if (excludes.size() == mix.size())
+            runner.halt(options, "Intelligent mix runner has excluded all operations from further runs due to timeouts/failures");
 
         return run;
     }

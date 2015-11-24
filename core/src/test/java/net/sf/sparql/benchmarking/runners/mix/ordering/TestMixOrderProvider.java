@@ -181,7 +181,7 @@ public class TestMixOrderProvider {
         check(5, options, provider, excludes);
     }
 
-    @Test
+    @Test(expected = RuntimeException.class)
     public void intelligent_02() {
         MixOrderProvider provider = new DefaultMixOrderProvider();
         BenchmarkOptions options = new BenchmarkOptions();
@@ -196,10 +196,8 @@ public class TestMixOrderProvider {
 
         // Run the mix
         // This should result in all operations failing and being excluded
+        // which will cause an error to be thrown
         options.getMixRunner().warmup(new BenchmarkRunner(), options, mix);
-        Assert.assertEquals(5, excludes.size());
-
-        check(5, options, provider, excludes);
     }
 
     @Test
