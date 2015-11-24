@@ -82,10 +82,10 @@ public class DefaultOperationRunner implements OperationRunner {
             }
         } catch (TimeoutException tEx) {
             // Handle timeout error
-            logger.error("Operation Callable execeeded Timeout - " + tEx.getMessage());
+            logger.error("Operation Callable exceeded Timeout - " + tEx.getMessage());
             if (options.getHaltOnTimeout() || options.getHaltAny())
                 runner.halt(options, tEx);
-            r = op.createErrorInformation("Operation Callable execeeded Timeout - " + tEx.getMessage(), ErrorCategories.TIMEOUT,
+            r = op.createErrorInformation("Operation Callable exceeded Timeout - " + tEx.getMessage(), ErrorCategories.TIMEOUT,
                     System.nanoTime() - startTime);
 
             // If the query times out but we aren't halting cancel further

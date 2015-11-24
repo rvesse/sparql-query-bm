@@ -263,7 +263,7 @@ public abstract class AbstractRunner<T extends Options> implements Runner<T> {
                     reportProgress(options, "Failed with error - " + run.getErrorMessage());
                 }
             } catch (TimeoutException tEx) {
-                logger.error("Sanity Check execeeded 30 Second Timeout - " + tEx.getMessage());
+                logger.error("Sanity Check exceeded 30 Second Timeout - " + tEx.getMessage());
                 reportProgress(options, "Failed");
             } catch (InterruptedException e) {
                 logger.error("Sanity Check was interrupted - " + e.getMessage());

@@ -79,13 +79,13 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
             halt(options, "No Operation Mix was set");
         }
         if (options.getOutliers() * 2 >= options.getRuns()) {
-            System.err
-                    .println("Specified number of outliers would mean all run results would be discarded, please specify a lower number of outliers");
+            System.err.println(
+                    "Specified number of outliers would mean all run results would be discarded, please specify a lower number of outliers");
             halt(options, "Number of Outliers too high");
         }
         if (options.getTimeout() <= 0) {
-            System.err
-                    .println("Benchmarking requires that an operation timeout be set, cannot run with timeout disabled");
+            System.err.println(
+                    "Benchmarking requires that an operation timeout be set, cannot run with timeout disabled");
             halt(options, "No timeout was set");
         }
 
@@ -128,10 +128,14 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
             reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(r.getTotalRuntime()));
             int minOperationId = r.getMinimumRuntimeOperationID();
             int maxOperationId = r.getMaximumRuntimeOperationID();
-            reportProgress(options, "Minimum Operation Runtime: " + FormatUtils.formatSeconds(r.getMinimumRuntime())
-                    + " (Operation " + options.getOperationMix().getOperation(minOperationId).getName() + ")");
-            reportProgress(options, "Maximum Operation Runtime: " + FormatUtils.formatSeconds(r.getMaximumRuntime())
-                    + " (Operation " + options.getOperationMix().getOperation(maxOperationId).getName() + ")");
+            if (minOperationId != -1) {
+                reportProgress(options, "Minimum Operation Runtime: " + FormatUtils.formatSeconds(r.getMinimumRuntime())
+                        + " (Operation " + options.getOperationMix().getOperation(minOperationId).getName() + ")");
+            }
+            if (maxOperationId != -1) {
+                reportProgress(options, "Maximum Operation Runtime: " + FormatUtils.formatSeconds(r.getMaximumRuntime())
+                        + " (Operation " + options.getOperationMix().getOperation(maxOperationId).getName() + ")");
+            }
             reportProgress(options);
         }
         options.getOperationMix().getStats().clear();
@@ -160,12 +164,18 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
                 reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(r.getTotalRuntime()));
                 int minOperationId = r.getMinimumRuntimeOperationID();
                 int maxOperationId = r.getMaximumRuntimeOperationID();
-                reportProgress(options,
-                        "Minimum Operation Runtime: " + FormatUtils.formatSeconds(r.getMinimumRuntime()) + " (Query "
-                                + options.getOperationMix().getOperation(minOperationId).getName() + ")");
-                reportProgress(options,
-                        "Maximum Operation Runtime: " + FormatUtils.formatSeconds(r.getMaximumRuntime()) + " (Query "
-                                + options.getOperationMix().getOperation(maxOperationId).getName() + ")");
+                if (minOperationId != -1) {
+                    reportProgress(options,
+                            "Minimum Operation Runtime: " + FormatUtils.formatSeconds(r.getMinimumRuntime())
+                                    + " (Query " + options.getOperationMix().getOperation(minOperationId).getName()
+                                    + ")");
+                }
+                if (maxOperationId != -1) {
+                    reportProgress(options,
+                            "Maximum Operation Runtime: " + FormatUtils.formatSeconds(r.getMaximumRuntime())
+                                    + " (Query " + options.getOperationMix().getOperation(maxOperationId).getName()
+                                    + ")");
+                }
                 reportProgress(options);
             }
         } else {
@@ -219,14 +229,13 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options, "---------------------");
         reportProgress(options);
         reportProgress(options, "Total Mix Runs: " + FormatUtils.formatNumber(options.getRuns()));
-        reportProgress(
-                options,
-                "Total Operation Runs: "
-                        + FormatUtils.formatNumber(options.getOperationMix().getStats().getTotalOperations()));
+        reportProgress(options, "Total Operation Runs: "
+                + FormatUtils.formatNumber(options.getOperationMix().getStats().getTotalOperations()));
         reportProgress(options, "Start Time: " + FormatUtils.formatInstant(startInstant));
         reportProgress(options, "End Time: " + FormatUtils.formatInstant(endInstant));
         reportProgress(options);
-        reportProgress(options, "Total Errors: " + FormatUtils.formatNumber(options.getOperationMix().getStats().getTotalErrors()));
+        reportProgress(options,
+                "Total Errors: " + FormatUtils.formatNumber(options.getOperationMix().getStats().getTotalErrors()));
         if (options.getOperationMix().getStats().getTotalErrors() > 0) {
             // Show errors by category
             Map<Integer, List<OperationRun>> categorizedErrors = options.getOperationMix().getStats()
@@ -236,45 +245,33 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options);
         reportProgress(options,
                 "Total Response Time: " + FormatUtils.formatSeconds(operationMix.getStats().getTotalResponseTime()));
-        reportProgress(
-                options,
-                "Average Response Time (Arithmetic): "
-                        + FormatUtils.formatSeconds(operationMix.getStats().getAverageResponseTime()));
+        reportProgress(options, "Average Response Time (Arithmetic): "
+                + FormatUtils.formatSeconds(operationMix.getStats().getAverageResponseTime()));
         reportProgress(options,
                 "Total Runtime: " + FormatUtils.formatSeconds(operationMix.getStats().getTotalRuntime()));
         if (options.getParallelThreads() > 1)
             reportProgress(options,
                     "Actual Runtime: " + FormatUtils.formatSeconds(operationMix.getStats().getActualRuntime()));
-        reportProgress(
-                options,
-                "Average Runtime (Arithmetic): "
-                        + FormatUtils.formatSeconds(operationMix.getStats().getAverageRuntime()));
+        reportProgress(options, "Average Runtime (Arithmetic): "
+                + FormatUtils.formatSeconds(operationMix.getStats().getAverageRuntime()));
         if (options.getParallelThreads() > 1)
-            reportProgress(
-                    options,
-                    "Actual Average Runtime (Arithmetic): "
-                            + FormatUtils.formatSeconds(operationMix.getStats().getActualAverageRuntime()));
-        reportProgress(
-                options,
-                "Average Runtime (Geometric): "
-                        + FormatUtils.formatSeconds(operationMix.getStats().getGeometricAverageRuntime()));
+            reportProgress(options, "Actual Average Runtime (Arithmetic): "
+                    + FormatUtils.formatSeconds(operationMix.getStats().getActualAverageRuntime()));
+        reportProgress(options, "Average Runtime (Geometric): "
+                + FormatUtils.formatSeconds(operationMix.getStats().getGeometricAverageRuntime()));
         reportProgress(options,
                 "Minimum Mix Runtime: " + FormatUtils.formatSeconds(operationMix.getStats().getMinimumRuntime()));
         reportProgress(options,
                 "Maximum Mix Runtime: " + FormatUtils.formatSeconds(operationMix.getStats().getMaximumRuntime()));
         reportProgress(options,
                 "Mix Runtime Variance: " + FormatUtils.formatSecondsSquared(operationMix.getStats().getVariance()));
-        reportProgress(
-                options,
-                "Mix Runtime Standard Deviation: "
-                        + FormatUtils.formatSeconds(operationMix.getStats().getStandardDeviation()));
-        reportProgress(options,
-                "Operation Mixes per Hour: " + String.format("%,f", operationMix.getStats().getOperationMixesPerHour()));
+        reportProgress(options, "Mix Runtime Standard Deviation: "
+                + FormatUtils.formatSeconds(operationMix.getStats().getStandardDeviation()));
+        reportProgress(options, "Operation Mixes per Hour: "
+                + String.format("%,f", operationMix.getStats().getOperationMixesPerHour()));
         if (options.getParallelThreads() > 1)
-            reportProgress(
-                    options,
-                    "Actual Operation Mixes per Hour: "
-                            + String.format("%,f", operationMix.getStats().getActualOperationMixesPerHour()));
+            reportProgress(options, "Actual Operation Mixes per Hour: "
+                    + String.format("%,f", operationMix.getStats().getActualOperationMixesPerHour()));
         reportProgress(options);
 
         // Finally inform listeners that benchmarking finished OK
@@ -288,12 +285,10 @@ public class BenchmarkRunner extends AbstractRunner<BenchmarkOptions> {
         reportProgress(options, "Warmups = " + options.getWarmups());
         reportProgress(options, "Runs = " + options.getRuns());
         reportProgress(options, "Outliers = " + options.getOutliers());
-        reportProgress(options,
-                "CSV Results File = "
-                        + (options.getCsvResultsFile() == null ? "disabled" : options.getCsvResultsFile()));
-        reportProgress(options,
-                "XML Results File = "
-                        + (options.getXmlResultsFile() == null ? "disabled" : options.getXmlResultsFile()));
+        reportProgress(options, "CSV Results File = "
+                + (options.getCsvResultsFile() == null ? "disabled" : options.getCsvResultsFile()));
+        reportProgress(options, "XML Results File = "
+                + (options.getXmlResultsFile() == null ? "disabled" : options.getXmlResultsFile()));
         reportProgress(options);
     }
 }

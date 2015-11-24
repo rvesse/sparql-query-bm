@@ -69,8 +69,8 @@ public class DefaultParallelClient<T extends Options> extends AbstractParallelCl
 
     @Override
     public Object call() throws Exception {
-    	Thread.currentThread().setName("Parallel Client " + this.getID());
-    	
+        Thread.currentThread().setName("Parallel Client " + this.getID());
+
         ParallelClientManager<T> manager = this.getManager();
         T options = manager.getOptions();
         Runner<T> runner = manager.getRunner();
@@ -103,14 +103,21 @@ public class DefaultParallelClient<T extends Options> extends AbstractParallelCl
                 runner.reportProgress(options, "Operation Mix Run " + completedRun + " by Client " + this.getID());
                 runner.reportAfterOperationMix(options, operationMix, r);
                 runner.reportProgress(options);
-                runner.reportProgress(options, "Total Response Time: " + FormatUtils.formatSeconds(r.getTotalResponseTime()));
+                runner.reportProgress(options,
+                        "Total Response Time: " + FormatUtils.formatSeconds(r.getTotalResponseTime()));
                 runner.reportProgress(options, "Total Runtime: " + FormatUtils.formatSeconds(r.getTotalRuntime()));
                 int minOperationId = r.getMinimumRuntimeOperationID();
                 int maxOperationId = r.getMaximumRuntimeOperationID();
-                runner.reportProgress(options, "Minimum Operation Runtime: " + FormatUtils.formatSeconds(r.getMinimumRuntime())
-                        + " (Operation " + operationMix.getOperation(minOperationId).getName() + ")");
-                runner.reportProgress(options, "Maximum Operation Runtime: " + FormatUtils.formatSeconds(r.getMaximumRuntime())
-                        + " (Operation " + operationMix.getOperation(maxOperationId).getName() + ")");
+                if (minOperationId != -1) {
+                    runner.reportProgress(options,
+                            "Minimum Operation Runtime: " + FormatUtils.formatSeconds(r.getMinimumRuntime())
+                                    + " (Operation " + operationMix.getOperation(minOperationId).getName() + ")");
+                }
+                if (maxOperationId != -1) {
+                    runner.reportProgress(options,
+                            "Maximum Operation Runtime: " + FormatUtils.formatSeconds(r.getMaximumRuntime())
+                                    + " (Operation " + operationMix.getOperation(maxOperationId).getName() + ")");
+                }
                 runner.reportProgress(options);
             } catch (Exception e) {
                 // Log Error
@@ -118,7 +125,7 @@ public class DefaultParallelClient<T extends Options> extends AbstractParallelCl
                 if (options.getHaltOnError() || options.getHaltAny()) {
                     // Inform manager it needs to halt other clients
                     manager.halt();
-                	
+
                     runner.halt(options, "Operation Mix run failed in Client " + this.getID() + " - " + e.getMessage());
                 }
             }

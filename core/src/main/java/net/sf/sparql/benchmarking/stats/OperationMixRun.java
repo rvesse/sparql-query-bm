@@ -126,14 +126,14 @@ public interface OperationMixRun extends Comparable<OperationMixRun> {
      * Gets the runtime of the operation from the set that took the shortest
      * time to run
      * 
-     * @return Minimum Runtime in nanoseconds
+     * @return Minimum Runtime in nanoseconds or {@link Long#MAX_VALUE} if no operations were run
      */
     public abstract long getMinimumRuntime();
 
     /**
      * Gets the ID of the operation that took the shortest time to run
      * 
-     * @return ID of the Operation with the Minimum Runtime
+     * @return ID of the Operation with the Minimum Runtime or -1 if no operations were run
      */
     public abstract int getMinimumRuntimeOperationID();
 
@@ -141,14 +141,14 @@ public interface OperationMixRun extends Comparable<OperationMixRun> {
      * Gets the runtime of the operation from the set that took the longest time
      * to run
      * 
-     * @return Maximum Runtime in nanoseconds
+     * @return Maximum Runtime in nanoseconds or {@link Long#MIN_VALUE} if no operations were run
      */
     public abstract long getMaximumRuntime();
 
     /**
      * Gets the ID of the operation that took the longest time to run
      * 
-     * @return ID of the operation with Maximum Runtime
+     * @return ID of the operation with Maximum Runtime or -1 if no operations were run
      */
     public abstract int getMaximumRuntimeOperationID();
 
