@@ -1,5 +1,7 @@
 # Change Log
 
+## Version 2.3.0 (*Unreleased*)
+
 ## Version 2.2.0 (16th September 2016)
 
 - Upgrade dependencies
