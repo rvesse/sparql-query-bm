@@ -37,7 +37,7 @@ Documentation for the project may be found at https://sourceforge.net/p/sparql-q
 
 SPARQL Query Benchmarker is licensed under a 3 Clause BSD License
 
-Copyright 2011-2014 Cray Inc. All Rights Reserved
+Copyright 2011-2016 Cray Inc. All Rights Reserved
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are

@@ -1,9 +1,9 @@
 # Change Log
 
-## Version 2.2.0 (Unreleased)
+## Version 2.2.0 (16th September 2016)
 
 - Upgrade dependencies
-    - Jena 3.0.1-SNAPSHOT
+    - Jena 3.1.0
 - Fix possible bug with hangs when long running queries time out or are otherwise terminated that both hangs the client and causes the server to waste resources
 - **BREAKING** Refactored how the built-in mix runners get their operation ordering to support other new features - this involves some slight changes to the `OperationMixRunner` API
 - New `IntelligentMixRunner` primarily designed for benchmarking
@@ -15,6 +15,9 @@
     - The local limit applies only to how many results are counted and not to the queries themselves
     - This provides a compromise between enforcing a limit on queries (`--limit`) and not counting results at all (`--no-count`) both of which can make results less realistic.  Enforcing a limit asks the system being tested to do less work and may cause it to optimise and process the query differently.  On the other hand not counting results can skew results because often calculating the first result can be very quick but calculating all the results takes much longer.
     - Therefore being able to count some portion of the results allows you to put an upper bound on the amount of work a system does for a given query
+- New summarize feature (`--summarize`)
+    - Runs queries in summarise form instead of the original. Essentially this rewrites queries so that they are sub-queries of a `SELECT (COUNT(*) AS ?var)` outer query.
+    - Effectively this means that the system being tested is forced to compute all possible solutions in order to count them but need only materialise and transmit a single result row. Thus allowing a time to compute the complete query results to be benchmarked without including results serialisation in the timings.
 
 ## Version 2.1.1 (5th November 2015)
 
