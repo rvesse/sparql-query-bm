@@ -64,8 +64,9 @@ public abstract class AbstractLineBasedMixLoader extends AbstractOperationMixLoa
         try {
             int lineNum = 1;
             String line = reader.readLine();
-            while (StringUtils.isNotBlank(line)) {
-                ops.add(this.parseLine(file.getParentFile(), line, lineNum));
+            while (line != null) {
+                if (StringUtils.isNotBlank(line))
+                    ops.add(this.parseLine(file.getParentFile(), line, lineNum));
                 line = reader.readLine();
                 lineNum++;
             }
