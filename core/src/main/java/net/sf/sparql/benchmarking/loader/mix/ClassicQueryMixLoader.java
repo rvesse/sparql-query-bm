@@ -35,6 +35,8 @@ package net.sf.sparql.benchmarking.loader.mix;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
+
 import net.sf.sparql.benchmarking.loader.AbstractLineBasedMixLoader;
 import net.sf.sparql.benchmarking.loader.query.FixedQueryOperationLoader;
 import net.sf.sparql.benchmarking.operations.Operation;
@@ -50,7 +52,9 @@ public class ClassicQueryMixLoader extends AbstractLineBasedMixLoader {
     private static final FixedQueryOperationLoader loader = new FixedQueryOperationLoader();
 
     @Override
-    protected Operation parseLine(File baseDir, String line) throws IOException {
+    protected Operation parseLine(File baseDir, String line, int lineNum) throws IOException {
+        if (StringUtils.isBlank(line))
+            throw new IOException(String.format("Line %d: Unexpected blank line", lineNum));
         return loader.load(baseDir, new String[] { line });
     }
 

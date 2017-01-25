@@ -56,13 +56,21 @@ public class TsvMixLoader extends AbstractLineBasedMixLoader {
     }
 
     @Override
-    protected Operation parseLine(File baseDir, String line) throws IOException {
+    protected Operation parseLine(File baseDir, String line, int lineNum) throws IOException {
         String[] fields = line.split("\t");
+        if (fields.length == 0)
+            throw new IOException(String.format("Line %d: Expected a tab separated line but no tabs present", lineNum));
         OperationLoader loader = OperationLoaderRegistry.getLoader(fields[0]);
         if (loader == null)
-            throw new IOException("No OperationLoader is registered for the operation type " + fields[0]);
+            throw new IOException(String.format("Line %d: No OperationLoader is registered for the operation type %s",
+                    lineNum, fields[0]));
         String[] args = Arrays.copyOfRange(fields, 1, fields.length);
-        return loader.load(baseDir, args);
+        try {
+            return loader.load(baseDir, args);
+        } catch (IOException e) {
+            // Add offending line number to any loading errors
+            throw new IOException(String.format("Line %d: %s", lineNum, e.getMessage()));
+        }
     }
 
 }

@@ -42,6 +42,7 @@ import java.util.List;
 
 import net.sf.sparql.benchmarking.operations.Operation;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,10 +62,12 @@ public abstract class AbstractLineBasedMixLoader extends AbstractOperationMixLoa
         List<Operation> ops = new ArrayList<Operation>();
         BufferedReader reader = new BufferedReader(new FileReader(file));
         try {
+            int lineNum = 1;
             String line = reader.readLine();
-            while (line != null) {
-                ops.add(this.parseLine(file.getParentFile(), line));
+            while (StringUtils.isNotBlank(line)) {
+                ops.add(this.parseLine(file.getParentFile(), line, lineNum));
                 line = reader.readLine();
+                lineNum++;
             }
         } finally {
             reader.close();
@@ -80,10 +83,12 @@ public abstract class AbstractLineBasedMixLoader extends AbstractOperationMixLoa
      *            necessary
      * @param line
      *            Line to parse
+     * @param lineNum
+     *            Line number, can be used to provide better error messages
      * @return Operation
      * @throws IOException
      *             Thrown if the line does not represent a valid operation
      */
-    protected abstract Operation parseLine(File baseDir, String line) throws IOException;
+    protected abstract Operation parseLine(File baseDir, String line, int lineNum) throws IOException;
 
 }

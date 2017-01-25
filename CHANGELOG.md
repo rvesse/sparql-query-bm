@@ -2,6 +2,9 @@
 
 ## Version 2.3.0 (*Unreleased*)
 
+- Bug fixes
+    - Better error handling for blank or invalid lines (#4)
+
 ## Version 2.2.0 (16th September 2016)
 
 - Upgrade dependencies
